@@ -1,7 +1,9 @@
-import { createContext, useEffect, useCallback } from 'react'
+import { createContext, useEffect, useCallback, useState } from 'react'
 // utils
 import axios from '@unfinity/services/axios'
 import { LOGIN_PATH } from '@unfinity/constants/routes'
+import { dispatch } from '@unfinity/redux'
+import { getUser } from '@unfinity/redux/user'
 
 // ----------------------------------------------------------------------
 const setSession = (accessToken: string | null) => {
@@ -18,7 +20,7 @@ const setSession = (accessToken: string | null) => {
 interface AuthContextProps {
     isAuthenticated: boolean
     isInitialized: boolean
-    // user: IUser
+    user: IUser
     login: (email: string, password: string) => Promise<void>
     logout: () => Promise<void>
 }
@@ -32,6 +34,7 @@ type AuthProviderProps = {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const [isAuthenticated , setisAuthenticated ] = useState(false)
     const initialize = useCallback(async () => {
         try {
             const accessToken =
@@ -85,12 +88,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // });
         // const { accessToken, user } = response.data;
         // setSession(accessToken);
-        // dispatch({
-        //     type: Types.LOGIN,
-        //     payload: {
-        //         user,
-        //     },
-        // });
+        dispatch(getUser());
+        setisAuthenticated(true)
     }
 
     // LOGOUT
@@ -104,8 +103,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return (
         <AuthContext.Provider
             value={{
-                isAuthenticated: true,
+                isAuthenticated: isAuthenticated,
                 isInitialized: true,
+                user:{role:'',name:''},
                 login,
                 logout,
             }}

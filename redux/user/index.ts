@@ -6,7 +6,8 @@ const initialState: IUserStoreState = {
     isLoading: false,
     error: null,
     user: {
-        name: ''
+        name: '',
+        role: ''
     }
 }
 
@@ -35,7 +36,9 @@ export const getUser = () => async () => {
     dispatch(slice.actions.startLoadingAction())
     try {
         const response = await fetchGetUser()
-        dispatch(slice.actions.getUserAction(response))
+        setTimeout(() => {
+            dispatch(slice.actions.getUserAction(response))
+        }, 2000)
     } catch (error) {
         console.log('error: ', error)
         dispatch(slice.actions.hasErrorAction(error))

@@ -1,22 +1,12 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import LoginForm from './components/LoginForm'
+import ForgotPassword from './components/ForgotPassword'
 import Image from '@sentry/components/image';
-import { useEffect } from 'react';
-import { getUser } from '@unfinity/redux/user';
-import { useSelector } from 'react-redux';
-import { RootState } from '@unfinity/redux';
 
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
-
-    const user = useSelector((i:RootState)=>i.user)
-    useEffect(() => {
-        console.log("user",user);
-    }, [])
-    
 
     const ContentStyle = styled('div')(({ theme }) => ({
         maxWidth: 480,
@@ -51,7 +41,7 @@ export default function LoginPage() {
     return (
         <>
             <Head>
-                <title> Login | KU </title>
+                <title> Forgot password | KU </title>
             </Head>
 
             <StyledRoot>
@@ -77,12 +67,13 @@ export default function LoginPage() {
                 <StyledContent>
                     <Stack sx={{ width: 1 }}>
                         <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
-                            <Typography variant="h4">Sign in to Scientific Equipment Booking</Typography>
-                            <Stack direction="row" spacing={0.5}>
-                                <Typography variant="body2">Enter your details below</Typography>
+                            <Typography variant="h4" align="center">Forgot your password?</Typography>
+                            <Stack direction="column" spacing={0.5}>
+                                <Typography variant="body2" align="center">Please enter the email address associated with your account,</Typography>
+                                <Typography variant="body2" align="center">and we'll email you a link to reset your password.</Typography>
                             </Stack>
                         </Stack>
-                        <LoginForm />
+                        <ForgotPassword />
                     </Stack>
                 </StyledContent>
             </StyledRoot>

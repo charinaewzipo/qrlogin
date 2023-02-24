@@ -14,16 +14,19 @@ type AuthGuardProps = {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-    const { isAuthenticated, isInitialized } = useAuthContext()
+    const { isAuthenticated, isInitialized , user } = useAuthContext()
 
     const { pathname, push } = useRouter()
 
     const [requestedLocation, setRequestedLocation] = useState<string | null>(null)
 
     useEffect(() => {
+        console.log(requestedLocation , pathname , requestedLocation);
+        
         if (requestedLocation && pathname !== requestedLocation) {
             push(requestedLocation)
         }
+        console.log("AuthGuard - isAuthenticated, ",isAuthenticated, user );
         if (isAuthenticated) {
             setRequestedLocation(null)
         }
