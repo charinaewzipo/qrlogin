@@ -7,9 +7,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, useTheme, alpha } from '@mui/material'
 import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
 import OtpInput from 'react18-input-otp';
-
+import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 import OTPInput from './components/OTPInput';
 
 type FormValuesProps = {
@@ -67,7 +67,7 @@ function ResetPasswordForm() {
     })
 
     const defaultValues = {
-        email: isEmpty(router.query) ? '' : (router.query.id).toString(),
+        email: isEmpty(router.query) ? '' : get(router, "query.id", '').toString(),
         password: '',
         confirmPassword: '',
     }
@@ -87,17 +87,19 @@ function ResetPasswordForm() {
     } = methods
 
     const onSubmit = async (data: FormValuesProps) => {
-        const errorOptions: ErrorOption = {
-            message: "errorResponse.data || errorResponse.devMessage"
+        if (!isErrorOtp) {
+            const errorOptions: ErrorOption = {
+                message: "errorResponse.data || errorResponse.devMessage"
+            }
+            setError('afterSubmit', errorOptions)
         }
-        setError('afterSubmit', errorOptions)
     }
 
     const handleClickResend = () => {
         if (!isReSend) {
             setIsReSend(true)
-            // setMinutes(10)
-            setSeconds(5)
+            setMinutes(10)
+            // setSeconds(5)
         }
     }
 
@@ -109,11 +111,9 @@ function ResetPasswordForm() {
                     ? <></>
                     : <Alert severity="success">Resent code complete; you can resend again in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</Alert>
                 }
-
                 <RHFTextField name="email" label="Email address" disabled={true} />
                 <Stack sx={{ justifyContent: "center" }}>
                     <OTPInput
-
                         autoFocus
                         isNumberInput
                         length={6}
@@ -137,7 +137,7 @@ function ResetPasswordForm() {
                 </Stack>
                 {isErrorOtp &&
                     <Box >
-                        <p style={{ marginTop: "-5px" }} className='MuiFormHelperText-root Mui-disabled Mui-error MuiFormHelperText-sizeMedium MuiFormHelperText-contained css-1ds92iq-MuiFormHelperText-root'>OTP is required</p>
+                        <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, mt: -1 }}>OTP is required</FormHelperText>
                     </Box>}
                 <RHFTextField
                     name="password"

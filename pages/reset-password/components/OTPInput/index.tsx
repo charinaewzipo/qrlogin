@@ -41,7 +41,6 @@ export function OTPInputComponent(props: OTPInputProps) {
   // Helper to return OTP from inputs
   const handleOtpChange = useCallback(
     (otp: string[]) => {
-      console.log("otp", otp)
       const otpValue = otp.join('');
       onChangeOTP(otpValue);
     },
@@ -182,7 +181,6 @@ export function OTPInputComponent(props: OTPInputProps) {
     },
     [activeInput, getRightValue, length, otpValues],
   );
-  console.log(inputStyle)
   return (
     <div {...rest}>
       {Array(length)
