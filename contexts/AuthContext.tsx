@@ -1,9 +1,9 @@
 import { createContext, useEffect, useCallback, useState } from 'react'
 // utils
-import axios from '@unfinity/services/axios'
-import { LOGIN_PATH } from '@unfinity/constants/routes'
-import { dispatch } from '@unfinity/redux'
-import { getUser } from '@unfinity/redux/user'
+import axios from '@ku/services/axios'
+import { LOGIN_PATH } from '@ku/constants/routes'
+import { dispatch } from '@ku/redux'
+import { getUser } from '@ku/redux/user'
 
 // ----------------------------------------------------------------------
 const setSession = (accessToken: string | null) => {

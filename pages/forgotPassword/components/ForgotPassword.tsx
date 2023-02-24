@@ -5,7 +5,7 @@ import { ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import ConfirmDialog from './ConfirmDialog';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FORGOT_PASSWORD_PATH } from '@unfinity/constants/routes'
+import { FORGOT_PASSWORD_PATH } from '@ku/constants/routes'
 import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box } from '@mui/material'
 import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
 import palette from '@sentry/theme/palette';

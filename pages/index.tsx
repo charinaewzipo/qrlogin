@@ -3,7 +3,7 @@ import styles from '../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box } from '@mui/material'
-import AuthorizedLayout from '@unfinity/layouts/authorized'
+import AuthorizedLayout from '@ku/layouts/authorized'
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -54,7 +54,7 @@ export function Index() {
                             <div id="welcome">
                                 <h1>
                                     <span> Hello there, </span>
-                                    Welcome unfinity 👋
+                                    Welcome ku 👋
                                 </h1>
                             </div>
 

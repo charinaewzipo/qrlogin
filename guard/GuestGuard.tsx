@@ -2,11 +2,11 @@ import { useEffect } from 'react'
 // next
 import { useRouter } from 'next/router'
 // routes
-import { DASHBOARD_PATH } from '@unfinity/constants/routes'
+import { DASHBOARD_PATH } from '@ku/constants/routes'
 // components
 import LoadingScreen from '@sentry/components/loading-screen'
 //
-import { useAuthContext } from '@unfinity/contexts/useAuthContext'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 

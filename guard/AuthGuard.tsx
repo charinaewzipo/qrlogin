@@ -4,8 +4,8 @@ import { useRouter } from 'next/router'
 // components
 import LoadingScreen from '@sentry/components/loading-screen'
 //
-import Login from '@unfinity/pages/login'
-import { useAuthContext } from '@unfinity/contexts/useAuthContext'
+import Login from '@ku/pages/login'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 

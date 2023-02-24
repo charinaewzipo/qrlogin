@@ -4,9 +4,9 @@ import Head from 'next/head'
 import LoginForm from './components/LoginForm'
 import Image from '@sentry/components/image';
 import { useEffect } from 'react';
-import { getUser } from '@unfinity/redux/user';
+import { getUser } from '@ku/redux/user';
 import { useSelector } from 'react-redux';
-import { RootState } from '@unfinity/redux';
+import { RootState } from '@ku/redux';
 
 // ----------------------------------------------------------------------
 

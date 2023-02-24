@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { dispatch } from '..'
-import { fetchGetUser } from '@unfinity/services/user'
+import { fetchGetUser } from '@ku/services/user'
 
 const initialState: IUserStoreState = {
     isLoading: false,
