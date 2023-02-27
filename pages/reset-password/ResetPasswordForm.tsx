@@ -11,7 +11,7 @@ import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
 import OTPInput from './components/OTPInput';
 import { RESET_PASSWORD_SUCCESS_PATH } from '@ku/constants/routes';
-
+import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 type FormValuesProps = {
     email: string
     password: string

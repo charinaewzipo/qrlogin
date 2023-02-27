@@ -9,26 +9,10 @@ const ResetPassword = () => {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: 480,
     margin: 'auto',
-    display: 'flex',
     minHeight: '100vh',
+    display: 'flex',
+    justifyContent: 'center',
     flexDirection: 'column',
-    justifyContent: 'center',
-    padding: theme.spacing(12, 0),
-  }))
-
-  const StyledRoot = styled('main')(() => ({
-    height: '100%',
-    display: 'flex',
-    position: 'relative',
-  }));
-
-  const StyledContent = styled('div')(({ theme }) => ({
-    width: 480,
-    margin: 'auto',
-    textAlign: "center",
-    display: 'flex',
-    minHeight: '100vh',
-    justifyContent: 'center',
     padding: theme.spacing(30, 0),
     [theme.breakpoints.up('md')]: {
       flexShrink: 0,
@@ -43,8 +27,7 @@ const ResetPassword = () => {
       </Head>
       <Container>
         <LogoOnlyLayout/>
-        <ContentStyle>
-          <StyledContent >
+          <ContentStyle >
             <Stack>
               <Stack direction={"row"} justifyContent="center">
                 <Box
@@ -74,9 +57,7 @@ const ResetPassword = () => {
               </Stack>
               <ResetPasswordForm />
             </Stack>
-          </StyledContent>
-
-        </ContentStyle>
+          </ContentStyle>
       </Container>
     </>
   )
