@@ -1,7 +1,7 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import LoginForm from './components/LoginForm'
+import LoginForm from './LoginForm'
 import Image from '@sentry/components/image';
 import { useEffect } from 'react';
 import { getUser } from '@ku/redux/user';
@@ -11,22 +11,6 @@ import { RootState } from '@ku/redux';
 // ----------------------------------------------------------------------
 
 export default function LoginPage() {
-
-    const user = useSelector((i:RootState)=>i.user)
-    useEffect(() => {
-        console.log("user",user);
-    }, [])
-    
-
-    const ContentStyle = styled('div')(({ theme }) => ({
-        maxWidth: 480,
-        margin: 'auto',
-        display: 'flex',
-        minHeight: '100vh',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: theme.spacing(12, 0),
-    }))
 
     const StyledRoot = styled('main')(() => ({
         height: '100%',

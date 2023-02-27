@@ -1,25 +1,22 @@
-import { useState } from 'react';
+
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { ErrorOption, useForm } from 'react-hook-form'
-import Iconify from '@sentry/components/iconify';
-import ConfirmDialog from './ConfirmDialog';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FORGOT_PASSWORD_PATH } from '@ku/constants/routes'
-import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box } from '@mui/material'
-import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
-import palette from '@sentry/theme/palette';
+import { Alert, Stack } from '@mui/material'
+import FormProvider, { RHFTextField } from "@sentry/components/hook-form";
+import router from 'next/router'
 
 type FormValuesProps = {
     email: string
     afterSubmit?: string
 }
 
-function LoginForm() {
+function ForgotPasswordForm() {
     // const [showPassword, setShowPassword] = useState(false)
     // const [openPleaseContact, setOpenPleaseContact] = useState(false)
 
-    const LoginSchema = Yup.object().shape({
+    const ForgotPasswordSchema = Yup.object().shape({
         email: Yup.string().email('Email must be a valid email address').required('Email is required'),
     })
 
@@ -28,16 +25,13 @@ function LoginForm() {
     }
 
     const methods = useForm<FormValuesProps>({
-        resolver: yupResolver(LoginSchema),
+        resolver: yupResolver(ForgotPasswordSchema),
         defaultValues,
     })
 
     const {
-        reset,
         setError,
         handleSubmit,
-        setValue,
-        getValues,
         formState: { errors },
     } = methods
 
@@ -75,7 +69,7 @@ function LoginForm() {
                 variant="text"
                 sx={{mt:2}}
                 onClick={()=>{
-
+                    router.back()
                 }}
                 // loading={authenticationStore.isFetching}
             >
@@ -108,4 +102,4 @@ function LoginForm() {
     )
 }
 
-export default LoginForm
+export default ForgotPasswordForm

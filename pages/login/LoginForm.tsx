@@ -1,16 +1,16 @@
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
-import ConfirmDialog from './ConfirmDialog';
+import ConfirmDialog from '../../components/ConfirmDialog';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FORGOT_PASSWORD_PATH } from '@ku/constants/routes'
+import { FORGOT_PASSWORD_PATH, REGISTER_PATH } from '@ku/constants/routes'
 import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box } from '@mui/material'
 import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
 import palette from '@sentry/theme/palette';
 import { useAuthContext } from '@ku/contexts/useAuthContext';
-import { AuthContext } from '@ku/contexts/AuthContext';
+import { useRouter } from 'next/router'
 
 type FormValuesProps = {
     email: string
@@ -20,7 +20,8 @@ type FormValuesProps = {
 }
 
 function LoginForm() {
-    const { login, isAuthenticated } = useAuthContext()
+    const { login } = useAuthContext()
+    const router = useRouter()
     const [showPassword, setShowPassword] = useState(false)
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
 
@@ -110,7 +111,7 @@ function LoginForm() {
                 variant="text"
                 sx={{mt:2}}
                 onClick={()=>{
-
+                    router.push(REGISTER_PATH)
                 }}
                 // loading={authenticationStore.isFetching}
             >

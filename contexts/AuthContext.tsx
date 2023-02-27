@@ -3,7 +3,8 @@ import { createContext, useEffect, useCallback, useState } from 'react'
 import axios from '@ku/services/axios'
 import { LOGIN_PATH } from '@ku/constants/routes'
 import { dispatch } from '@ku/redux'
-import { getUser } from '@ku/redux/user'
+import { getTodos, getUser } from '@ku/redux/user'
+import { get } from 'lodash'
 
 // ----------------------------------------------------------------------
 const setSession = (accessToken: string | null) => {
@@ -35,8 +36,16 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [isAuthenticated , setisAuthenticated ] = useState(false)
+    const [isInitialized, setIsInitialized] = useState(false)
+    const [user, setUser] = useState<IUser>({name:'',role:''})
     const initialize = useCallback(async () => {
         try {
+
+            const dataUser : IUser&{isAuthenticated:boolean} = JSON.parse(localStorage.getItem('dataUser'))
+            setisAuthenticated(get(dataUser,'isAuthenticated',false))
+            setUser(dataUser)
+            setIsInitialized(true)
+        
             const accessToken =
                 typeof window !== 'undefined' ? localStorage.getItem('accessToken') : ''
 
@@ -95,6 +104,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // LOGOUT
     const logout = async () => {
         setSession(null)
+        localStorage.removeItem('dataUser')
         // dispatch({
         //     type: Types.LOGOUT,
         // });
@@ -104,8 +114,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         <AuthContext.Provider
             value={{
                 isAuthenticated: isAuthenticated,
-                isInitialized: true,
-                user:{role:'',name:''},
+                isInitialized: isInitialized,
+                user:user,
                 login,
                 logout,
             }}

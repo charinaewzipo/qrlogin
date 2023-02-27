@@ -1,22 +1,12 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import ForgotPassword from './components/ForgotPassword'
+import ForgotPassword from './ForgotPassword'
 import Image from '@sentry/components/image';
 
 // ----------------------------------------------------------------------
 
-export default function LoginPage() {
-
-    const ContentStyle = styled('div')(({ theme }) => ({
-        maxWidth: 480,
-        margin: 'auto',
-        display: 'flex',
-        minHeight: '100vh',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        padding: theme.spacing(12, 0),
-    }))
+export default function ForgotPasswordPage() {
 
     const StyledRoot = styled('main')(() => ({
         height: '100%',
