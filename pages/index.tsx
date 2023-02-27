@@ -4,6 +4,8 @@ import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box } from '@mui/material'
 import AuthorizedLayout from '@unfinity/layouts/authorized'
+import { useDispatch, useSelector } from '@unfinity/redux'
+import { getUser } from '@unfinity/redux/user'
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -17,7 +19,8 @@ export function Index() {
         damping: 30,
         restDelta: 0.001,
     })
-
+    const d = useDispatch()
+    const s = useSelector(state => state.user)
     const progress = (
         <m.div
             style={{
@@ -37,10 +40,10 @@ export function Index() {
     return (
         <>
             <Head>
-                <title>Unfinity | Dashboard</title>
+                <title>{s.user.name}</title>
             </Head>
             {progress}
-
+            <button onClick={()=>d(getUser())}></button>
             <Box
                 sx={{
                     overflow: 'hidden',
@@ -53,7 +56,7 @@ export function Index() {
                         <div className="container">
                             <div id="welcome">
                                 <h1>
-                                    <span> Hello there, </span>
+                                    <span onClick={()=>d(getUser())}> Hello there, </span>
                                     Welcome unfinity 👋
                                 </h1>
                             </div>
