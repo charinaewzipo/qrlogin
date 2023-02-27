@@ -4,8 +4,8 @@ import { useRouter } from 'next/router'
 // components
 import LoadingScreen from '@sentry/components/loading-screen'
 //
-import Login from '@unfinity/pages/login'
-import { useAuthContext } from '@unfinity/contexts/useAuthContext'
+import Login from '@ku/pages/login'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 
@@ -14,16 +14,19 @@ type AuthGuardProps = {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-    const { isAuthenticated, isInitialized } = useAuthContext()
+    const { isAuthenticated, isInitialized , user } = useAuthContext()
 
     const { pathname, push } = useRouter()
 
     const [requestedLocation, setRequestedLocation] = useState<string | null>(null)
 
     useEffect(() => {
+        console.log(requestedLocation , pathname , requestedLocation);
+        
         if (requestedLocation && pathname !== requestedLocation) {
             push(requestedLocation)
         }
+        console.log("AuthGuard - isAuthenticated, ",isAuthenticated, user );
         if (isAuthenticated) {
             setRequestedLocation(null)
         }

@@ -2,7 +2,7 @@ import { useState } from 'react'
 // @mui
 import { MenuItem, Stack } from '@mui/material'
 // locales
-import { useLocales } from '@unfinity/locales'
+import { useLocales } from '@ku/locales'
 // components
 import Image from '@sentry/components/image'
 import MenuPopover from '@sentry/components/menu-popover'
