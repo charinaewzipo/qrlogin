@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import React, { memo, useRef, useLayoutEffect } from 'react';
-import usePrevious from '../../hooks/usePrevious';
-export interface SingleOTPInputProps
+import React, { memo, useEffect, useRef } from 'react';
+import usePrevious from '../../hooks/usePrevious'; export interface SingleOTPInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   focus?: boolean;
 }
@@ -14,7 +13,7 @@ export function SingleOTPInputComponent({
   const inputRef = useRef<HTMLInputElement>(null);
   const prevFocus = usePrevious(!!focus);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (inputRef.current) {
       if (focus && autoFocus) {
         inputRef.current.focus();

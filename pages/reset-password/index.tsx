@@ -74,7 +74,7 @@ const ResetPassword = () => {
                 }}
               >
                 <Image
-                  alt="Logo"
+                  alt="ic_email_sent"
                   src={'/assets/icons/apps/ic_email_sent.png'}
                   sx={{ width: "103.32px", objectFit: "cover" }}
                   disabledEffect

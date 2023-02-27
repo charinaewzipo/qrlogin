@@ -4,13 +4,13 @@ import { LoadingButton } from '@mui/lab'
 import { ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, useTheme, alpha } from '@mui/material'
-import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
-import OtpInput from 'react18-input-otp';
+import { Alert, IconButton, InputAdornment, Stack, Button, Typography, Box, useTheme, alpha } from '@mui/material'
+import FormProvider, { RHFTextField } from "@sentry/components/hook-form";
 import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
 import OTPInput from './components/OTPInput';
+import { RESET_PASSWORD_SUCCESS_PATH } from '@unfinity/constants/routes';
 
 type FormValuesProps = {
     email: string
@@ -24,13 +24,12 @@ function ResetPasswordForm() {
     const [otp, setOtp] = useState('')
     const [isErrorOtp, setIsErrorOtp] = useState(false)
     const [isReSend, setIsReSend] = useState(false)
-    const [countDown, setCountDown] = useState<NodeJS.Timeout>()
     const [minutes, setMinutes] = useState(0);
     const [seconds, setSeconds] = useState(0);
 
     const router = useRouter()
-
     const theme = useTheme()
+
     useEffect(() => {
         let myInterval = setInterval(() => {
             if (seconds > 0) {
@@ -87,11 +86,13 @@ function ResetPasswordForm() {
     } = methods
 
     const onSubmit = async (data: FormValuesProps) => {
+        console.log("data", data)
         if (!isErrorOtp) {
-            const errorOptions: ErrorOption = {
-                message: "errorResponse.data || errorResponse.devMessage"
-            }
-            setError('afterSubmit', errorOptions)
+            router.push({ pathname: RESET_PASSWORD_SUCCESS_PATH, query: { id: data.email } })
+            // const errorOptions: ErrorOption = {
+            //     message: "errorResponse.data || errorResponse.devMessage"
+            // }
+            // setError('afterSubmit', errorOptions)
         }
     }
 
@@ -99,7 +100,6 @@ function ResetPasswordForm() {
         if (!isReSend) {
             setIsReSend(true)
             setMinutes(10)
-            // setSeconds(5)
         }
     }
 
@@ -168,14 +168,6 @@ function ResetPasswordForm() {
                     }}
                 />
             </Stack>
-
-            {/* <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ my: 2 }}>
-                <RHFCheckbox name="remember" label="Remember me" />
-                <Link variant="subtitle1" href={FORGOT_PASSWORD_PATH}>
-                    Forgot password?
-                </Link>
-            </Stack> */}
-
             <LoadingButton
                 onClick={() => {
                     if (otp.length < 6) {
@@ -187,39 +179,16 @@ function ResetPasswordForm() {
                 type="submit"
                 variant="contained"
                 sx={{ my: 3 }}
-            // loading={authenticationStore.isFetching}
+
             >
                 Change Password
             </LoadingButton>
-
 
             <Stack direction={'row'} spacing={0.5} justifyContent="center" >
                 <Typography variant='body2'>Don’t have a code? </Typography>
                 <Typography variant='subtitle2' sx={{ color: `${isReSend ? theme.palette.action.disabled : "primary.main"}`, cursor: `${isReSend ? "default" : "pointer"}` }} onClick={handleClickResend}> Resend code</Typography>
             </Stack>
-            {/* <ConfirmDialog
-                open={openPleaseContact}
-                textCancel="Try it now"
-                onClose={() => {
-                    setOpenPleaseContact(false)
-                    setValue('password', '')
-                }}
-                title="Expiry account!"
-                content={
-                    <Box>
-                        {[
-                            { sx: { mb: 2 }, text: `Hi ${getValues('email')},` },
-                            { sx: { my: 2 }, text: `Please contact Scientific Equipment Center.` },
-                            { sx: { my: 2 }, text: `fsciquip_center@ku.ac.th`, },
-                            { sx: { mt: 1 }, text: `50 Ngamwongwan Rd Ladyao,`, },
-                            { sx: { mb: 1 }, text: `Chatuchak, Bankok 10900 Thailand.`, },
-                            { sx: { my: 2 }, text: `Tel. 02 562 5555 ext. 646154 646156`, },
-                            { sx: { my: 2 }, text: `Office hour: 8.30 - 16.30`, },
-                        ].map((i, index) => <Typography key={'contact' + index} variant="body1" sx={{ ...{ color: (theme) => palette(theme.palette.mode).text.secondary }, ...i.sx }}>{i.text}</Typography>)}
-                    </Box>
-                }
-                action={<></>}
-            /> */}
+
         </FormProvider >
     )
 }
