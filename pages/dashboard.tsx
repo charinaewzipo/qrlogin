@@ -2,12 +2,10 @@ import { m, useScroll, useSpring } from 'framer-motion'
 import styles from '../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
-import { Box, Grid } from '@mui/material'
+import { Box, Grid, Container } from '@mui/material'
 import AuthorizedLayout from '@unfinity/layouts/authorized'
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumb'
-import {
-    AnalyticsWidgetSummary,  
-} from '../components/analytics'
+import { AnalyticsWidgetSummary } from '../components/analytics'
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -21,6 +19,8 @@ export function Index() {
         damping: 30,
         restDelta: 0.001,
     })
+
+    const permission = 'Supervisor'
 
     const progress = (
         <m.div
@@ -44,61 +44,178 @@ export function Index() {
                 <title>Unfinity | Dashboard</title>
             </Head>
             {progress}
+            <Container>
+                <Box
+                    sx={{
+                        overflow: 'hidden',
+                        position: 'relative',
+                        bgcolor: 'background.default',
+                    }}
+                >
+                    <div className={styles.page}>
+                        <div className="wrapper">
+                            <HeaderBreadcrumbs
+                                heading="Dashboard"
+                                links={[{ name: 'Dashboard' }, { name: permission }]}
+                                sx={{ mt: 3, mb: 0, height: 72 }}
+                            />
 
-            <Box
-                sx={{
-                    overflow: 'hidden',
-                    position: 'relative',
-                    bgcolor: 'background.default',
-                }}
-            >
-                <div className={styles.page}>
-                    <div className="wrapper">
-                        <HeaderBreadcrumbs
-                            heading="Dashboard"
-                            links={[{ name: 'Dashboard' }, { name: 'Admin' }]}
-                            sx={{ mt: 3, mb: 0, height: 72 }}
-                        />
+                            {permission === 'Admin' ? (
+                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
 
-                        <Grid container spacing={3} sx={{ mt: 5 }}>
-                            <Grid item xs={12} sm={6} md={3}>
-                                <AnalyticsWidgetSummary
-                                    title="Today"
-                                    total={2}
-                                    color="secondary"
-                                    icon={'ant-design:android-filled'}
-                                />
-                            </Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Pending"
+                                            total={581}
+                                            color="warning"
+                                            icon={'ant-design:apple-filled'}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
 
-                            <Grid item xs={12} sm={6} md={3}>
-                                <AnalyticsWidgetSummary
-                                    title="Pending"
-                                    total={581}
-                                    color="warning"
-                                    icon={'ant-design:apple-filled'}
-                                />
-                            </Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Pending"
+                                            total={581}
+                                            color="warning"
+                                            icon={'ant-design:apple-filled'}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            ) : permission === 'Finance' ? (
+                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
 
-                            <Grid item xs={12} sm={6} md={3}>
-                                <AnalyticsWidgetSummary
-                                    title="Confirm"
-                                    total={18}
-                                    icon={'ant-design:windows-filled'}
-                                />
-                            </Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Pending"
+                                            total={581}
+                                            color="warning"
+                                            icon={'ant-design:apple-filled'}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            ) : permission === 'Supervisor' ? (
+                                <>
+                                <div style={{marginTop:40}}>
+                                    Supervisor Code
+                                <p >AA5643GN</p>
+                                </div>
+                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Confirm"
+                                            total={18}
+                                            icon={'ant-design:windows-filled'}
+                                        />
+                                    </Grid>
 
-                            <Grid item xs={12} sm={6} md={3}>
-                                <AnalyticsWidgetSummary
-                                    title="Waiting for payment"
-                                    total={12}
-                                    color="info"
-                                    icon={'ant-design:bug-filled'}
-                                />
-                            </Grid>
-                        </Grid>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Waiting for payment"
+                                            total={12}
+                                            color="info"
+                                            icon={'ant-design:bug-filled'}
+                                        />
+                                    </Grid>
+
+                                  
+                                </Grid>
+
+                                <div style={{marginTop:40}}>Students/Staff (Under control)</div>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
+                                 
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Confirm"
+                                            total={18}
+                                            icon={'ant-design:windows-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Waiting for payment"
+                                            total={12}
+                                            color="info"
+                                            icon={'ant-design:bug-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
+                                </Grid>
+                                </>
+                            ) : (
+                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Today"
+                                            total={2}
+                                            color="secondary"
+                                            icon={'ant-design:android-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Pending"
+                                            total={581}
+                                            color="warning"
+                                            icon={'ant-design:apple-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Confirm"
+                                            total={18}
+                                            icon={'ant-design:windows-filled'}
+                                        />
+                                    </Grid>
+                                </Grid>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </Box>
+                </Box>
+            </Container>
         </>
     )
 }
