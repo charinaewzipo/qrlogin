@@ -4,7 +4,7 @@ import React from 'react'
 import Image from '@sentry/components/image';
 import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
 import ResetPasswordForm from './ResetPasswordForm';
-
+import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 const ResetPassword = () => {
   const ContentStyle = styled('div')(({ theme }) => ({
     maxWidth: 480,
@@ -42,26 +42,8 @@ const ResetPassword = () => {
         <title> Login | Minimal UI</title>
       </Head>
       <Container>
+        <LogoOnlyLayout/>
         <ContentStyle>
-          <Box
-            component="div"
-            sx={{
-              display: 'inline-flex',
-              position: 'absolute',
-              width: 400,
-              height: 56,
-              zIndex: 9,
-              mt: { xs: 1.5, md: 5 },
-              ml: { xs: 2, md: 5 },
-            }}
-          >
-            <Image
-              alt="Logo"
-              src={'/assets/images/logo/Logo.png'}
-              disabledEffect
-            />
-          </Box>
-
           <StyledContent >
             <Stack>
               <Stack direction={"row"} justifyContent="center">

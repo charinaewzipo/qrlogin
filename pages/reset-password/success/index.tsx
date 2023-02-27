@@ -2,7 +2,7 @@ import { Box, Button, Stack, styled, Typography, useTheme } from '@mui/material'
 import Head from 'next/head'
 import React, { useEffect } from 'react'
 import Image from '@sentry/components/image';
-import { LOGIN_PATH } from '@unfinity/constants/routes';
+import { LOGIN_PATH } from '@ku/constants/routes';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
