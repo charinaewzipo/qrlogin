@@ -119,7 +119,7 @@ const ResetPassword = () => {
               <Image
                 alt="Icon Base"
                 src={'/assets/icons/direction/Icon Base.png'}
-                sx={{ objectFit: 'cover', height: 20.67, mr: 2 }}
+                sx={{ objectFit: 'cover', height: 20.67, mr: 1 }}
               />
               <Link
                 href={{

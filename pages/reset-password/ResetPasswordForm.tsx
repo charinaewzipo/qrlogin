@@ -100,16 +100,17 @@ function ResetPasswordForm() {
         if (!isReSend) {
             setIsReSend(true)
             setMinutes(10)
+            // setSeconds(5)
         }
     }
-
+    const countdownTimer = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3}>
                 {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
                 {minutes === 0 && seconds === 0
                     ? <></>
-                    : <Alert severity="success">Resent code complete; you can resend again in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}</Alert>
+                    : <Alert severity="success">Resent code complete; you can resend again in <strong>{countdownTimer}</strong></Alert>
                 }
                 <RHFTextField name="email" label="Email address" disabled={true} />
                 <Stack sx={{ justifyContent: "center" }}>
