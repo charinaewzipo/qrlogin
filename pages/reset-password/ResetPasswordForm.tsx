@@ -89,10 +89,10 @@ function ResetPasswordForm() {
         console.log("data", data)
         if (!isErrorOtp) {
             router.push({ pathname: RESET_PASSWORD_SUCCESS_PATH, query: { id: data.email } })
-            // const errorOptions: ErrorOption = {
-            //     message: "errorResponse.data || errorResponse.devMessage"
-            // }
-            // setError('afterSubmit', errorOptions)
+            const errorOptions: ErrorOption = {
+                message: "errorResponse.data || errorResponse.devMessage"
+            }
+            setError('afterSubmit', errorOptions)
         }
     }
 

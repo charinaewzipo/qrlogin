@@ -113,6 +113,9 @@ const ResetPassword = () => {
               sx={{
                 border: `1px solid ${theme.palette.divider}`,
                 color: theme.palette.text.primary,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
                 mt: 3
               }}
             >
