@@ -25,9 +25,9 @@ const ResetPassword = () => {
       <Head>
         <title> Login | Minimal UI</title>
       </Head>
+      <LogoOnlyLayout/>
       <Container>
-        <LogoOnlyLayout/>
-          <ContentStyle >
+          <ContentStyle sx={{ textAlign: 'center' }}>
             <Stack>
               <Stack direction={"row"} justifyContent="center">
                 <Box
