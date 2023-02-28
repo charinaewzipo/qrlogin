@@ -1,12 +1,12 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import RegisterForm from './components/RegisterForm'
+import RegisterForm from '@unfinity/components/RegisterForm'
 import Image from '@sentry/components/image'
 import { useLocales } from '@unfinity/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
-import PDPAForm from './components/PDPAForm'
+import PDPAForm from '@unfinity/components/PDPAForm'
 
 // ----------------------------------------------------------------------
 const cons = {

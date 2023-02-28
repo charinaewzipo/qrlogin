@@ -173,8 +173,8 @@ function RegisterForm(props: RegisterFormProps) {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
             then: Yup.array(Yup.string()).test({
                 name: 'idImages',
-                message: 'Required',
-                test: (images) => every(images, (img) => img !== ''),
+                message: 'SciKU student & staff ID card are require',
+                test: (idImages) => every(idImages, (img) => img !== ''),
             }),
         }),
         supervisorCode: Yup.string().when(['position', 'typeOfPerson'], {
