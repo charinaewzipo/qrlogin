@@ -6,11 +6,13 @@ import { Box, Grid, Container } from '@mui/material'
 import AuthorizedLayout from '@unfinity/layouts/authorized'
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumb'
 import { AnalyticsWidgetSummary } from '../components/analytics'
+import { useTranslation } from "react-i18next";
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
 export function Index() {
     const theme = useTheme()
+    const { t } = useTranslation();
 
     const { scrollYProgress } = useScroll()
 
@@ -81,53 +83,55 @@ export function Index() {
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Today"
-                                            total={2}
-                                            color="secondary"
-                                            icon={'ant-design:android-filled'}
+                                            title="Confirm"
+                                            total={18}
+                                            icon={'ant-design:windows-filled'}
                                         />
                                     </Grid>
 
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Pending"
-                                            total={581}
-                                            color="warning"
-                                            icon={'ant-design:apple-filled'}
+                                            title="Waiting for payment"
+                                            total={12}
+                                            color="info"
+                                            icon={'ant-design:bug-filled'}
                                         />
                                     </Grid>
                                 </Grid>
                             ) : permission === 'Finance' ? (
                                 <Grid container spacing={2} sx={{ mt: 5 }}>
+                    
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Today"
-                                            total={2}
-                                            color="secondary"
-                                            icon={'ant-design:android-filled'}
+                                            title="Waiting for payment"
+                                            total={12}
+                                            color="info"
+                                            icon={'ant-design:bug-filled'}
                                         />
                                     </Grid>
 
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Pending"
-                                            total={581}
-                                            color="warning"
-                                            icon={'ant-design:apple-filled'}
+                                            title="All booking"
+                                            total={128}
+                                            color='secondary'
+                                            icon={'ant-design:windows-filled'}
                                         />
                                     </Grid>
                                 </Grid>
                             ) : permission === 'Supervisor' ? (
                                 <>
                                 <div style={{marginTop:40}}>
+                                {/* {t("en.only_admin_can_see_this_item")} */}
                                     Supervisor Code
                                 <p >AA5643GN</p>
                                 </div>
                                 <Grid container spacing={2} sx={{ mt: 5 }}>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Confirm"
-                                            total={18}
+                                            title="All Booking"
+                                            total={5}
+                                            color={'secondary'}
                                             icon={'ant-design:windows-filled'}
                                         />
                                     </Grid>
@@ -149,9 +153,28 @@ export function Index() {
                                  
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Confirm"
-                                            total={18}
+                                            title="Student"
+                                            total={450}
+                                            color={'secondary'}
                                             icon={'ant-design:windows-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="All Booking"
+                                            total={320}
+                                            color="secondary"
+                                            icon={'ant-design:bug-filled'}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={12} sm={6} md={3}>
+                                        <AnalyticsWidgetSummary
+                                            title="Pending"
+                                            total={15}
+                                            color="warning"
+                                            icon={'ant-design:android-filled'}
                                         />
                                     </Grid>
 
@@ -160,24 +183,6 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={12}
                                             color="info"
-                                            icon={'ant-design:bug-filled'}
-                                        />
-                                    </Grid>
-
-                                    <Grid item xs={12} sm={6} md={3}>
-                                        <AnalyticsWidgetSummary
-                                            title="Today"
-                                            total={2}
-                                            color="secondary"
-                                            icon={'ant-design:android-filled'}
-                                        />
-                                    </Grid>
-
-                                    <Grid item xs={12} sm={6} md={3}>
-                                        <AnalyticsWidgetSummary
-                                            title="Today"
-                                            total={2}
-                                            color="secondary"
                                             icon={'ant-design:android-filled'}
                                         />
                                     </Grid>
@@ -187,8 +192,8 @@ export function Index() {
                                 <Grid container spacing={2} sx={{ mt: 5 }}>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Today"
-                                            total={2}
+                                            title="All Booking"
+                                            total={5}
                                             color="secondary"
                                             icon={'ant-design:android-filled'}
                                         />
@@ -197,7 +202,7 @@ export function Index() {
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
                                             title="Pending"
-                                            total={581}
+                                            total={1}
                                             color="warning"
                                             icon={'ant-design:apple-filled'}
                                         />
@@ -205,8 +210,9 @@ export function Index() {
 
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
-                                            title="Confirm"
-                                            total={18}
+                                            title="Waiting for payment"
+                                            total={0}
+                                            color={'info'}
                                             icon={'ant-design:windows-filled'}
                                         />
                                     </Grid>
