@@ -22,7 +22,7 @@ export function Index() {
         restDelta: 0.001,
     })
 
-    const permission = 'Finance'
+    const permission = 'user'
 
     const progress = (
         <m.div
@@ -69,7 +69,7 @@ export function Index() {
                                             title="Today"
                                             total={2}
                                             // color="grey"
-                                            icon={'ant-design:android-filled'}
+                                            icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -79,7 +79,7 @@ export function Index() {
                                             title="Pending"
                                             total={581}
                                             color="warning"
-                                            icon={'ant-design:apple-filled'}
+                                            icon={'icon-park-outline:done-all'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -87,7 +87,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Confirm"
                                             total={18}
-                                            icon={'ant-design:windows-filled'}
+                                            icon={'ic:baseline-verified'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -97,7 +97,7 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={12}
                                             color="info"
-                                            icon={'ant-design:bug-filled'}
+                                            icon={'ant-design:credit-card-filled'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -110,7 +110,7 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={12}
                                             color="info"
-                                            icon={'ant-design:bug-filled'}
+                                            icon={'ant-design:credit-card-filled'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -120,7 +120,7 @@ export function Index() {
                                             title="All booking"
                                             total={128}
                                             color='secondary'
-                                            icon={'ant-design:windows-filled'}
+                                            icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -138,7 +138,7 @@ export function Index() {
                                             title="All Booking"
                                             total={5}
                                             color={'secondary'}
-                                            icon={'ant-design:windows-filled'}
+                                            icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -148,7 +148,7 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={12}
                                             color="info"
-                                            icon={'ant-design:bug-filled'}
+                                            icon={'ant-design:credit-card-filled'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -167,7 +167,7 @@ export function Index() {
                                             title="Student"
                                             total={450}
                                             color={'secondary'}
-                                            icon={'ant-design:windows-filled'}
+                                            icon={'fa6-solid:user-group'}
                                             units='Users'
                                         />
                                     </Grid>
@@ -177,7 +177,7 @@ export function Index() {
                                             title="All Booking"
                                             total={320}
                                             color="secondary"
-                                            icon={'ant-design:bug-filled'}
+                                            icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -187,7 +187,7 @@ export function Index() {
                                             title="Pending"
                                             total={15}
                                             color="warning"
-                                            icon={'ant-design:android-filled'}
+                                            icon={'icon-park-outline:done-all'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -197,7 +197,7 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={12}
                                             color="info"
-                                            icon={'ant-design:android-filled'}
+                                            icon={'ant-design:credit-card-filled'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -210,7 +210,7 @@ export function Index() {
                                             title="All Booking"
                                             total={5}
                                             color="secondary"
-                                            icon={'ant-design:android-filled'}
+                                            icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -220,7 +220,7 @@ export function Index() {
                                             title="Pending"
                                             total={1}
                                             color="warning"
-                                            icon={'ant-design:apple-filled'}
+                                            icon={'icon-park-outline:done-all'}
                                             units='Booking'
                                         />
                                     </Grid>
@@ -230,8 +230,8 @@ export function Index() {
                                             title="Waiting for payment"
                                             total={0}
                                             color={'info'}
-                                            icon={'ant-design:windows-filled'}
-                                            units='Booking'
+                                            icon={'ant-design:credit-card-filled'}
+                                             units='Booking'
                                         />
                                     </Grid>
                                 </Grid>
