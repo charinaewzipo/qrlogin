@@ -523,6 +523,7 @@ function RegisterForm(props: RegisterFormProps) {
                         defaultValue={''}
                         render={({ field, fieldState: { error } }) => (
                             <DatePicker
+                                inputFormat='dd MMM yyyy'
                                 label={constant.expiryDate}
                                 value={field.value || null}
                                 onChange={(newValue) => {
