@@ -5,7 +5,7 @@ import { Controller, ErrorOption, useFieldArray, useForm } from 'react-hook-form
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FORGOT_PASSWORD_PATH } from '@unfinity/constants/routes'
-import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, styled, MenuItem, TextField, Divider, CircularProgress, FormHelperText } from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, styled, MenuItem, TextField, Divider, CircularProgress, FormHelperText, Autocomplete } from '@mui/material'
 import FormProvider, { RHFAutocomplete, RHFCheckbox, RHFSelect, RHFTextField } from "@sentry/components/hook-form";
 import palette from '@sentry/theme/palette';
 import { Upload, UploadAvatar } from '@sentry/components/upload';
@@ -36,6 +36,7 @@ type FormValuesProps = {
     address: string
     phoneNumber: string
     idImages: string[]
+    supervisorCode: string
 }
 const constant = {
     submit: 'Submit',
@@ -115,6 +116,12 @@ interface IIdImageUpload {
 function RegisterForm(props: RegisterFormProps) {
     const [showPassword, setShowPassword] = useState(false)
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
+    const checkIsKuPerson = (typeOfPerson: string) =>
+        ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
+    const checkIsStudent = (position: string) => position.includes('student')
+    const checkIsStaff = (position: string) => ['Lecturer', 'Researcher',].includes(position)
+    const checkIsKuStudent = (position: string, typeOfPerson: string) =>
+        checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
 
     const RegisterSchema = Yup.object().shape({
         email: Yup.string()
@@ -123,29 +130,56 @@ function RegisterForm(props: RegisterFormProps) {
         password: Yup.string().required('Password is require'),
         avatar: Yup.string().required('Profile image is require'),
         typeOfPerson: Yup.string().required('Type of person is require'),
-        department: Yup.string().required('Department is require'),
-        universityName: Yup.string().required('University name is require'),
+        department: Yup.string().nullable().when('typeOfPerson', {
+            is: (position) => checkIsKuPerson(position) || position === '',
+            then: Yup.string().nullable().required('Department is require'),
+        }),
+        universityName: Yup.string().when('typeOfPerson', {
+            is: 'Other University',
+            then: Yup.string().required('University name is require'),
+        }),
+        governmentName: Yup.string().when('typeOfPerson', {
+            is: 'Government office',
+            then: Yup.string().required('Government name is require'),
+        }),
+        companyName: Yup.string().when('typeOfPerson', {
+            is: 'Private company',
+            then: Yup.string().required('Company name is require'),
+        }),
         position: Yup.string().required('Position is require'),
-        studentId: Yup.string().required('Student ID is required'),
+        studentId: Yup.string().when(['position', 'typeOfPerson'], {
+            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
+            then: Yup.string().required('Student ID is required'),
+        }),
         staffId: Yup.string(),
-        positionName: Yup.string().required('Position is require'),
-        expiryDate: Yup.string().required('Expiry date is required'),
+        positionName: Yup.string().when('position', {
+            is: 'Other',
+            then: Yup.string().required('Position is require'),
+        }),
+        expiryDate: Yup.string().when(['position', 'typeOfPerson'], {
+            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
+            then: Yup.string().required('Expiry date is required'),
+        }),
         title: Yup.string().required('Title is require'),
-        otherTitle: Yup.string().when("title", {
-            is: "Other",
-            then: Yup.string().required('Other title is require')
+        otherTitle: Yup.string().when('title', {
+            is: (title) => title === 'Other' || title === '',
+            then: Yup.string().required('Other title is require'),
         }),
         firstName: Yup.string().required('Firstname is require'),
         surName: Yup.string().required('Surname is require'),
         address: Yup.string().required('Address is require'),
         phoneNumber: Yup.string().required('Phone number is require'),
         idImages: Yup.array(Yup.string()).when(['position', 'typeOfPerson'], {
-            is: (true),
+            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
             then: Yup.array(Yup.string()).test({
                 name: 'idImages',
                 message: 'Required',
-                test: (val) => every(val, (v) => v !== ''),
-            })
+                test: (images) => every(images, (img) => img !== ''),
+            }),
+        }),
+        supervisorCode: Yup.string().when(['position', 'typeOfPerson'], {
+            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
+            then: Yup.string().required('Supervisor code is require, please contact your supervisor for code'),
         }),
     })
 
@@ -184,17 +218,18 @@ function RegisterForm(props: RegisterFormProps) {
         getValues,
         formState: { errors },
         control,
-        watch
+        watch,
     } = methods
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
     const watchTitle = watch('title')
 
-    const isKu = ['KU Student & Staff', 'SciKU Student & Staff'].includes(watchTypeOfPerson)
-    const isStudent = watchPosition.includes('Student') || watchPosition.includes('student')
-    const isStaff = ['Lecturer', 'Researcher',].includes(watchPosition)
+    const isKu = checkIsKuPerson(watchTypeOfPerson)
+    const isStudent = checkIsStudent(watchPosition)
+    const isStaff = checkIsStaff(watchPosition)
+    const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
     const isPositionOther = watchPosition === 'Other'
-    const isTitleOther = watchTitle === 'Other'
+    const isTitleOther = watchTitle === 'Other' || watchTitle === ''
 
     const onSubmit = async (data: FormValuesProps) => {
         methods.watch
@@ -204,40 +239,37 @@ function RegisterForm(props: RegisterFormProps) {
         setOpenPleaseContact(true)
         setError('afterSubmit', errorOptions)
         console.log(data);
-        
+        window.scrollTo(0, 0)
     }
 
-    const IdImageUpload: FC<IIdImageUpload> = ({index}) => {
+    const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
         return (
-            <>
-                <Controller
-                    name={`idImages.${index}`}
-                    control={control}
-                    render={({ field }) => (
-                        <Upload
-                            accept={{'image/*': ['.jpeg, .jpg, .png, .gif']}}
-                            file={field.value}
-                            onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
-                            onDelete={()=>field.onChange('')}
-                            sx={{
-                                width: get(field, 'value', '') === '' ? 264 : '100%',
-                                flex: get(field, 'value', '') === '' ? '' : '50%',
-                                '& > div > div': {
-                                    flexDirection: 'column',
-                                    textAlign: 'center',
-                                },
-                            }}
-                            maxSize={200000}
-                        />
-                    )}
-                />
-            </>
+            <Controller
+                name={`idImages.${index}`}
+                control={control}
+                render={({ field }) => (
+                    <Upload
+                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                        file={field.value}
+                        onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
+                        onDelete={() => field.onChange('')}
+                        sx={{
+                            width: get(field, 'value', '') === '' ? 264 : '100%',
+                            flex: get(field, 'value', '') === '' ? '' : '50%',
+                            '& > div > div': {
+                                flexDirection: 'column',
+                                textAlign: 'center',
+                            },
+                        }}
+                        maxSize={200000}
+                    />
+                )}
+            />
         )
     }
     const RenderIdImageUpload = () => {
         const idImageWithoutEmpty = watch('idImages').filter(idImage => idImage)
         const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
-        
         return (
             <>
                 <Stack flexDirection={'row'} flexWrap={'wrap'} justifyContent={'center'} gap={1.5}>
@@ -251,11 +283,11 @@ function RegisterForm(props: RegisterFormProps) {
     }
 
     const collapseableInputStyle = (isShow: boolean) => ({
-        flex: isShow ? '100%' : 0,
+        flex: isShow ? '100%' : '0%',
         transform: `scaleZ(${isShow ? '1' : '0'})`,
         transitionDuration: '.2s',
         transformOrigin: 'right',
-        marginLeft: isShow ? 3 : 0,
+        marginLeft: isShow ? 3 : -3,
         '& > div': {
             transitionDuration: '.2s',
             opacity: isShow ? 1 : 0,
@@ -310,6 +342,7 @@ function RegisterForm(props: RegisterFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
+                {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
                 <Controller
                     name="avatar"
                     control={control}
@@ -330,7 +363,7 @@ function RegisterForm(props: RegisterFormProps) {
                                     </Typography>
                                 }
                             />
-                            <FormHelperText error sx={{ mt: 2 }}>
+                            <FormHelperText error sx={{ mt: 2, textAlign: 'center' }}>
                                 {errors.avatar?.message}
                             </FormHelperText>
                         </Stack>
@@ -382,15 +415,43 @@ function RegisterForm(props: RegisterFormProps) {
                             />
                         ),
                         'SciKU Student & Staff': (
-                            <RHFAutocomplete
-                                fullWidth
-                                options={department}
+                            // <RHFAutocomplete
+                            //     fullWidth
+                            //     options={department}
+                            //     name="department"
+                            //     key={'department-auto'}
+                            //     renderInput={(param) => (
+                            //         <TextField
+                            //             {...param}
+                            //             error={!!errors?.department}
+                            //             helperText={get(errors?.department, 'message', '')}
+                            //             label={constant.department}
+                            //         />
+                            //     )}
+                            //     placeholder={constant.department}
+                            //     defaultValue={''}
+                            // />
+                            <Controller
                                 name="department"
-                                renderInput={(params) => (
-                                    <TextField {...params} label={constant.department} />
+                                control={control}
+                                render={({ field }) => (
+                                    <Autocomplete
+                                        {...field}
+                                        fullWidth
+                                        onChange={(event, newValue) => field.onChange(newValue)}
+                                        options={department}
+                                        key={'department-auto'}
+                                        renderInput={(param) => (
+                                            <TextField
+                                                {...param}
+                                                error={!!errors?.department}
+                                                helperText={get(errors?.department, 'message', '')}
+                                                label={constant.department}
+                                            />
+                                        )}
+                                        placeholder={constant.department}
+                                    />
                                 )}
-                                placeholder={constant.department}
-                                defaultValue={''}
                             />
                         ),
                         'Government office': (
@@ -438,15 +499,19 @@ function RegisterForm(props: RegisterFormProps) {
                         })}
                     </RHFSelect>
 
-                    <Stack sx={collapseableInputStyle(( isKu || isPositionOther) && watchPosition !== '')}>
-                        {isStudent ? (
+                    <Stack
+                        sx={collapseableInputStyle(
+                            (isKu || isPositionOther) && watchPosition !== ''
+                        )}
+                    >
+                        {isKuStudent ? (
                             <RHFTextField name="studentId" label={constant.studentId} />
-                        ) : isStaff ? (
+                        ) : isKu && isStaff ? (
                             <RHFTextField name="staffId" label={constant.staffId} />
                         ) : isPositionOther ? (
                             <RHFTextField name="positionName" label={constant.positionName} />
                         ) : (
-                            <></>
+                            <RHFTextField name="studentId" label={constant.studentId} />
                         )}
                     </Stack>
                 </Stack>
