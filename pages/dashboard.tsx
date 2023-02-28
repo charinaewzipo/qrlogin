@@ -22,7 +22,7 @@ export function Index() {
         restDelta: 0.001,
     })
 
-    const permission = 'Supervisor'
+    const permission = 'Finance'
 
     const progress = (
         <m.div
@@ -68,8 +68,9 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Today"
                                             total={2}
-                                            color="secondary"
+                                            // color="grey"
                                             icon={'ant-design:android-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -79,6 +80,7 @@ export function Index() {
                                             total={581}
                                             color="warning"
                                             icon={'ant-design:apple-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={3}>
@@ -86,6 +88,7 @@ export function Index() {
                                             title="Confirm"
                                             total={18}
                                             icon={'ant-design:windows-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -95,6 +98,7 @@ export function Index() {
                                             total={12}
                                             color="info"
                                             icon={'ant-design:bug-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
                                 </Grid>
@@ -107,6 +111,7 @@ export function Index() {
                                             total={12}
                                             color="info"
                                             icon={'ant-design:bug-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -116,6 +121,7 @@ export function Index() {
                                             total={128}
                                             color='secondary'
                                             icon={'ant-design:windows-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
                                 </Grid>
@@ -123,8 +129,8 @@ export function Index() {
                                 <>
                                 <div style={{marginTop:40}}>
                                 {/* {t("en.only_admin_can_see_this_item")} */}
-                                    Supervisor Code
-                                <p >AA5643GN</p>
+                                <p style={{ fontSize:16,fontWeight:600,color:'#637381'}}>Supervisor Code</p>
+                                <p style={{ fontSize:32,fontWeight:700,color:'#212B36'}}>AA5643GN</p>
                                 </div>
                                 <Grid container spacing={2} sx={{ mt: 5 }}>
                                     <Grid item xs={12} sm={6} md={3}>
@@ -133,6 +139,7 @@ export function Index() {
                                             total={5}
                                             color={'secondary'}
                                             icon={'ant-design:windows-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -142,13 +149,17 @@ export function Index() {
                                             total={12}
                                             color="info"
                                             icon={'ant-design:bug-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
                                   
                                 </Grid>
 
-                                <div style={{marginTop:40}}>Students/Staff (Under control)</div>
+                                <div style={{marginTop:40}}>
+                                    <span style={{ fontSize:16,fontWeight:600,color:'#212B36'}}>Students/Staff</span> 
+                                    <span style={{fontSize:16,fontWeight:600,color:'#919EAB'}}> (Under control)</span>
+                                    </div>
                                 <Grid container spacing={2} sx={{ mt: 3 }}>
                                  
                                     <Grid item xs={12} sm={6} md={3}>
@@ -157,6 +168,7 @@ export function Index() {
                                             total={450}
                                             color={'secondary'}
                                             icon={'ant-design:windows-filled'}
+                                            units='Users'
                                         />
                                     </Grid>
 
@@ -166,6 +178,7 @@ export function Index() {
                                             total={320}
                                             color="secondary"
                                             icon={'ant-design:bug-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -175,6 +188,7 @@ export function Index() {
                                             total={15}
                                             color="warning"
                                             icon={'ant-design:android-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -184,6 +198,7 @@ export function Index() {
                                             total={12}
                                             color="info"
                                             icon={'ant-design:android-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
                                 </Grid>
@@ -196,6 +211,7 @@ export function Index() {
                                             total={5}
                                             color="secondary"
                                             icon={'ant-design:android-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -205,6 +221,7 @@ export function Index() {
                                             total={1}
                                             color="warning"
                                             icon={'ant-design:apple-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
 
@@ -214,6 +231,7 @@ export function Index() {
                                             total={0}
                                             color={'info'}
                                             icon={'ant-design:windows-filled'}
+                                            units='Booking'
                                         />
                                     </Grid>
                                 </Grid>

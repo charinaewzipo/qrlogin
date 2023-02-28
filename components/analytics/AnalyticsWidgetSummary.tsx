@@ -28,6 +28,7 @@ interface Props extends CardProps {
   total: number;
   icon: string;
   color?: ColorSchema;
+  units? : string
 }
 
 export default function AnalyticsWidgetSummary({
@@ -36,6 +37,7 @@ export default function AnalyticsWidgetSummary({
   icon,
   color = 'primary',
   sx,
+  units,
   ...other
 }: Props) {
   return (
@@ -63,7 +65,7 @@ export default function AnalyticsWidgetSummary({
         <Iconify icon={icon} width={24} height={24} />
       </IconWrapperStyle>
 
-      <Typography variant="h3">{fShortenNumber(total)}</Typography>
+      <Typography variant="h3">{fShortenNumber(total)} {<span style={{fontSize:14}}>{units && units}</span>}</Typography>
 
       <Typography variant="subtitle2" sx={{ opacity: 0.72 }}>
         {title}
