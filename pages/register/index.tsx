@@ -19,23 +19,15 @@ interface StyledContentWrapperProps{
 }
 
 export default function RegisterPage() {
-    const StyledRoot = styled('main')(() => ({
-        height: '100%',
-        display: 'flex',
-        position: 'relative',
-        flexDirection: 'column',
-        alignItems: 'center',
-    }))
-
     const StyledContentWrapper = styled('div')<StyledContentWrapperProps>(({ isBigger, theme }) => ({
         maxWidth: isBigger ? 640 : 480,
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
-        padding: isBigger ? `${theme.spacing(20)} 0 ${theme.spacing(10)} 0` : `${theme.spacing(8)} 0 ${theme.spacing(4)} 0`,
+        padding: isBigger ? `${theme.spacing(20)} 0 ${theme.spacing(10)} 0` : `${theme.spacing(15)} 0 ${theme.spacing(4)} 0`,
         gap: theme.spacing(5),
         flex: '1',
-        margin: `0 ${theme.spacing(2)}`,
+        margin: 'auto',
         width: '100%',
     }))
 
@@ -92,7 +84,7 @@ export default function RegisterPage() {
                     disabledEffect
                 />
             </Box>
-            <StyledRoot>
+            <Container>
                 <StyledContentWrapper isBigger={isPdpaAccepted}>
                     <Stack spacing={2} sx={{ position: 'relative' }}>
                         <Typography variant="h3" textAlign="center">
@@ -103,14 +95,14 @@ export default function RegisterPage() {
                         </Typography>
                     </Stack>
                     <StyledContent>
-                    {!isPdpaAccepted ? (
-                        <PDPAForm onAccept={onAcceptPdpa} onDecline={onDeclinePdpa} />
-                    ) : (
-                        <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} />
-                    )}
+                        {!isPdpaAccepted ? (
+                            <PDPAForm onAccept={onAcceptPdpa} onDecline={onDeclinePdpa} />
+                        ) : (
+                            <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} />
+                        )}
                     </StyledContent>
                 </StyledContentWrapper>
-            </StyledRoot>
+            </Container>
         </>
     )
 }
