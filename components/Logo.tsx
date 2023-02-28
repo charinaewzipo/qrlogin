@@ -14,7 +14,7 @@ export default function Logo({ disabledLink = false, sx, logoType = 'small' }: P
   // const PRIMARY_MAIN = theme.palette.primary.main;
   // const PRIMARY_DARK = theme.palette.primary.dark;
   const logo = (
-    <Box sx={{ height: logoType === 'small' ? 24 : 64, ...sx }} component="img" src={'/assets/images/logo/Logo.png'}/>
+    <Box sx={{ height: logoType === 'small' ? 24 : 56, ...sx }} component="img" src={'/assets/images/logo/Logo.png'}/>
   );
 
   if (disabledLink) {

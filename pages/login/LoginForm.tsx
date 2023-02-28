@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { ErrorOption, useForm } from 'react-hook-form'
@@ -11,6 +11,7 @@ import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook
 import palette from '@sentry/theme/palette';
 import { useAuthContext } from '@ku/contexts/useAuthContext';
 import { useRouter } from 'next/router'
+import { getstoreValidation, makePersistable, removestore } from '@sentry/utils/localstore'
 
 type FormValuesProps = {
     email: string
@@ -18,12 +19,39 @@ type FormValuesProps = {
     remember: boolean
     afterSubmit?: string
 }
+interface ILogin {
+    email: string
+    password: string
+}
+
+const LOCAL_SESSION_KEY = 'KU_ScientificEquipmentBooking'
 
 function LoginForm() {
     const { login } = useAuthContext()
     const router = useRouter()
     const [showPassword, setShowPassword] = useState(false)
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
+
+    useEffect(() => {
+        const rememberData = getstoreValidation<ILogin>(LOCAL_SESSION_KEY)
+        if (rememberData) {
+            reset({
+                email: rememberData.email,
+                password: rememberData.password,
+                remember: true,
+            })
+        } else {
+            reset({ email: '', password: '', remember: false })
+        }
+    }, [])
+
+    const setRemember = (data: ILogin | null) => {
+        if (data) {
+            makePersistable(LOCAL_SESSION_KEY, data, 168)
+        } else {
+            removestore(LOCAL_SESSION_KEY)
+        }
+    }
 
     const LoginSchema = Yup.object().shape({
         email: Yup.string().email('Email must be a valid email address').required('Email is required'),
@@ -52,11 +80,36 @@ function LoginForm() {
     } = methods
 
     const onSubmit = async (data: FormValuesProps) => {
-        login(data.email,data.password)
-        // .then((e)=>{
-        //     console.log("eeee login ",e);
-            
-        // })
+
+        try {
+            if (data.remember) {
+                setRemember({ email: data.email, password: data.password })
+            } else {
+                setRemember(null)
+            }
+
+            login(data.email,data.password)
+            // .then((e)=>{
+            //     console.log("eeee login ",e);
+                
+            // })
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+            // await authenticationStore.login({ email: data.email, password: data.password })
+            // sync()
+            // navigate(PATH_DASHBOARD.root)
+        } catch (error) {
+            // const errorResponse = error as IResponse
+            // const errorOptions: ErrorOption = {
+            //     message: errorResponse.data || errorResponse.devMessage
+            // }
+            // reset()
+            // if (isMountedRef.current) {
+            //     setError('afterSubmit', errorOptions)
+            // }
+        }
+
         const errorOptions: ErrorOption = {
             message: "errorResponse.data || errorResponse.devMessage"
         }

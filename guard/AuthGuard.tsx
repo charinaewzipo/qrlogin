@@ -6,6 +6,7 @@ import LoadingScreen from '@sentry/components/loading-screen'
 //
 import Login from '@ku/pages/login'
 import { useAuthContext } from '@ku/contexts/useAuthContext'
+import { LOGIN_PATH } from '@ku/constants/routes'
 
 // ----------------------------------------------------------------------
 
@@ -35,9 +36,10 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
     if (!isAuthenticated) {
         if (pathname !== requestedLocation) {
-            setRequestedLocation(pathname)
+            // setRequestedLocation('/login')
+            push(LOGIN_PATH)
         }
-        return <Login />
+        return <LoadingScreen />
     }
 
     return <>{children}</>

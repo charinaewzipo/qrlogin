@@ -20,10 +20,8 @@ export default function GuestGuard({ children }: GuestGuardProps) {
     const { isAuthenticated, isInitialized } = useAuthContext()
 
     useEffect(() => {
-        console.log("GuestGuard - isAuthenticated, ",isAuthenticated);
-        
         if (isAuthenticated) {
-            push(DASHBOARD_PATH)
+            push("/")
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated])
