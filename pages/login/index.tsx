@@ -3,12 +3,12 @@ import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
 import LoginForm from './LoginForm'
 import Image from '@sentry/components/image';
-import { useEffect } from 'react';
-import { getUser } from '@ku/redux/user';
-import { useSelector } from 'react-redux';
-import { RootState } from '@ku/redux';
+
+import CompactLayout from '@ku/layouts/compact'
 
 // ----------------------------------------------------------------------
+
+LoginPage.getLayout = (page: React.ReactElement) => <CompactLayout> {page} </CompactLayout>
 
 export default function LoginPage() {
 
