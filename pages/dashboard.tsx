@@ -63,7 +63,7 @@ export function Index() {
                             />
 
                             {permission === 'Admin' ? (
-                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
                                             title="Today"
@@ -105,7 +105,7 @@ export function Index() {
                                     </Grid>
                                 </Grid>
                             ) : permission === 'Finance' ? (
-                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
                     
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
@@ -134,7 +134,7 @@ export function Index() {
                                 <p style={{ fontSize:16,fontWeight:600,color:'#637381'}}>Supervisor Code</p>
                                 <p style={{ fontSize:32,fontWeight:700,color:'#212B36'}}>AA5643GN</p>
                                 </div>
-                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
                                             title="All Booking"
@@ -206,7 +206,7 @@ export function Index() {
                                 </Grid>
                                 </>
                             ) : (
-                                <Grid container spacing={2} sx={{ mt: 5 }}>
+                                <Grid container spacing={2} sx={{ mt: 3 }}>
                                     <Grid item xs={12} sm={6} md={3}>
                                         <AnalyticsWidgetSummary
                                             title="All Booking"
