@@ -14,6 +14,7 @@ import { Accept } from 'react-dropzone';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
+import UploadWithTextProps from './upload/UploadWithTextProps';
 
 type FormValuesProps = {
     email: string
@@ -248,7 +249,36 @@ function RegisterForm(props: RegisterFormProps) {
                 name={`idImages.${index}`}
                 control={control}
                 render={({ field }) => (
-                    <Upload
+                    <UploadWithTextProps
+                        titleText={isKu || watchTypeOfPerson === '' ? constant.studentIdImage : constant.citizenIdImage}
+                        descriptionText={
+                            <>
+                                Drop files here or click
+                                <Typography
+                                    variant="body2"
+                                    component="span"
+                                    sx={{
+                                        mx: 0.5,
+                                        color: 'primary.main',
+                                        textDecoration: 'underline',
+                                    }}
+                                >
+                                    {`browse\n`}
+                                </Typography>
+                                thorough your machine.
+                                <Typography
+                                    variant="body2"
+                                    component="span"
+                                    sx={{
+                                        mt: 2,
+                                        display: 'block'
+                                    }}
+                                >
+                                    Allowed *.jpeg, *.jpg, *.png
+                                    Max size of 200KB
+                                </Typography>
+                            </>
+                        }
                         accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
                         file={field.value}
                         onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
