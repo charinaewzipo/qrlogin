@@ -36,10 +36,11 @@ export default function AuthGuard({ children }: AuthGuardProps) {
 
     if (!isAuthenticated) {
         if (pathname !== requestedLocation) {
-            // setRequestedLocation('/login')
+            // setRequestedLocation(pathname)
             push(LOGIN_PATH)
         }
         return <LoadingScreen />
+        // return <Login />
     }
 
     return <>{children}</>
