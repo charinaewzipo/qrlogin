@@ -22,7 +22,7 @@ export function Index() {
         restDelta: 0.001,
     })
 
-    const permission = 'user'
+    const permission = 'Admin'
 
     const progress = (
         <m.div
@@ -68,9 +68,10 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Today"
                                             total={2}
-                                            // color="grey"
+                                            color="grey"
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
+                                            iconLinearColor='linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%)'
                                         />
                                     </Grid>
 
@@ -81,6 +82,7 @@ export function Index() {
                                             color="warning"
                                             icon={'icon-park-outline:done-all'}
                                             units='Booking'
+                                            // iconLinearColor='linear-gradient(135deg, rgba(183, 129, 3, 0) 0%, rgba(183, 129, 3, 0.24) 97.35%)'
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={3}>
@@ -109,7 +111,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Waiting for payment"
                                             total={12}
-                                            color="info"
+                                            color="grey"
                                             icon={'ant-design:credit-card-filled'}
                                             units='Booking'
                                         />
@@ -119,7 +121,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="All booking"
                                             total={128}
-                                            color='secondary'
+                                            color='info'
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
@@ -137,7 +139,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="All Booking"
                                             total={5}
-                                            color={'secondary'}
+                                            color={'grey'}
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
@@ -166,7 +168,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Student"
                                             total={450}
-                                            color={'secondary'}
+                                            color={'grey'}
                                             icon={'fa6-solid:user-group'}
                                             units='Users'
                                         />
@@ -176,7 +178,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="All Booking"
                                             total={320}
-                                            color="secondary"
+                                            color="grey"
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
@@ -209,7 +211,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="All Booking"
                                             total={5}
-                                            color="secondary"
+                                            color="grey"
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
                                         />
