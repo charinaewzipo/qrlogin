@@ -14,6 +14,8 @@ import { Accept } from 'react-dropzone';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
+import { useDispatch, useSelector } from '@unfinity/redux';
+import { getSupervisor } from '@unfinity/redux/supervisor';
 import UploadWithTextProps from './upload/UploadWithTextProps';
 
 type FormValuesProps = {
@@ -115,8 +117,6 @@ interface IIdImageUpload {
   index: number
 }
 function RegisterForm(props: RegisterFormProps) {
-    const [showPassword, setShowPassword] = useState(false)
-    const [openPleaseContact, setOpenPleaseContact] = useState(false)
     const checkIsKuPerson = (typeOfPerson: string) =>
         ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
@@ -237,7 +237,6 @@ function RegisterForm(props: RegisterFormProps) {
         const errorOptions: ErrorOption = {
             message: "errorResponse.data || errorResponse.devMessage"
         }
-        setOpenPleaseContact(true)
         setError('afterSubmit', errorOptions)
         console.log(data);
         window.scrollTo(0, 0)
@@ -320,11 +319,18 @@ function RegisterForm(props: RegisterFormProps) {
             opacity: isShow ? 1 : 0,
         },
     })
-
+    
+    const dispatch = useDispatch()
+    const {isLoading, error, supervisor} = useSelector(state => state.supervisor)
+    
     const RenderSupervisorDetail = () => {
         const supervisorName = 'Asst. Prof. Dr. Firstname Surname (AB4945GR)'
         const supervisorEmail = 'supervisor.email@ku.ac.th'
-        const supervisorPic = 'https://via.placeholder.com/150 '
+        const supervisorPic = 'https://via.placeholder.com/150'
+        const handleCodeOnChange = (input) => {
+            console.log(input)
+            dispatch(getSupervisor())
+        }
         return (
             <Stack spacing={2} textAlign={'left'}>
                 <Typography variant="h4">{constant.supervisorDetail}</Typography>
@@ -334,10 +340,11 @@ function RegisterForm(props: RegisterFormProps) {
                 <RHFTextField
                     name="supervisorCode"
                     label={constant.supervisorCode}
+                    onChange={e => handleCodeOnChange(e.target.value)}
                     InputProps={{
                         endAdornment: (
                             <InputAdornment position="end">
-                                {'isFetched' ? (
+                                {isLoading ? (
                                     <CircularProgress size={16} sx={{ color: 'text.primary' }} />
                                 ) : (
                                     <IconButton onClick={() => console.log('click')} edge="end">
@@ -348,17 +355,18 @@ function RegisterForm(props: RegisterFormProps) {
                         ),
                     }}
                 />
+                {isLoading === false && error === ''}
                 <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                     <Image
                         alt="Logo"
-                        src={supervisorPic}
+                        src={supervisor.pic}
                         sx={{ height: 64, width: 64, borderRadius: 1 }}
                         disabledEffect
                     />
                     <Stack>
-                        <Typography variant="h6">{supervisorName}</Typography>
+                        <Typography variant="h6">{supervisor.name}</Typography>
                         <Typography variant="body1" whiteSpace={'pre-line'}>
-                            {supervisorEmail}
+                            {supervisor.email}
                         </Typography>
                     </Stack>
                 </Stack>
@@ -400,21 +408,6 @@ function RegisterForm(props: RegisterFormProps) {
                 <RHFTextField
                     name="password"
                     label="Password"
-                    type={showPassword ? 'text' : 'password'}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                <IconButton
-                                    onClick={() => setShowPassword(!showPassword)}
-                                    edge="end"
-                                >
-                                    <Iconify
-                                        icon={showPassword ? 'eva:eye-fill' : 'eva:eye-off-fill'}
-                                    />
-                                </IconButton>
-                            </InputAdornment>
-                        ),
-                    }}
                 />
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFSelect
@@ -512,9 +505,6 @@ function RegisterForm(props: RegisterFormProps) {
                         sx={{ flex: '100%' }}
                     >
                         <option value={''} key={`${''}-position-option`} hidden></option>
-                        <option value={''} key={`${'s'}-position-option`}>
-                            Plese select
-                        </option>
                         {position.map((val) => {
                             if (watchTypeOfPerson === 'SciKU Student & Staff' && val === 'Other')
                                 return
