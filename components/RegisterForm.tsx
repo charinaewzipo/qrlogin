@@ -265,16 +265,13 @@ function RegisterForm(props: RegisterFormProps) {
                                 >
                                     {`browse\n`}
                                 </Typography>
-                                thorough your machine.
                                 <Typography
                                     variant="body2"
                                     component="span"
-                                    sx={{
-                                        mt: 2,
-                                        display: 'block'
-                                    }}
+                                    whiteSpace='pre-line'
                                 >
-                                    Allowed *.jpeg, *.jpg, *.png
+                                    {`thorough your machine.\n\n`}
+                                    Allowed *.jpeg, *.jpg, *.png<br />
                                     Max size of 200KB
                                 </Typography>
                             </>

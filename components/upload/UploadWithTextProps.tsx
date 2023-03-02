@@ -19,7 +19,7 @@ const StyledDropZone = styled('div')(({ theme }) => ({
     cursor: 'pointer',
     overflow: 'hidden',
     position: 'relative',
-    padding: theme.spacing(5, 0),
+    padding: theme.spacing(5, 3),
     borderRadius: theme.shape.borderRadius,
     transition: theme.transitions.create('padding'),
     backgroundColor: theme.palette.background.neutral,
@@ -178,7 +178,7 @@ function Placeholder({ sx, titleText, descriptionText, ...other }: PlaceholderPr
         >
             <UploadIllustration sx={{ width: 220 }} />
 
-            <Box sx={{ p: 3 }}>
+            <Box sx={{ p: 3, px: 0 }}>
                 <Typography gutterBottom variant="h6">
                     {titleText ? titleText : 'Drop or Select file'}
                 </Typography>
