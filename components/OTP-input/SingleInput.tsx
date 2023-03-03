@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-props-no-spreading */
 import React, { memo, useEffect, useRef } from 'react';
-import usePrevious from '../../hooks/usePrevious'; export interface SingleOTPInputProps
+import usePrevious from './hooks/usePrevious'; export interface SingleOTPInputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
   focus?: boolean;
 }

@@ -9,9 +9,9 @@ import FormProvider, { RHFTextField } from "@sentry/components/hook-form";
 import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
-import OTPInput from './components/OTPInput';
 import { RESET_PASSWORD_SUCCESS_PATH } from '@ku/constants/routes';
-import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
+import { OTPInputComponent } from '@ku/components/OTP-input';
+
 type FormValuesProps = {
     email: string
     password: string
@@ -114,7 +114,7 @@ function ResetPasswordForm() {
                 }
                 <RHFTextField name="email" label="Email address" disabled={true} />
                 <Stack sx={{ justifyContent: "center" }}>
-                    <OTPInput
+                    <OTPInputComponent
                         autoFocus
                         isNumberInput
                         length={6}
