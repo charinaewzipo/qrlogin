@@ -30,7 +30,7 @@ export default function Breadcrumbs({ links, activeLast = false, ...other }: Pro
   const listActiveLast = links.map((link) => (
     <div key={link.name}>
       {link.name !== currentLink ? (
-        <LinkItem link={link} />
+        <LinkItem link={link}  />
       ) : (
         <Typography
           variant="body2"
@@ -84,6 +84,7 @@ function LinkItem({ link }: LinkItemProps) {
       //   color: 'text.primary',
       //   '& > div': { display: 'inherit' },
       // }}
+      sx={{color: 'text.primary'}}
     >
       {icon && <Box sx={{ mr: 1, '& svg': { width: 20, height: 20 } }}>{icon}</Box>}
       {name}

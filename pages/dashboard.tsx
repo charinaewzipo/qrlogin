@@ -3,12 +3,13 @@ import styles from '../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box, Grid, Container } from '@mui/material'
-import AuthorizedLayout from '@unfinity/layouts/authorized'
+import AuthorizedLayout from '@ku/layouts/authorized'
 import HeaderBreadcrumbs from '../components/HeaderBreadcrumb'
 import { AnalyticsWidgetSummary } from '../components/analytics'
 import { useTranslation } from "react-i18next";
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function Index() {
     const theme = useTheme()
@@ -22,7 +23,9 @@ export function Index() {
         restDelta: 0.001,
     })
 
-    const permission = 'Admin'
+
+
+    const permission : PERMISSION = 'Admin'
 
     const progress = (
         <m.div
@@ -43,7 +46,7 @@ export function Index() {
     return (
         <>
             <Head>
-                <title>Unfinity | Dashboard</title>
+                <title>Dashboard | KU</title>
             </Head>
             {progress}
             <Container>
@@ -71,7 +74,7 @@ export function Index() {
                                             color="grey"
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
-                                            iconLinearColor='linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%)'
+                                            // iconLinearColor='linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%)'
                                         />
                                     </Grid>
 
