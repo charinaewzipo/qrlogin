@@ -4,7 +4,7 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useFieldArray, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FORGOT_PASSWORD_PATH } from '@unfinity/constants/routes'
+import { FORGOT_PASSWORD_PATH } from '@ku/constants/routes'
 import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, styled, MenuItem, TextField, Divider, CircularProgress, FormHelperText, Autocomplete } from '@mui/material'
 import FormProvider, { RHFAutocomplete, RHFCheckbox, RHFSelect, RHFTextField } from "@sentry/components/hook-form";
 import palette from '@sentry/theme/palette';
@@ -14,8 +14,8 @@ import { Accept } from 'react-dropzone';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
-import { useDispatch, useSelector } from '@unfinity/redux';
-import { getSupervisor } from '@unfinity/redux/supervisor';
+import { useDispatch, useSelector } from '@ku/redux';
+import { getSupervisor } from '@ku/redux/supervisor';
 import UploadWithTextProps from './upload/UploadWithTextProps';
 
 type FormValuesProps = {

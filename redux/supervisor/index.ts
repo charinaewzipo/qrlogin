@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { dispatch } from '..'
-import { fetchGetSupervisor } from '@unfinity/services/supervisor'
+import { fetchGetSupervisor } from '@ku/services/supervisor'
 
 const initialState: ISupervisorStoreState = {
     isLoading: false,
