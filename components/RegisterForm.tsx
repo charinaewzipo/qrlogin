@@ -53,7 +53,7 @@ const constant = {
     companyName: 'Company name *',
     position: 'Position *',
     studentId: 'StudentId *',
-    staffId: 'Staff ID *',
+    staffId: 'Staff ID',
     positionName: 'Position name *',
     expiryDate: 'Expiry date *',
     title: 'Title *',
