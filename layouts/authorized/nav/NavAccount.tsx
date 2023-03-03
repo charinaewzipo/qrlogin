@@ -6,7 +6,7 @@ import { Box, Link, Typography } from '@mui/material'
 // auth
 // import { useAuthContext } from '../../../contexts/useAuthContext'
 // routes
-import { DASHBOARD_PATH } from '@unfinity/constants/routes'
+import { DASHBOARD_PATH } from '@ku/constants/routes'
 // components
 import { CustomAvatar } from '@sentry/components/custom-avatar'
 

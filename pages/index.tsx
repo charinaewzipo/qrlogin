@@ -3,9 +3,7 @@ import styles from '../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box } from '@mui/material'
-import AuthorizedLayout from '@unfinity/layouts/authorized'
-import { useDispatch, useSelector } from '@unfinity/redux'
-import { getUser } from '@unfinity/redux/user'
+import AuthorizedLayout from '@ku/layouts/authorized'
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -56,8 +54,8 @@ export function Index() {
                         <div className="container">
                             <div id="welcome">
                                 <h1>
-                                    <span onClick={()=>d(getUser())}> Hello there, </span>
-                                    Welcome unfinity 👋
+                                    <span> Hello there, </span>
+                                    Welcome ku 👋
                                 </h1>
                             </div>
 

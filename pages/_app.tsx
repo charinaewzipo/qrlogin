@@ -6,7 +6,7 @@ import 'react-quill/dist/quill.snow.css'
 import 'slick-carousel/slick/slick.css'
 import 'slick-carousel/slick/slick-theme.css'
 import 'react-lazy-load-image-component/src/effects/blur.css'
-import '@unfinity/styles/globals.scss'
+import '@ku/styles/globals.scss'
 
 import { ReactElement, ReactNode } from 'react'
 import { NextPage } from 'next'
@@ -20,7 +20,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns'
 
 // TODO:
 import { store } from '../redux'
-import ThemeLocalization from '@unfinity/locales'
+import ThemeLocalization from '@ku/locales'
 
 import createEmotionCache from '@sentry/utils/createEmotionCache'
 import ThemeProvider from '@sentry/theme'
@@ -29,7 +29,7 @@ import ProgressBar from '@sentry/components/progress-bar'
 import SnackbarProvider from '@sentry/components/snackbar'
 import { MotionLazyContainer } from '@sentry/components/animate'
 import { ThemeSettings, SettingsProvider } from '@sentry/components/settings'
-import { AuthProvider } from '@unfinity/contexts/AuthContext'
+import { AuthProvider } from '@ku/contexts/AuthContext'
 
 const clientSideEmotionCache = createEmotionCache()
 

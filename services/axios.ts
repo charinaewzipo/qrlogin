@@ -1,6 +1,6 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
 import { isEmpty, get } from 'lodash'
-import { API_URL } from '@unfinity/constants/config'
+import { API_URL } from '@ku/constants/config'
 
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
     const contentTypes = !isEmpty(get(config, 'headers.Content-Type', '')) ? get(config, 'headers.Content-Type', '') : 'application/json'
