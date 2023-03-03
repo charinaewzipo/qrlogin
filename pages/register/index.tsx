@@ -1,12 +1,12 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import RegisterForm from '@ku/components/RegisterForm'
+import RegisterForm from '@ku/components/register/RegisterForm'
 import Image from '@sentry/components/image'
 import { useLocales } from '@ku/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
-import PDPAForm from '@ku/components/PDPAForm'
+import PDPAForm from '@ku/components/register/PDPAForm'
 import { useRouter } from 'next/router'
 import { LOGIN_PATH } from '@ku/constants/routes'
 

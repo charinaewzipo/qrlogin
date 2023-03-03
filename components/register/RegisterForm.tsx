@@ -1,22 +1,19 @@
-import { FC, useCallback, useRef, useState, useEffect } from 'react';RHFTextField
+import { FC, useEffect } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, ErrorOption, useFieldArray, useForm } from 'react-hook-form'
+import { Controller, ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { FORGOT_PASSWORD_PATH } from '@ku/constants/routes'
-import { Alert, IconButton, InputAdornment, Stack, Link, Button, Typography, Box, styled, MenuItem, TextField, Divider, CircularProgress, FormHelperText, Autocomplete } from '@mui/material'
-import FormProvider, { RHFAutocomplete, RHFCheckbox, RHFSelect, RHFTextField } from "@sentry/components/hook-form";
-import palette from '@sentry/theme/palette';
-import { Upload, UploadAvatar } from '@sentry/components/upload';
+import { Alert, IconButton, InputAdornment, Stack, Typography, TextField, Divider, CircularProgress, FormHelperText, Autocomplete } from '@mui/material'
+import FormProvider, { RHFSelect, RHFTextField } from "@sentry/components/hook-form";
+import { UploadAvatar } from '@sentry/components/upload';
 import { fData } from '@sentry/utils/formatNumber';
-import { Accept } from 'react-dropzone';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from '@ku/redux';
 import { getSupervisor } from '@ku/redux/supervisor';
-import UploadWithTextProps from './upload/UploadWithTextProps';
+import UploadWithTextProps from '@ku/components/upload/UploadWithTextProps';
 
 type FormValuesProps = {
     email: string
@@ -70,45 +67,45 @@ const constant = {
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 }
 const typeOfPerson = [
-    'SciKU Student & Staff',
-    'KU Student & Staff',
-    'Other University',
-    'Government office',
-    'Private company',
+    {value: 'SciKU Student & Staff', label: 'SciKU Student & Staff'},
+    {value: 'KU Student & Staff', label: 'KU Student & Staff'},
+    {value: 'Other University', label: 'Other University'},
+    {value: 'Government office', label: 'Government office'},
+    {value: 'Private company', label: 'Private company'},
 ]
 const position = [
-    'Lecturer',
-    'Researcher',
-    'Ph.D. student',
-    'Master student',
-    'Bachelor student',
-    'Other',
+    {value: 'Lecturer', label: 'Lecturer'},
+    {value: 'Researcher', label: 'Researcher'},
+    {value: 'Ph.D. student', label: 'Ph.D. student'},
+    {value: 'Master student', label: 'Master student'},
+    {value: 'Bachelor student', label: 'Bachelor student'},
+    {value: 'Other', label: 'Other'},
 ]
 const department = [
-    'Dept. of Applied Radiation and Isotope',
-    'Dept. of Biochemistry',
-    'Dept. of Botany',
-    'Dept. of Chemistry',
-    'Dept. of Computer Science',
-    'Dept. of Earth Sciences',
-    'Dept. of Genetics',
-    'Dept. of Material Science',
-    'Dept. of Mathematics',
-    'Dept. of Microbiology',
-    'Dept. of Physics',
-    'Dept. of Statustics',
-    'Dept. of Zoology',
+    {value: 'Dept. of Applied Radiation and Isotope', label: 'Dept. of Applied Radiation and Isotope'},
+    {value: 'Dept. of Biochemistry', label: 'Dept. of Biochemistry'},
+    {value: 'Dept. of Botany', label: 'Dept. of Botany'},
+    {value: 'Dept. of Chemistry', label: 'Dept. of Chemistry'},
+    {value: 'Dept. of Computer Science', label: 'Dept. of Computer Science'},
+    {value: 'Dept. of Earth Sciences', label: 'Dept. of Earth Sciences'},
+    {value: 'Dept. of Genetics', label: 'Dept. of Genetics'},
+    {value: 'Dept. of Material Science', label: 'Dept. of Material Science'},
+    {value: 'Dept. of Mathematics', label: 'Dept. of Mathematics'},
+    {value: 'Dept. of Microbiology', label: 'Dept. of Microbiology'},
+    {value: 'Dept. of Physics', label: 'Dept. of Physics'},
+    {value: 'Dept. of Statustics', label: 'Dept. of Statustics'},
+    {value: 'Dept. of Zoology', label: 'Dept. of Zoology'},
 ]
 const title = [
-    'Mr',
-    'Miss',
-    'Mrs',
-    'Ms',
-    'Dr',
-    'Asst.Prof',
-    'Assoc.Prof',
-    'Prof',
-    'Other',
+    {value: 'Mr', label: 'Mr'},
+    {value: 'Miss', label: 'Miss'},
+    {value: 'Mrs', label: 'Mrs'},
+    {value: 'Ms', label: 'Ms'},
+    {value: 'Dr', label: 'Dr'},
+    {value: 'Asst.Prof', label: 'Asst.Prof'},
+    {value: 'Assoc.Prof', label: 'Assoc.Prof'},
+    {value: 'Prof', label: 'Prof'},
+    {value: 'Other', label: 'Other'},
 ]
 interface RegisterFormProps {
     onSubmit: () => void
@@ -378,9 +375,9 @@ function RegisterForm(props: RegisterFormProps) {
                         placeholder={constant.typeOfPerson}
                     >
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
-                        {typeOfPerson.map((val) => (
-                            <option value={val} key={`${val}-typeOfPerson-option`}>
-                                {val}
+                        {typeOfPerson.map(({value, label}) => (
+                            <option value={value} key={`${value}-typeOfPerson-option`}>
+                                {label}
                             </option>
                         ))}
                     </RHFSelect>
@@ -450,12 +447,12 @@ function RegisterForm(props: RegisterFormProps) {
                         sx={{ flex: '100%' }}
                     >
                         <option value={''} key={`${''}-position-option`} hidden></option>
-                        {position.map((val) => {
-                            if (watchTypeOfPerson === 'SciKU Student & Staff' && val === 'Other')
+                        {position.map(({value, label}) => {
+                            if (watchTypeOfPerson === 'SciKU Student & Staff' && value === 'Other')
                                 return
                             return (
-                                <option value={val} key={`${val}-position-option`}>
-                                    {val}
+                                <option value={value} key={`${value}-position-option`}>
+                                    {label}
                                 </option>
                             )
                         })}
@@ -513,9 +510,9 @@ function RegisterForm(props: RegisterFormProps) {
                         // onBlur={() => clearErrors('otherTitle')}
                     >
                         <option value={''} key={`${''}-title-option`} hidden></option>
-                        {title.map((val) => (
-                            <option value={val} key={`${val}-title-option`}>
-                                {val}
+                        {title.map(({value, label}) => (
+                            <option value={value} key={`${value}-title-option`}>
+                                {label}
                             </option>
                         ))}
                     </RHFSelect>
