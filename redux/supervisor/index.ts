@@ -33,10 +33,13 @@ const slice = createSlice({
 
 export default slice.reducer
 export const { startLoadingAction, hasErrorAction, getSupervisorAction } = slice.actions
-export const getSupervisor = () => async () => {
+export const getSupervisor = (code: string) => async () => {
     dispatch(slice.actions.startLoadingAction())
     try {
-        const response = await fetchGetSupervisor()
+        if (code === '999999') {
+            throw '500'
+        }
+        const response = await fetchGetSupervisor(code)
         dispatch(slice.actions.getSupervisorAction(response))
     } catch (error) {
         console.log('error: ', error)

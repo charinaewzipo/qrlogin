@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useCallback, useRef, useState, useEffect } from 'react';RHFTextField
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useFieldArray, useForm } from 'react-hook-form'
@@ -224,7 +224,15 @@ function RegisterForm(props: RegisterFormProps) {
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
     const watchTitle = watch('title')
+    const watchSupervisorCode = watch('supervisorCode')
 
+    useEffect(() => {
+        if (!watchSupervisorCode)
+            return
+        if (watchSupervisorCode.length === 6)
+        fetchSupervisorData(watchSupervisorCode)
+    }, [watchSupervisorCode])
+    
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
@@ -322,58 +330,12 @@ function RegisterForm(props: RegisterFormProps) {
     
     const dispatch = useDispatch()
     const {isLoading, error, supervisor} = useSelector(state => state.supervisor)
-    
-    const RenderSupervisorDetail = () => {
-        const supervisorName = 'Asst. Prof. Dr. Firstname Surname (AB4945GR)'
-        const supervisorEmail = 'supervisor.email@ku.ac.th'
-        const supervisorPic = 'https://via.placeholder.com/150'
-        const handleCodeOnChange = (input) => {
-            console.log(input)
-            dispatch(getSupervisor())
-        }
-        return (
-            <Stack spacing={2} textAlign={'left'}>
-                <Typography variant="h4">{constant.supervisorDetail}</Typography>
-                <Typography variant="body1" whiteSpace={'pre-line'}>
-                    {constant.enterSupervisorCode}
-                </Typography>
-                <RHFTextField
-                    name="supervisorCode"
-                    label={constant.supervisorCode}
-                    onChange={e => handleCodeOnChange(e.target.value)}
-                    InputProps={{
-                        endAdornment: (
-                            <InputAdornment position="end">
-                                {isLoading ? (
-                                    <CircularProgress size={16} sx={{ color: 'text.primary' }} />
-                                ) : (
-                                    <IconButton onClick={() => console.log('click')} edge="end">
-                                        <Iconify icon={'ic:round-refresh'} />
-                                    </IconButton>
-                                )}
-                            </InputAdornment>
-                        ),
-                    }}
-                />
-                {isLoading === false && error === ''}
-                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
-                    <Image
-                        alt="Logo"
-                        src={supervisor.pic}
-                        sx={{ height: 64, width: 64, borderRadius: 1 }}
-                        disabledEffect
-                    />
-                    <Stack>
-                        <Typography variant="h6">{supervisor.name}</Typography>
-                        <Typography variant="body1" whiteSpace={'pre-line'}>
-                            {supervisor.email}
-                        </Typography>
-                    </Stack>
-                </Stack>
-            </Stack>
-        )
-    }
 
+    const fetchSupervisorData = (code: string) => {
+        console.log(code)
+        dispatch(getSupervisor(code))
+    }
+    
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
@@ -405,16 +367,12 @@ function RegisterForm(props: RegisterFormProps) {
                     )}
                 />
                 <RHFTextField name="email" label="Email" />
-                <RHFTextField
-                    name="password"
-                    label="Password"
-                />
+                <RHFTextField name="password" label="Password" />
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFSelect
                         name="typeOfPerson"
                         label={constant.typeOfPerson}
                         placeholder={constant.typeOfPerson}
-                        defaultValue={''}
                     >
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
                         {typeOfPerson.map((val) => (
@@ -435,28 +393,13 @@ function RegisterForm(props: RegisterFormProps) {
                             />
                         ),
                         'SciKU Student & Staff': (
-                            // <RHFAutocomplete
-                            //     fullWidth
-                            //     options={department}
-                            //     name="department"
-                            //     key={'department-auto'}
-                            //     renderInput={(param) => (
-                            //         <TextField
-                            //             {...param}
-                            //             error={!!errors?.department}
-                            //             helperText={get(errors?.department, 'message', '')}
-                            //             label={constant.department}
-                            //         />
-                            //     )}
-                            //     placeholder={constant.department}
-                            //     defaultValue={''}
-                            // />
                             <Controller
                                 name="department"
                                 control={control}
                                 render={({ field }) => (
                                     <Autocomplete
                                         {...field}
+                                        freeSolo
                                         fullWidth
                                         onChange={(event, newValue) => field.onChange(newValue)}
                                         options={department}
@@ -501,7 +444,6 @@ function RegisterForm(props: RegisterFormProps) {
                         name="position"
                         label={constant.position}
                         placeholder={constant.position}
-                        defaultValue={''}
                         sx={{ flex: '100%' }}
                     >
                         <option value={''} key={`${''}-position-option`} hidden></option>
@@ -546,6 +488,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 onChange={(newValue) => {
                                     field.onChange(newValue)
                                 }}
+                                disableMaskedInput
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
@@ -564,7 +507,6 @@ function RegisterForm(props: RegisterFormProps) {
                         name="title"
                         label={constant.title}
                         placeholder={constant.title}
-                        defaultValue={''}
                         // onBlur={() => clearErrors('otherTitle')}
                     >
                         <option value={''} key={`${''}-title-option`} hidden></option>
@@ -592,7 +534,46 @@ function RegisterForm(props: RegisterFormProps) {
             {isKu && isStudent ? (
                 <>
                     <Divider sx={{ marginY: 8 }} />
-                    <RenderSupervisorDetail />
+                    <Stack spacing={2} textAlign={'left'}>
+                        <Typography variant="h4">{constant.supervisorDetail}</Typography>
+                        <Typography variant="body1" whiteSpace={'pre-line'}>
+                            {constant.enterSupervisorCode}
+                        </Typography>
+                        <RHFTextField
+                            name="supervisorCode"
+                            label={constant.supervisorCode}
+                            error={!!error}
+                            helperText={error?.message}
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        {isLoading ? (
+                                            <CircularProgress size={16} sx={{ color: 'text.primary' }} />
+                                        ) : (
+                                            <IconButton onClick={() => console.log('click')} edge="end">
+                                                <Iconify icon={'ic:round-refresh'} />
+                                            </IconButton>
+                                        )}
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                        {isLoading === false && error === '' && supervisor.code !== ''}
+                        <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
+                            <Image
+                                alt="Logo"
+                                src={supervisor.pic}
+                                sx={{ height: 64, width: 64, borderRadius: 1 }}
+                                disabledEffect
+                            />
+                            <Stack>
+                                <Typography variant="h6">{`${supervisor.name} (${supervisor.code})`}</Typography>
+                                <Typography variant="body1" whiteSpace={'pre-line'}>
+                                    {supervisor.email}
+                                </Typography>
+                            </Stack>
+                        </Stack>
+                    </Stack>
                 </>
             ) : (
                 <></>
