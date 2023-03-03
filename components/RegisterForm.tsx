@@ -44,24 +44,24 @@ type FormValuesProps = {
 const constant = {
     submit: 'Submit',
     back: 'Back',
-    email: 'Email',
-    password: 'Password',
-    typeOfPerson: 'Type of person',
-    department: 'Department',
-    governmentName: 'Government name',
-    universityName: 'University name',
-    companyName: 'Company name',
-    position: 'Position',
-    studentId: 'StudentId',
-    staffId: 'Staff ID',
-    positionName: 'Position name',
-    expiryDate: 'Expiry date',
-    title: 'Title',
+    email: 'Email *',
+    password: 'Password *',
+    typeOfPerson: 'Type of person *',
+    department: 'Department *',
+    governmentName: 'Government name *',
+    universityName: 'University name *',
+    companyName: 'Company name *',
+    position: 'Position *',
+    studentId: 'StudentId *',
+    staffId: 'Staff ID *',
+    positionName: 'Position name *',
+    expiryDate: 'Expiry date *',
+    title: 'Title *',
     otherTitle: 'Other title',
-    firstName: 'Firstname',
-    surName: 'Surname',
-    address: 'Address',
-    phoneNumber: 'Phone number',
+    firstName: 'Firstname *',
+    surName: 'Surname *',
+    address: 'Address *',
+    phoneNumber: 'Phone number *',
     studentIdImage: 'Student/Staff ID Image',
     citizenIdImage: 'Citizen ID Image',
     supervisorDetail: 'Supervisor/Advisor Detail',
@@ -366,8 +366,8 @@ function RegisterForm(props: RegisterFormProps) {
                         </Stack>
                     )}
                 />
-                <RHFTextField name="email" label="Email" />
-                <RHFTextField name="password" label="Password" />
+                <RHFTextField name="email" label={constant.email} />
+                <RHFTextField name="password" label={constant.password} />
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFSelect
                         name="typeOfPerson"
@@ -518,7 +518,7 @@ function RegisterForm(props: RegisterFormProps) {
                     </RHFSelect>
                     <RHFTextField
                         name={isTitleOther ? 'otherTitle' : ''}
-                        label={constant.otherTitle}
+                        label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
                         disabled={!isTitleOther}
                     />
                 </Stack>
