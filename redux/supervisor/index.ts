@@ -36,9 +36,6 @@ export const { startLoadingAction, hasErrorAction, getSupervisorAction } = slice
 export const getSupervisor = (code: string) => async () => {
     dispatch(slice.actions.startLoadingAction())
     try {
-        if (code === '999999') {
-            throw '500'
-        }
         const response = await fetchGetSupervisor(code)
         dispatch(slice.actions.getSupervisorAction(response))
     } catch (error) {

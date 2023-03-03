@@ -67,6 +67,7 @@ const constant = {
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
     supervisorCode: 'Supervisor code',
+    supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 }
 const typeOfPerson = [
     'SciKU Student & Staff',
@@ -333,13 +334,15 @@ function RegisterForm(props: RegisterFormProps) {
 
     const fetchSupervisorData = (code: string) => {
         console.log(code)
-        dispatch(getSupervisor(code))
+        dispatch(getSupervisor(code)).then(()=> console.log(supervisor.code))
     }
     
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
-                {!!errors.afterSubmit && <Alert severity="error">{errors.afterSubmit.message}</Alert>}
+                {!!errors.afterSubmit && (
+                    <Alert severity="error">{errors.afterSubmit.message}</Alert>
+                )}
                 <Controller
                     name="avatar"
                     control={control}
@@ -482,7 +485,7 @@ function RegisterForm(props: RegisterFormProps) {
                         defaultValue={''}
                         render={({ field, fieldState: { error } }) => (
                             <DatePicker
-                                inputFormat='dd MMM yyyy'
+                                inputFormat="dd MMM yyyy"
                                 label={constant.expiryDate}
                                 value={field.value || null}
                                 onChange={(newValue) => {
@@ -542,15 +545,26 @@ function RegisterForm(props: RegisterFormProps) {
                         <RHFTextField
                             name="supervisorCode"
                             label={constant.supervisorCode}
-                            error={!!error}
-                            helperText={error?.message}
+                            error={!!errors.supervisorCode || supervisor.code === '500'}
+                            helperText={
+                                get(errors?.department, 'supervisorCode', '') ||
+                                supervisor.code === '500'
+                                    ? constant.supervisorNotFound
+                                    : ''
+                            }
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
                                         {isLoading ? (
-                                            <CircularProgress size={16} sx={{ color: 'text.primary' }} />
+                                            <CircularProgress
+                                                size={16}
+                                                sx={{ color: 'text.primary' }}
+                                            />
                                         ) : (
-                                            <IconButton onClick={() => console.log('click')} edge="end">
+                                            <IconButton
+                                                onClick={() => console.log('click')}
+                                                edge="end"
+                                            >
                                                 <Iconify icon={'ic:round-refresh'} />
                                             </IconButton>
                                         )}
@@ -558,21 +572,24 @@ function RegisterForm(props: RegisterFormProps) {
                                 ),
                             }}
                         />
-                        {isLoading === false && error === '' && supervisor.code !== ''}
-                        <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
-                            <Image
-                                alt="Logo"
-                                src={supervisor.pic}
-                                sx={{ height: 64, width: 64, borderRadius: 1 }}
-                                disabledEffect
-                            />
-                            <Stack>
-                                <Typography variant="h6">{`${supervisor.name} (${supervisor.code})`}</Typography>
-                                <Typography variant="body1" whiteSpace={'pre-line'}>
-                                    {supervisor.email}
-                                </Typography>
+                        {supervisor.code !== '500' ? (
+                            <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
+                                <Image
+                                    alt="Logo"
+                                    src={supervisor.pic}
+                                    sx={{ height: 64, width: 64, borderRadius: 1 }}
+                                    disabledEffect
+                                />
+                                <Stack>
+                                    <Typography variant="h6">{`${supervisor.name} (${supervisor.code})`}</Typography>
+                                    <Typography variant="body1" whiteSpace={'pre-line'}>
+                                        {supervisor.email}
+                                    </Typography>
+                                </Stack>
                             </Stack>
-                        </Stack>
+                        ) : (
+                            <></>
+                        )}
                     </Stack>
                 </>
             ) : (

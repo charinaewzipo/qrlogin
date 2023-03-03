@@ -4,18 +4,20 @@ const fetchGetSupervisor = (code: string) => {
   let output = {}
   if (code === '123456') {
     output = {
-      name: 'kornner nnee',
+      name: 'test sensei1',
       email: '123@gmail.com',
-      code: '123456',
+      code: '200',
       pic: 'https://via.placeholder.com/150',
     }
   } else if (code === '111111') {
     output = {
-      name: 'LOOOL erer',
+      name: 'sensei test2',
       email: '111111@gmail.com',
-      code: '111111',
+      code: '200',
       pic: 'https://via.placeholder.com/150',
     }
+  } else {
+    output = { code: '500' }
   }
   return new Promise((resolve) =>
       setTimeout(
