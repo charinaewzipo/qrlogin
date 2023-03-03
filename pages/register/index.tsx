@@ -7,6 +7,8 @@ import { useLocales } from '@ku/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/PDPAForm'
+import { useRouter } from 'next/router'
+import { LOGIN_PATH } from '@ku/constants/routes'
 
 // ----------------------------------------------------------------------
 const cons = {
@@ -47,11 +49,13 @@ export default function RegisterPage() {
     const { translate, currentLang, onChangeLang } = useLocales()
     const { t } = useTranslation()
     const [isPdpaAccepted, setIsPdpaAccepted] = useState(false)
+    const router = useRouter()
     const onAcceptPdpa = () => {
         setIsPdpaAccepted(true)
     }
     const onDeclinePdpa = () => {
         //go back to login
+        router.push(LOGIN_PATH)
     }
     const onSubmitRegister = () => {
         setIsPdpaAccepted(true)
