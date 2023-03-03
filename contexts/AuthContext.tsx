@@ -1,7 +1,10 @@
-import { createContext, useEffect, useCallback } from 'react'
+import { createContext, useEffect, useCallback, useState } from 'react'
 // utils
-import axios from '@unfinity/services/axios'
-import { LOGIN_PATH } from '@unfinity/constants/routes'
+import axios from '@ku/services/axios'
+import { LOGIN_PATH } from '@ku/constants/routes'
+import { dispatch } from '@ku/redux'
+import { getTodos, getUser } from '@ku/redux/user'
+import { get } from 'lodash'
 
 // ----------------------------------------------------------------------
 const setSession = (accessToken: string | null) => {
@@ -18,7 +21,7 @@ const setSession = (accessToken: string | null) => {
 interface AuthContextProps {
     isAuthenticated: boolean
     isInitialized: boolean
-    // user: IUser
+    user: IUser
     login: (email: string, password: string) => Promise<void>
     logout: () => Promise<void>
 }
@@ -32,8 +35,17 @@ type AuthProviderProps = {
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
+    const [isAuthenticated , setisAuthenticated ] = useState(false)
+    const [isInitialized, setIsInitialized] = useState(false)
+    const [user, setUser] = useState<IUser>({name:'',role:''})
     const initialize = useCallback(async () => {
         try {
+
+            const dataUser : IUser&{isAuthenticated:boolean} = JSON.parse(localStorage.getItem('dataUser'))
+            setisAuthenticated(get(dataUser,'isAuthenticated',false))
+            setUser(dataUser)
+            setIsInitialized(true)
+        
             const accessToken =
                 typeof window !== 'undefined' ? localStorage.getItem('accessToken') : ''
 
@@ -85,17 +97,14 @@ export function AuthProvider({ children }: AuthProviderProps) {
         // });
         // const { accessToken, user } = response.data;
         // setSession(accessToken);
-        // dispatch({
-        //     type: Types.LOGIN,
-        //     payload: {
-        //         user,
-        //     },
-        // });
+        dispatch(getUser());
+        setisAuthenticated(true)
     }
 
     // LOGOUT
     const logout = async () => {
         setSession(null)
+        localStorage.removeItem('dataUser')
         // dispatch({
         //     type: Types.LOGOUT,
         // });
@@ -104,8 +113,9 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return (
         <AuthContext.Provider
             value={{
-                isAuthenticated: true,
-                isInitialized: true,
+                isAuthenticated: isAuthenticated,
+                isInitialized: isInitialized,
+                user:user,
                 login,
                 logout,
             }}
