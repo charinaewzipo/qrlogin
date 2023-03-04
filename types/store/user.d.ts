@@ -4,7 +4,9 @@ interface IUser {
 }
 
 interface IUserStoreState {
-    isLoading: boolean
     error?: any
+    isLoading: boolean
+    isInitialized: boolean,
+    isAuthenticated: boolean,
     user: IUser
 }
