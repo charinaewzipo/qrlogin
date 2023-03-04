@@ -5,7 +5,7 @@ import NextLink from 'next/link'
 // @mui
 import { Button, Typography } from '@mui/material'
 // layouts
-import CompactLayout from '@unfinity/layouts/compact'
+import CompactLayout from '@ku/layouts/compact'
 // components
 import { MotionContainer, varBounce } from '@sentry/components/animate'
 // assets

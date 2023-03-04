@@ -1,5 +1,5 @@
 // routes
-import { ROOT_PATH, DASHBOARD_PATH, ACCOUNT_PATH } from '@unfinity/constants/routes'
+import { ROOT_PATH, DASHBOARD_PATH, ACCOUNT_PATH } from '@ku/constants/routes'
 // components
 import SvgColor from '@sentry/components/svg-color'
 

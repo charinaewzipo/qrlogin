@@ -4,7 +4,7 @@ import { Box } from '@mui/material'
 // hooks
 import useResponsive from '@sentry/hooks/useResponsive'
 // auth
-import AuthGuard from '@unfinity/guard/AuthGuard'
+import AuthGuard from '@ku/guard/AuthGuard'
 // components
 import { useSettingsContext } from '@sentry/components/settings'
 //

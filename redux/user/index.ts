@@ -1,12 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 import { dispatch } from '..'
-import { fetchGetUser } from '@unfinity/services/user'
+import { fetchGetUser } from '@ku/services/user'
 
 const initialState: IUserStoreState = {
     isLoading: false,
     error: null,
     user: {
-        name: ''
+        name: '',
+        role: ''
     }
 }
 
@@ -24,20 +25,37 @@ const slice = createSlice({
         getUserAction(state, action) {
             state.isLoading = false
             state.user = action.payload
+        },
+        getStateUser(state) {
+            return state
         }
     }
 })
 
 export default slice.reducer
-export const { startLoadingAction, hasErrorAction, getUserAction } = slice.actions
+export const { startLoadingAction, hasErrorAction, getUserAction, getStateUser } = slice.actions
 
 export const getUser = () => async () => {
-    dispatch(slice.actions.startLoadingAction())
+    dispatch(startLoadingAction())
     try {
         const response = await fetchGetUser()
-        dispatch(slice.actions.getUserAction(response))
+        setTimeout(() => {
+            localStorage.setItem('dataUser', JSON.stringify({ ...response, isAuthenticated: true }));
+            dispatch(getUserAction(response))
+        }, 2000)
     } catch (error) {
         console.log('error: ', error)
-        dispatch(slice.actions.hasErrorAction(error))
+        dispatch(hasErrorAction(error))
     }
 }
+
+export const getTodos = () => async () => {
+    dispatch(getStateUser())
+}
+
+
+// export const getTodos = () => state.todos.items
+
+// export const getStateUser = () => slice.getInitialState
+
+// export const getStateUser = () => async () => slice.
