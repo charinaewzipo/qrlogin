@@ -1,9 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosInstance } from 'axios'
-import { isEmpty, get } from 'lodash'
 import { API_URL } from '@ku/constants/config'
 
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
-    const contentTypes = !isEmpty(get(config, 'headers.Content-Type', '')) ? get(config, 'headers.Content-Type', '') : 'application/json'
     const configure: AxiosRequestConfig = {
         ...config,
         url: config.url?.replace(/([^:])(\/\/)/g, '$1/')
@@ -21,13 +19,13 @@ const axiosInstance: AxiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use(requestInterceptor, handleRequestError)
-
+export const TOKEN_KEY = 'kusec-accesstoken'
 export const setSession = async (accessToken: string | null) => {
     if (accessToken) {
-        await localStorage.setItem('accessToken', accessToken)
+        await localStorage.setItem(TOKEN_KEY, accessToken)
         axios.defaults.headers.common.Authorization = `Bearer ${accessToken}`
     } else {
-        await localStorage.removeItem('accessToken')
+        await localStorage.removeItem(TOKEN_KEY)
         delete axios.defaults.headers.common.Authorization
     }
 }

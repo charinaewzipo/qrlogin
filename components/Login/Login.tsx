@@ -1,18 +1,10 @@
-// next
 import { Stack, Typography } from '@mui/material'
-import Head from 'next/head'
+import LoginLayout from '@ku/layouts/login'
 import LoginForm from './LoginForm'
-import LoginLayout from '@ku/layouts/login';
 
-// ----------------------------------------------------------------------
-export default function LoginPage() {
+export default function Login() {
     return (
-        <>
-            <Head>
-                <title> Login | KU </title>
-            </Head>
-
-            <LoginLayout>
+        <LoginLayout>
             <Stack spacing={2} sx={{ mb: 5, position: 'relative' }}>
                 <Typography variant="h4">Sign in to Scientific Equipment Booking</Typography>
                 <Stack direction="row" spacing={0.5}>
@@ -20,7 +12,6 @@ export default function LoginPage() {
                 </Stack>
             </Stack>
             <LoginForm />
-            </LoginLayout>
-        </>
+        </LoginLayout>
     )
 }

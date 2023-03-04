@@ -24,7 +24,7 @@ const setRemember = async (loginData: ILogin) => {
     }
 }
 
-const extractLoginData = (): ILogin => {
+const extractLoginData = (): ILogin | null => {
     const loginData = typeof window !== 'undefined' ? localStorage.getItem(REMEMBER_KEY) : ''
     if (loginData) {
         const loginJSONFromString = JSON.parse(loginData) || []
@@ -47,18 +47,14 @@ const extractLoginData = (): ILogin => {
             }
         }
     }
-    return {
-        email: '',
-        password: '',
-        remember: false,
-    }
+    return null
 }
 
 interface AuthContextProps {
     isAuthenticated: boolean
     isInitialized: boolean
     user: IUser
-    loginData: ILogin | null
+    getLoginData: () => ILogin | null
     login: (loginData: ILogin) => Promise<void>
     logout: () => Promise<void>
 }
@@ -71,11 +67,8 @@ type AuthProviderProps = {
 
 export function AuthProvider({ children }: AuthProviderProps) {
     const [state, dispatch] = useReducer(userReducer, initialState)
-    const [loginData, setLoginData] = useState(null)
 
     const initialize = useCallback(async () => {
-        const loginData = extractLoginData()
-        setLoginData(loginData)
         await getUser(dispatch)
     }, [])
 
@@ -97,10 +90,10 @@ export function AuthProvider({ children }: AuthProviderProps) {
     return (
         <AuthContext.Provider
             value={{
-                isAuthenticated: true,
-                isInitialized: true,
+                isAuthenticated: state.isAuthenticated,
+                isInitialized: state.isInitialized,
                 user: state.user,
-                loginData: loginData,
+                getLoginData: extractLoginData,
                 login,
                 logout,
             }}

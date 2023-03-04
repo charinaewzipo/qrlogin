@@ -1,7 +1,7 @@
 import { AnyAction, createSlice } from '@reduxjs/toolkit'
 import { fetchGetUser } from '@ku/services/user'
 import { fetchLogin } from '@ku/services/auth'
-import { setSession } from '@ku/services/axios'
+import { setSession, TOKEN_KEY } from '@ku/services/axios'
 import { Dispatch } from 'react'
 
 export const initialState: IUserStoreState = {
@@ -73,8 +73,7 @@ export const getUser = async (dispatch: Dispatch<AnyAction>) => {
     dispatch(startLoadingAction())
     try {
         const accessToken =
-            typeof window !== 'undefined' ? localStorage.getItem('accessToken') : ''
-
+            typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : ''
         if (accessToken) {
             await setSession(accessToken)
             const { data } = await fetchGetUser()
