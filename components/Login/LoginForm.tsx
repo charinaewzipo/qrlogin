@@ -6,15 +6,7 @@ import Iconify from '@sentry/components/iconify'
 import ConfirmDialog from '../../components/ConfirmDialog'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { FORGOT_PASSWORD_PATH, REGISTER_PATH } from '@ku/constants/routes'
-import {
-    Alert,
-    IconButton,
-    InputAdornment,
-    Stack,
-    Link,
-    Typography,
-    Box,
-} from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack, Link, Typography, Box } from '@mui/material'
 import FormProvider, { RHFCheckbox, RHFTextField } from '@sentry/components/hook-form'
 import palette from '@sentry/theme/palette'
 import { useAuthContext } from '@ku/contexts/useAuthContext'
@@ -87,6 +79,7 @@ function LoginForm() {
                 message: 'errorResponse.data || errorResponse.devMessage',
             }
             reset()
+            // TODO: Handle when get some code to trigger this modal
             setOpenPleaseContact(true)
             setError('afterSubmit', errorOptions)
         }
