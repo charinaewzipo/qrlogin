@@ -1,7 +1,7 @@
 // next
 import { Stack, Typography } from '@mui/material'
 import Head from 'next/head'
-import ForgotPassword from './ForgotPasswordForm'
+import ForgotPasswordForm from '@ku/components/ForgotPassword/ForgotPasswordForm'
 import LoginLayout from '@ku/layouts/login'
 
 // ----------------------------------------------------------------------
@@ -22,7 +22,7 @@ export default function ForgotPasswordPage() {
                     <Typography variant="body2" align="center">and we'll email you a link to reset your password.</Typography>
                 </Stack>
             </Stack>
-            <ForgotPassword />
+            <ForgotPasswordForm />
         </>
     )
 }
