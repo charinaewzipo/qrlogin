@@ -1,6 +1,4 @@
-/* eslint-disable react/jsx-props-no-spreading */
-/* eslint-disable prefer-destructuring */
-/* eslint-disable react/no-array-index-key */
+
 import { useTheme } from '@mui/material';
 import { isEmpty } from 'lodash';
 import React, { memo, useState, useCallback, CSSProperties } from 'react';

@@ -2,7 +2,7 @@ import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
 import React from 'react'
 import Image from '@sentry/components/image';
-import ResetPasswordForm from '../../components/Reset-password/ResetPasswordForm';
+import ResetPasswordForm from '../../components/ResetPassword/ResetPasswordForm';
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 const ResetPassword = () => {
   const ContentStyle = styled('div')(({ theme }) => ({

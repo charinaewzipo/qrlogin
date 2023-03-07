@@ -10,7 +10,7 @@ import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
 import { RESET_PASSWORD_SUCCESS_PATH } from '@ku/constants/routes';
-import { OTPInputComponent } from '@ku/components/OTP-input';
+import { OTPInputComponent } from '@ku/components/OTPInput';
 
 type FormValuesProps = {
     email: string
