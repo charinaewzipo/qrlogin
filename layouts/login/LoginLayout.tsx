@@ -2,8 +2,6 @@
 import { Typography, Stack } from '@mui/material'
 // components
 import Logo from '@ku/components/Logo'
-//
-import GuestGuard from '@ku/guard/GuestGuard'
 
 import { StyledRoot, StyledContent } from './styles'
 
@@ -16,7 +14,6 @@ type Props = {
 
 export default function LoginLayout({ children, illustration, title }: Props) {
     return (
-        <GuestGuard>
         <StyledRoot>
             <Logo
                 sx={{
@@ -31,6 +28,5 @@ export default function LoginLayout({ children, illustration, title }: Props) {
                 <Stack sx={{ width: 1 }}> {children} </Stack>
             </StyledContent>
         </StyledRoot>
-        </GuestGuard>
     )
 }
