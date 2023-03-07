@@ -4,7 +4,7 @@ import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box, Grid, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
-import HeaderBreadcrumbs from '../../components/HeaderBreadcrumb'
+import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { AnalyticsWidgetSummary } from '../../components/Dashboard/analytics'
 import { useTranslation } from "react-i18next";
 
@@ -22,7 +22,6 @@ export function Index() {
         damping: 30,
         restDelta: 0.001,
     })
-
 
 
     const permission : PERMISSION = 'Admin'
@@ -59,7 +58,7 @@ export function Index() {
                 >
                     <div className={styles.page}>
                         <div className="wrapper">
-                            <HeaderBreadcrumbs
+                            <CustomBreadcrumbs
                                 heading="Dashboard"
                                 links={[{ name: 'Dashboard' }, { name: permission }]}
                                 sx={{ mt: 3, mb: 0, height: 72 }}
@@ -74,7 +73,7 @@ export function Index() {
                                             color="grey"
                                             icon={'mdi:bag-personal'}
                                             units='Booking'
-                                            // iconLinearColor='linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%)'
+                                            
                                         />
                                     </Grid>
 
@@ -85,7 +84,7 @@ export function Index() {
                                             color="warning"
                                             icon={'icon-park-outline:done-all'}
                                             units='Booking'
-                                            // iconLinearColor='linear-gradient(135deg, rgba(183, 129, 3, 0) 0%, rgba(183, 129, 3, 0.24) 97.35%)'
+                                           
                                         />
                                     </Grid>
                                     <Grid item xs={12} sm={6} md={3}>
