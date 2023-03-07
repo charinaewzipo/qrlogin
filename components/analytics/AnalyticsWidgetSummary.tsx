@@ -46,15 +46,15 @@ export default function AnalyticsWidgetSummary({
         py: 5,
         boxShadow: 0,
         textAlign: 'center',
-        color:  color === 'grey' ? (theme) => theme.palette[color] : (theme) => theme.palette[color].darker,
-        bgcolor:  color === 'grey' ? '#F4F6F8':(theme) => theme.palette[color].lighter,
+        color:  color === 'grey' ? (theme) => theme.palette[color as keyof ColorSchema] : (theme ) => theme.palette[color].darker,
+        bgcolor:  color === 'grey' ? '#F4F6F8':(theme ) => theme.palette[color].lighter,
         ...sx,
       }}
       {...other}
     >
       <IconWrapperStyle
         sx={{
-          color: color === 'grey' ? (theme) => theme.palette[color] :(theme) => theme.palette[color].dark,
+          color: color === 'grey' ? (theme) => theme.palette[color as keyof ColorSchema ] :(theme ) => theme.palette[color ].dark,
           backgroundImage: color === 'grey' ? 'linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%);' : (theme) =>
             `linear-gradient(135deg, ${alpha(theme.palette[color].dark, 0)} 0%, ${alpha(
               theme.palette[color].dark,

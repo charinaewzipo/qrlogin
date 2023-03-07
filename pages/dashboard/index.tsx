@@ -1,11 +1,11 @@
 import { m, useScroll, useSpring } from 'framer-motion'
-import styles from '../styles/index.module.scss'
+import styles from '../../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
 import { Box, Grid, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
-import HeaderBreadcrumbs from '../components/HeaderBreadcrumb'
-import { AnalyticsWidgetSummary } from '../components/analytics'
+import HeaderBreadcrumbs from '../../components/HeaderBreadcrumb'
+import { AnalyticsWidgetSummary } from '../../components/analytics'
 import { useTranslation } from "react-i18next";
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
