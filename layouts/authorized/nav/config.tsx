@@ -1,5 +1,5 @@
 // routes
-import { ROOT_PATH, DASHBOARD_PATH, ACCOUNT_PATH } from '@ku/constants/routes'
+import { ROOT_PATH, DASHBOARD_PATH, ACCOUNT_PATH, PRIVACY_POLICIES_PATH } from '@ku/constants/routes'
 // components
 import SvgColor from '@sentry/components/svg-color'
 
@@ -45,7 +45,7 @@ const navConfig = [
             { title: 'My Booking', path: ROOT_PATH, icon: ICONS.myBooking },
             { title: 'Equipments', path: ROOT_PATH, icon: ICONS.equipment },
             { title: 'Assessments', path: ROOT_PATH, icon: ICONS.assessments },
-            { title: 'Privacy Policies', path: ROOT_PATH, icon: ICONS.privacy },
+            { title: 'Privacy Policies', path: PRIVACY_POLICIES_PATH, icon: ICONS.privacy },
         ],
     },
 ]
