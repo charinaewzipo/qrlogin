@@ -327,11 +327,21 @@ function RegisterForm(props: RegisterFormProps) {
     })
     
     const dispatch = useDispatch()
-    const {isLoading, error, supervisor} = useSelector(state => state.supervisor)
-
+    const supervisorSelector = useSelector(state => state.supervisor)
+    useEffect(() => {
+        if (supervisorSelector.isLoading)
+            return
+        if (supervisorSelector.supervisor.code === '500') {
+            setError('supervisorCode', {type: 'custom', message: constant.supervisorNotFound})
+        } else {
+            clearErrors('supervisorCode')
+        }
+    
+    }, [supervisorSelector.isLoading])
+    
     const fetchSupervisorData = (code: string) => {
         console.log(code)
-        dispatch(getSupervisor(code)).then(()=> console.log(supervisor.code))
+        dispatch(getSupervisor(code))
     }
     
     return (
@@ -375,7 +385,7 @@ function RegisterForm(props: RegisterFormProps) {
                         placeholder={constant.typeOfPerson}
                     >
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
-                        {typeOfPerson.map(({value, label}) => (
+                        {typeOfPerson.map(({ value, label }) => (
                             <option value={value} key={`${value}-typeOfPerson-option`}>
                                 {label}
                             </option>
@@ -447,7 +457,7 @@ function RegisterForm(props: RegisterFormProps) {
                         sx={{ flex: '100%' }}
                     >
                         <option value={''} key={`${''}-position-option`} hidden></option>
-                        {position.map(({value, label}) => {
+                        {position.map(({ value, label }) => {
                             if (watchTypeOfPerson === 'SciKU Student & Staff' && value === 'Other')
                                 return
                             return (
@@ -510,7 +520,7 @@ function RegisterForm(props: RegisterFormProps) {
                         // onBlur={() => clearErrors('otherTitle')}
                     >
                         <option value={''} key={`${''}-title-option`} hidden></option>
-                        {title.map(({value, label}) => (
+                        {title.map(({ value, label }) => (
                             <option value={value} key={`${value}-title-option`}>
                                 {label}
                             </option>
@@ -541,18 +551,14 @@ function RegisterForm(props: RegisterFormProps) {
                         </Typography>
                         <RHFTextField
                             name="supervisorCode"
+                            defaultValue=""
                             label={constant.supervisorCode}
-                            error={!!errors.supervisorCode || supervisor.code === '500'}
-                            helperText={
-                                get(errors?.department, 'supervisorCode', '') ||
-                                supervisor.code === '500'
-                                    ? constant.supervisorNotFound
-                                    : ''
-                            }
+                            error={!!errors.supervisorCode}
+                            helperText={get(errors?.supervisorCode, 'message', '')}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        {isLoading ? (
+                                        {supervisorSelector.isLoading ? (
                                             <CircularProgress
                                                 size={16}
                                                 sx={{ color: 'text.primary' }}
@@ -569,18 +575,20 @@ function RegisterForm(props: RegisterFormProps) {
                                 ),
                             }}
                         />
-                        {supervisor.code !== '500' ? (
+                        {supervisorSelector.supervisor.code !== '500' ? (
                             <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                 <Image
                                     alt="Logo"
-                                    src={supervisor.pic}
+                                    src={supervisorSelector.supervisor.pic}
                                     sx={{ height: 64, width: 64, borderRadius: 1 }}
                                     disabledEffect
                                 />
                                 <Stack>
-                                    <Typography variant="h6">{`${supervisor.name} (${supervisor.code})`}</Typography>
+                                    <Typography variant="h6">
+                                        {`${supervisorSelector.supervisor.name} (${supervisorSelector.supervisor.code})`}
+                                    </Typography>
                                     <Typography variant="body1" whiteSpace={'pre-line'}>
-                                        {supervisor.email}
+                                        {supervisorSelector.supervisor.email}
                                     </Typography>
                                 </Stack>
                             </Stack>

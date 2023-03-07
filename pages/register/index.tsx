@@ -9,6 +9,7 @@ import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/register/PDPAForm'
 import { useRouter } from 'next/router'
 import { LOGIN_PATH } from '@ku/constants/routes'
+import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 
 // ----------------------------------------------------------------------
 const cons = {
@@ -26,7 +27,7 @@ export default function RegisterPage() {
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
-        padding: isBigger ? `${theme.spacing(20)} 0 ${theme.spacing(10)} 0` : `${theme.spacing(15)} 0 ${theme.spacing(4)} 0`,
+        padding: isBigger ? `${theme.spacing(18)} 0 ${theme.spacing(10)} 0` : `${theme.spacing(18)} 0 ${theme.spacing(4)} 0`,
         gap: theme.spacing(5),
         flex: '1',
         margin: 'auto',
@@ -68,26 +69,7 @@ export default function RegisterPage() {
             <Head>
                 <title> Register | KU </title>
             </Head>
-
-            <Box
-                component="div"
-                sx={{
-                    display: 'inline-flex',
-                    position: 'absolute',
-                    width: 294,
-                    height: 56,
-                    zIndex: 9,
-                    mt: { xs: 1.5, md: 5 },
-                    ml: { xs: 2, md: 5 },
-                }}
-            >
-                <Image
-                    alt="Logo"
-                    src={'/assets/images/logo/Logo.png'}
-                    sx={{ objectFit: 'contain' }}
-                    disabledEffect
-                />
-            </Box>
+            <LogoOnlyLayout/>
             <Container>
                 <StyledContentWrapper isBigger={isPdpaAccepted}>
                     <Stack spacing={2} sx={{ position: 'relative' }}>
