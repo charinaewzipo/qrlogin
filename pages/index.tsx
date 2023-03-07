@@ -17,8 +17,7 @@ export function Index() {
         damping: 30,
         restDelta: 0.001,
     })
-    const d = useDispatch()
-    const s = useSelector(state => state.user)
+
     const progress = (
         <m.div
             style={{
@@ -38,10 +37,10 @@ export function Index() {
     return (
         <>
             <Head>
-                <title>{s.user.name}</title>
+                <title>Unfinity | Dashboard</title>
             </Head>
             {progress}
-            <button onClick={()=>d(getUser())}></button>
+
             <Box
                 sx={{
                     overflow: 'hidden',
