@@ -5,9 +5,9 @@ import { IconButton, Stack, Typography } from '@mui/material'
 // utils
 import { fData } from '@sentry/utils/formatNumber'
 //
-import Iconify from '../../iconify'
-import { varFade } from '../../animate'
-import FileThumbnail, { fileData } from '../../file-thumbnail'
+import Iconify from '@sentry/components/iconify'
+import { varFade } from '@sentry/components/animate'
+import FileThumbnail, { fileData } from '@sentry/components/file-thumbnail'
 //
 import { UploadProps } from '../types'
 

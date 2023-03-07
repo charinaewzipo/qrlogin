@@ -13,7 +13,7 @@ import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from '@ku/redux';
 import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
-import UploadWithTextProps from '@ku/components/upload/UploadWithTextProps';
+import { UploadWithTextProps } from '@ku/components/upload';
 
 type FormValuesProps = {
     email: string
