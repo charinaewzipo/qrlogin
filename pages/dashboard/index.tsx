@@ -5,7 +5,7 @@ import { useTheme } from '@mui/material/styles'
 import { Box, Grid, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import HeaderBreadcrumbs from '../../components/HeaderBreadcrumb'
-import { AnalyticsWidgetSummary } from '../../components/analytics'
+import { AnalyticsWidgetSummary } from '../../components/Dashboard/analytics'
 import { useTranslation } from "react-i18next";
 
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
