@@ -1,10 +1,14 @@
-import { createSlice } from '@reduxjs/toolkit'
-import { dispatch } from '..'
+import { AnyAction, createSlice } from '@reduxjs/toolkit'
 import { fetchGetUser } from '@ku/services/user'
+import { fetchLogin } from '@ku/services/auth'
+import { setSession, TOKEN_KEY } from '@ku/services/axios'
+import { Dispatch } from 'react'
 
-const initialState: IUserStoreState = {
+export const initialState: IUserStoreState = {
     isLoading: false,
     error: null,
+    isInitialized: false,
+    isAuthenticated: false,
     user: {
         name: '',
         role: ''
@@ -20,42 +24,70 @@ const slice = createSlice({
         },
         hasErrorAction(state, action) {
             state.isLoading = false
+            state.isInitialized = true
+            state.isAuthenticated = false
             state.error = action.payload
         },
         getUserAction(state, action) {
             state.isLoading = false
+            state.isInitialized = true
+            state.isAuthenticated = true
             state.user = action.payload
         },
-        getStateUser(state) {
-            return state
-        }
+        loginSuccessAction(state, action) {
+            state.user = action.payload
+            state.isLoading = false
+            state.isAuthenticated = true
+        },
+        clearSessionAction(state) {
+            state.isLoading = false
+            state.isInitialized = true
+            state.isAuthenticated = false
+            state.user = null
+        },
     }
 })
 
 export default slice.reducer
-export const { startLoadingAction, hasErrorAction, getUserAction, getStateUser } = slice.actions
+export const { startLoadingAction, hasErrorAction, getUserAction, loginSuccessAction, clearSessionAction } = slice.actions
 
-export const getUser = () => async () => {
+export const login = async (dispatch: Dispatch<AnyAction>, { remember, ...reuqestData }: ILogin) => {
     dispatch(startLoadingAction())
     try {
-        const response = await fetchGetUser()
-        setTimeout(() => {
-            localStorage.setItem('dataUser', JSON.stringify({ ...response, isAuthenticated: true }));
-            dispatch(getUserAction(response))
-        }, 2000)
+        const { data } = await fetchLogin(reuqestData)
+        const accessToken = data.accessToken
+        const userData = data.user
+        if (accessToken) {
+            await setSession(accessToken)
+            dispatch(loginSuccessAction(userData))
+        } else {
+            dispatch(clearSessionAction())
+        }
     } catch (error) {
         console.log('error: ', error)
         dispatch(hasErrorAction(error))
     }
 }
 
-export const getTodos = () => async () => {
-    dispatch(getStateUser())
+export const getUser = async (dispatch: Dispatch<AnyAction>) => {
+    dispatch(startLoadingAction())
+    try {
+        const accessToken =
+            typeof window !== 'undefined' ? localStorage.getItem(TOKEN_KEY) : ''
+        if (accessToken) {
+            await setSession(accessToken)
+            const { data } = await fetchGetUser()
+            dispatch(getUserAction(data))
+        } else {
+            dispatch(clearSessionAction())
+        }
+    } catch (error) {
+        console.log('error: ', error)
+        dispatch(hasErrorAction(error))
+    }
 }
 
-
-// export const getTodos = () => state.todos.items
-
-// export const getStateUser = () => slice.getInitialState
-
-// export const getStateUser = () => async () => slice.
+export const logout = async (dispatch: Dispatch<AnyAction>) => {
+    dispatch(clearSessionAction())
+    await setSession(null)
+}
