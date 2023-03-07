@@ -3,7 +3,7 @@ import { persistReducer } from 'redux-persist'
 import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
 // Reducers
-import userReducer from './user'
+// import userReducer from './user'
 // TODO: Put any reducer here
 
 const createNoopStorage = () => ({
@@ -27,15 +27,9 @@ const rootPersistConfig = {
     whitelist: [],
 };
 
-const userPersistConfig = {
-    key: 'user',
-    storage,
-    keyPrefix: 'redux-'
-};
-
 const rootReducer = combineReducers({
     // e.g. token: tokenReducer
-    user: persistReducer(userPersistConfig, userReducer),
+    // user: persistReducer(userPersistConfig, userReducer),
 })
 
 export { rootPersistConfig, rootReducer }
