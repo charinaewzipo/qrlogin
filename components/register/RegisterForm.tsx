@@ -12,7 +12,7 @@ import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from '@ku/redux';
-import { getSupervisor } from '@ku/redux/supervisor';
+import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
 import UploadWithTextProps from '@ku/components/upload/UploadWithTextProps';
 
 type FormValuesProps = {
@@ -325,6 +325,11 @@ function RegisterForm(props: RegisterFormProps) {
             opacity: isShow ? 1 : 0,
         },
     })
+    useEffect(() => {
+        return () => {
+            dispatch(clearSupervisor())
+        }
+    }, [])
     
     const dispatch = useDispatch()
     const supervisorSelector = useSelector(state => state.supervisor)
@@ -336,9 +341,8 @@ function RegisterForm(props: RegisterFormProps) {
         } else {
             clearErrors('supervisorCode')
         }
-    
     }, [supervisorSelector.isLoading])
-    
+
     const fetchSupervisorData = (code: string) => {
         console.log(code)
         dispatch(getSupervisor(code))
@@ -575,7 +579,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 ),
                             }}
                         />
-                        {supervisorSelector.supervisor.code !== '500' ? (
+                        {!supervisorSelector.isLoading && supervisorSelector.supervisor.code === '200' ? (
                             <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                 <Image
                                     alt="Logo"

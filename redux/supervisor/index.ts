@@ -43,3 +43,12 @@ export const getSupervisor = (code: string) => async () => {
         dispatch(slice.actions.hasErrorAction(error))
     }
 }
+export const clearSupervisor = () => async () => {
+    dispatch(slice.actions.startLoadingAction())
+    try {
+        dispatch(slice.actions.getSupervisorAction(''))
+    } catch (error) {
+        console.log('error: ', error)
+        dispatch(slice.actions.hasErrorAction(error))
+    }
+}
