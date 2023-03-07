@@ -225,9 +225,6 @@ function RegisterForm(props: RegisterFormProps) {
     const watchSupervisorCode = watch('supervisorCode')
 
     useEffect(() => {
-        if (!watchSupervisorCode)
-            return
-        if (watchSupervisorCode.length === 6)
         fetchSupervisorData(watchSupervisorCode)
     }, [watchSupervisorCode])
     
@@ -344,7 +341,11 @@ function RegisterForm(props: RegisterFormProps) {
     }, [supervisorSelector.isLoading])
 
     const fetchSupervisorData = (code: string) => {
-        console.log(code)
+        setError('supervisorCode', {type: 'custom', message: ''})
+        if (!code)
+            return
+        if (code.length < 6)
+            return
         dispatch(getSupervisor(code))
     }
     
@@ -567,19 +568,24 @@ function RegisterForm(props: RegisterFormProps) {
                                                 size={16}
                                                 sx={{ color: 'text.primary' }}
                                             />
-                                        ) : (
+                                        ) : !!errors.supervisorCode ? (
                                             <IconButton
-                                                onClick={() => console.log('click')}
+                                                onClick={() =>
+                                                    fetchSupervisorData(getValues('supervisorCode'))
+                                                }
                                                 edge="end"
                                             >
                                                 <Iconify icon={'ic:round-refresh'} />
                                             </IconButton>
+                                        ) : (
+                                            <></>
                                         )}
                                     </InputAdornment>
                                 ),
                             }}
                         />
-                        {!supervisorSelector.isLoading && supervisorSelector.supervisor.code === '200' ? (
+                        {!supervisorSelector.isLoading &&
+                        supervisorSelector.supervisor.code === '200' ? (
                             <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                 <Image
                                     alt="Logo"
