@@ -2,7 +2,7 @@ import { useEffect } from 'react'
 // next
 import { useRouter } from 'next/router'
 // routes
-import { DASHBOARD_PATH } from '@ku/constants/routes'
+import { ROOT_PATH } from '@ku/constants/routes'
 // components
 import LoadingScreen from '@sentry/components/loading-screen'
 //
@@ -21,7 +21,7 @@ export default function GuestGuard({ children }: GuestGuardProps) {
 
     useEffect(() => {
         if (isAuthenticated) {
-            push("/")
+            push(ROOT_PATH)
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated])
