@@ -11,13 +11,13 @@ declare interface PDPAFormProps {
     privacyPolicyText?: string
 }
 
-function PDPAForm(props: PDPAFormProps) {
+function PDPAForm({ onAccept, onDecline, privacyPolicyText }: PDPAFormProps) {
     return (
         <>
             <TextField
                 multiline
                 maxRows={Infinity}
-                value={pdpatext}
+                value={privacyPolicyText ? privacyPolicyText : pdpatext}
                 sx={{ width: '100%' }}
                 disabled
             />
@@ -26,7 +26,7 @@ function PDPAForm(props: PDPAFormProps) {
                 size="large"
                 type="submit"
                 variant="contained"
-                onClick={props.onAccept}
+                onClick={onAccept}
                 sx={{ mt: 3 }}
                 // loading={authenticationStore.isFetching}
             >
@@ -39,7 +39,7 @@ function PDPAForm(props: PDPAFormProps) {
                 type="button"
                 variant="text"
                 sx={{ mt: 1 }}
-                onClick={props.onDecline}
+                onClick={onDecline}
                 // loading={authenticationStore.isFetching}
             >
                 Decline

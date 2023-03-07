@@ -1,5 +1,4 @@
 // next
-import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
 import RegisterForm from '@ku/components/Register/RegisterForm'
 import { useLocales } from '@ku/locales'
@@ -8,7 +7,6 @@ import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/Register/PDPAForm'
 import { useRouter } from 'next/router'
 import { LOGIN_PATH } from '@ku/constants/routes'
-import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 import RegisterLayout from '@ku/layouts/register'
 import GuestGuard from '@ku/guard/GuestGuard'
 

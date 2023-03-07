@@ -250,12 +250,19 @@ function RegisterForm(props: RegisterFormProps) {
                 render={({ field }) => (
                     <Upload
                         dropzoneHelper={
-                            <Box sx={{ py: 3, px: 1, m: 0 }}>
-                                <Typography gutterBottom variant="h5">
-                                    {isKu || watchTypeOfPerson === '' ? constant.studentIdImage : constant.citizenIdImage}
+                            <Box sx={{ py: 3, px: 1 }}>
+                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
+                                    {isKu || watchTypeOfPerson === ''
+                                        ? constant.studentIdImage
+                                        : constant.citizenIdImage}
                                 </Typography>
-            
-                                <Typography variant="body2" component="span">
+
+                                <Typography
+                                    variant="body2"
+                                    component="p"
+                                    whiteSpace="pre-line"
+                                    sx={{ ml: -2 }}
+                                >
                                     Drop files here or click
                                     <Typography
                                         variant="body2"
@@ -268,15 +275,9 @@ function RegisterForm(props: RegisterFormProps) {
                                     >
                                         {`browse\n`}
                                     </Typography>
-                                    <Typography
-                                        variant="body2"
-                                        component="span"
-                                        whiteSpace='pre-line'
-                                    >
-                                        {`thorough your machine.\n\n`}
-                                        Allowed *.jpeg, *.jpg, *.png<br />
-                                        Max size of 200KB
-                                    </Typography>
+                                    {`thorough your machine.\n\n`}
+                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                    {`Max size of 200KB`}
                                 </Typography>
                             </Box>
                         }
