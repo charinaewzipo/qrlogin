@@ -2,8 +2,7 @@ import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
 import React from 'react'
 import Image from '@sentry/components/image';
-import FormProvider, { RHFCheckbox, RHFTextField } from "@sentry/components/hook-form";
-import ResetPasswordForm from './ResetPasswordForm';
+import ResetPasswordForm from '../../components/Reset-password/ResetPasswordForm';
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 const ResetPassword = () => {
   const ContentStyle = styled('div')(({ theme }) => ({
