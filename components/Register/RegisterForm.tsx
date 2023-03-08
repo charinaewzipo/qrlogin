@@ -4,16 +4,15 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Alert, IconButton, InputAdornment, Stack, Typography, TextField, Divider, CircularProgress, FormHelperText, Autocomplete } from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack, Typography, TextField, Divider, CircularProgress, FormHelperText, Autocomplete, Box } from '@mui/material'
 import FormProvider, { RHFSelect, RHFTextField } from "@sentry/components/hook-form";
-import { UploadAvatar } from '@sentry/components/upload';
+import { Upload, UploadAvatar } from '@sentry/components/upload';
 import { fData } from '@sentry/utils/formatNumber';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from '@ku/redux';
 import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
-import { UploadWithTextProps } from '@ku/components/upload';
 
 export interface RegisterFormValuesProps {
     email: string
@@ -209,11 +208,9 @@ function RegisterForm(props: RegisterFormProps) {
     })
 
     const {
-        reset,
         setError,
         clearErrors,
         handleSubmit,
-        setValue,
         getValues,
         formState: { errors },
         control,
@@ -252,32 +249,38 @@ function RegisterForm(props: RegisterFormProps) {
                 name={`idImages.${index}`}
                 control={control}
                 render={({ field }) => (
-                    <UploadWithTextProps
-                        titleText={isKu || watchTypeOfPerson === '' ? constant.studentIdImage : constant.citizenIdImage}
-                        descriptionText={
-                            <>
-                                Drop files here or click
-                                <Typography
-                                    variant="body2"
-                                    component="span"
-                                    sx={{
-                                        mx: 0.5,
-                                        color: 'primary.main',
-                                        textDecoration: 'underline',
-                                    }}
-                                >
-                                    {`browse\n`}
+                    <Upload
+                        dropzoneHelper={
+                            <Box sx={{ py: 3, px: 1 }}>
+                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
+                                    {isKu || watchTypeOfPerson === ''
+                                        ? constant.studentIdImage
+                                        : constant.citizenIdImage}
                                 </Typography>
+
                                 <Typography
                                     variant="body2"
-                                    component="span"
-                                    whiteSpace='pre-line'
+                                    component="p"
+                                    whiteSpace="pre-line"
+                                    sx={{ ml: -2 }}
                                 >
+                                    Drop files here or click
+                                    <Typography
+                                        variant="body2"
+                                        component="span"
+                                        sx={{
+                                            mx: 0.5,
+                                            color: 'primary.main',
+                                            textDecoration: 'underline',
+                                        }}
+                                    >
+                                        {`browse\n`}
+                                    </Typography>
                                     {`thorough your machine.\n\n`}
-                                    Allowed *.jpeg, *.jpg, *.png<br />
-                                    Max size of 200KB
+                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                    {`Max size of 200KB`}
                                 </Typography>
-                            </>
+                            </Box>
                         }
                         accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
                         file={field.value}

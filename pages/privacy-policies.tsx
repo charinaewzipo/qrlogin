@@ -5,7 +5,7 @@ import { PRIVACY_POLICIES_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import PrivacyPoliciesForm from '@ku/components/PrivacyPolicies/PrivacyPoliciesForm'
 import { fetchGetPrivacyPolicies } from '@ku/services/privacyPolicies'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSnackbar } from 'notistack'
 // sections
 
@@ -16,6 +16,10 @@ PrivacyPolicies.getLayout = (page: React.ReactElement) => (
 export default function PrivacyPolicies() {
     const { enqueueSnackbar } = useSnackbar()
     const [privacyPoliciesData, setPrivacyPolicies] = useState<IPrivacyPolicy | null>(null)
+
+    useEffect(() => {
+        getPrivacyPolicies()
+    }, [])
 
     const getPrivacyPolicies = async () => {
         try {
