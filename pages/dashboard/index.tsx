@@ -7,7 +7,7 @@ import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { AnalyticsWidgetSummary } from '../../components/Dashboard/analytics'
 import { useTranslation } from 'react-i18next'
-
+import Iconify from '@sentry/components/iconify'
 Index.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
@@ -128,26 +128,38 @@ export function Index() {
                             ) : (permission as PERMISSION) === 'Supervisor' ? (
                                 <>
                                     <div style={{ marginTop: 40 }}>
-                                        {/* {t("en.only_admin_can_see_this_item")} */}
-                                        <p
-                                            style={{
-                                                fontSize: 16,
-                                                fontWeight: 600,
-                                                color: theme.palette.grey[600],
-                                            }}
+                                        <Typography
+                                            fontSize={16}
+                                            fontWeight={600}
+                                            color={theme.palette.grey[600]}
                                         >
                                             Supervisor Code
-                                        </p>
-                                        <p
+                                        </Typography>
+                                        <div
                                             style={{
-                                                fontSize: 32,
-                                                fontWeight: 700,
-                                                color: theme.palette.grey[800],
+                                                display: 'flex',
+                                                alignItems: 'center',
+                                                flexWrap: 'wrap',
                                             }}
                                         >
-                                            AA5643GN
-                                        </p>
+                                            <Typography
+                                                fontSize={32}
+                                                fontWeight={700}
+                                                color={theme.palette.grey[800]}
+                                                noWrap
+                                                component="span"
+                                            >
+                                                AA5643GN
+                                            </Typography>
+                                            <Iconify
+                                                marginLeft={2}
+                                                icon={'material-symbols:content-copy-rounded'}
+                                                width={18}
+                                                height={18}
+                                            />
+                                        </div>
                                     </div>
+
                                     <Grid container spacing={2} sx={{ mt: 3 }}>
                                         <Grid item xs={12} sm={6} md={3}>
                                             <AnalyticsWidgetSummary
