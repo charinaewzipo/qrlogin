@@ -4,13 +4,13 @@ import { LoadingButton } from '@mui/lab'
 import { ErrorOption, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify';
 import { yupResolver } from '@hookform/resolvers/yup'
-import { Alert, IconButton, InputAdornment, Stack, Button, Typography, Box, useTheme, alpha } from '@mui/material'
+import { Alert, IconButton, InputAdornment, Stack, Typography, Box, useTheme, alpha } from '@mui/material'
 import FormProvider, { RHFTextField } from "@sentry/components/hook-form";
 import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
 import { RESET_PASSWORD_SUCCESS_PATH } from '@ku/constants/routes';
-import { OTPInputComponent } from '@ku/components/OTPInput';
+import { OTPInputComponent } from '@ku/components/OTPInput/OTPInput';
 
 type FormValuesProps = {
     email: string
@@ -100,7 +100,7 @@ function ResetPasswordForm() {
         if (!isReSend) {
             setIsReSend(true)
             setMinutes(10)
-            // setSeconds(5)
+
         }
     }
     const countdownTimer = `${minutes}:${seconds < 10 ? `0${seconds}` : seconds}`

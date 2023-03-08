@@ -2,7 +2,7 @@
 import { useTheme } from '@mui/material';
 import { isEmpty } from 'lodash';
 import React, { memo, useState, useCallback, CSSProperties } from 'react';
-import SingleInput from './SingleInput';
+import SingleInput from './SingleInput/SingleInput';
 
 export interface OTPInputProps {
   length: number;
