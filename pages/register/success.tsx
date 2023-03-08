@@ -22,12 +22,6 @@ const RegisterSuccess = () => {
         padding: theme.spacing(12, 0),
     }))
 
-    useEffect(() => {
-        console.log('router', router.query)
-        console.log(!!get(router, 'query.isStudent', false));
-        
-    }, [])
-
     return (
         <>
             <Head>

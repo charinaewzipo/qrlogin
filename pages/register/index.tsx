@@ -1,8 +1,7 @@
 // next
-import { Box, Container, Stack, styled, Typography } from '@mui/material'
+import { Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
 import RegisterForm, { RegisterFormValuesProps } from '@ku/components/Register/RegisterForm'
-import Image from '@sentry/components/image'
 import { useLocales } from '@ku/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
@@ -47,7 +46,7 @@ export default function RegisterPage() {
         console.log(t('register_term'))
     }, [])
 
-    const { translate, currentLang, onChangeLang } = useLocales()
+    const { translate } = useLocales()
     const { t } = useTranslation()
     const [isPdpaAccepted, setIsPdpaAccepted] = useState(false)
     const router = useRouter()
