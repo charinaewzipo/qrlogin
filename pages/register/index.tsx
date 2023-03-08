@@ -1,14 +1,14 @@
 // next
 import { Box, Container, Stack, styled, Typography } from '@mui/material'
 import Head from 'next/head'
-import RegisterForm from '@ku/components/Register/RegisterForm'
+import RegisterForm, { RegisterFormValuesProps } from '@ku/components/Register/RegisterForm'
 import Image from '@sentry/components/image'
 import { useLocales } from '@ku/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/Register/PDPAForm'
 import { useRouter } from 'next/router'
-import { LOGIN_PATH } from '@ku/constants/routes'
+import { LOGIN_PATH, REGISTER_SUCCESS_PATH } from '@ku/constants/routes'
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 
 // ----------------------------------------------------------------------
@@ -58,8 +58,20 @@ export default function RegisterPage() {
         //go back to login
         router.push(LOGIN_PATH)
     }
-    const onSubmitRegister = () => {
-        setIsPdpaAccepted(true)
+    const onSubmitRegister = (data: RegisterFormValuesProps) => {
+        const checkIsKuPerson = (typeOfPerson: string) =>
+            ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
+        const checkIsStudent = (position: string) => position.includes('student')
+        const checkIsKuStudent = (position: string, typeOfPerson: string) =>
+            checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+        
+        router.push({
+            pathname: REGISTER_SUCCESS_PATH,
+            query: {
+                name: `${data.firstName} ${data.surName}`,
+                isStudent: checkIsKuStudent(data.position, data.typeOfPerson),
+            },
+        }, REGISTER_SUCCESS_PATH)
     }
     const onBackRegister = () => {
         setIsPdpaAccepted(false)
