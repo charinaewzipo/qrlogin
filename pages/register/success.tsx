@@ -47,7 +47,7 @@ const RegisterSuccess = () => {
                                 <Image
                                     alt="Illustration register"
                                     src={'/assets/illustrations/illustration_register.png'}
-                                    sx={{ objectFit: 'cover', my: 5, width: 327.33 }}
+                                    sx={{ objectFit: 'cover', my: 8, width: 327.33 }}
                                     disabledEffect
                                 />
                             </Box>
