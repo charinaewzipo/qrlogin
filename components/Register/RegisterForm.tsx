@@ -14,7 +14,7 @@ import { DatePicker } from '@mui/x-date-pickers';
 import { useDispatch, useSelector } from '@ku/redux';
 import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
 
-type FormValuesProps = {
+export interface RegisterFormValuesProps {
     email: string
     password: string
     afterSubmit?: string
@@ -107,7 +107,7 @@ const title = [
     {value: 'Other', label: 'Other'},
 ]
 interface RegisterFormProps {
-    onSubmit: () => void
+    onSubmit: (data: RegisterFormValuesProps) => void
     onBack: () => void
 }
 interface IIdImageUpload {
@@ -202,7 +202,7 @@ function RegisterForm(props: RegisterFormProps) {
         idImages: [''],
     }
 
-    const methods = useForm<FormValuesProps>({
+    const methods = useForm<RegisterFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
         defaultValues,
     })
@@ -232,7 +232,7 @@ function RegisterForm(props: RegisterFormProps) {
     const isPositionOther = watchPosition === 'Other'
     const isTitleOther = watchTitle === 'Other' || watchTitle === ''
 
-    const onSubmit = async (data: FormValuesProps) => {
+    const onSubmit = async (data: RegisterFormValuesProps) => {
         methods.watch
         const errorOptions: ErrorOption = {
             message: "errorResponse.data || errorResponse.devMessage"
@@ -240,6 +240,7 @@ function RegisterForm(props: RegisterFormProps) {
         setError('afterSubmit', errorOptions)
         console.log(data);
         window.scrollTo(0, 0)
+        props.onSubmit(data)
     }
 
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
@@ -419,7 +420,7 @@ function RegisterForm(props: RegisterFormProps) {
                                         {...field}
                                         freeSolo
                                         fullWidth
-                                        onChange={(event, newValue) => field.onChange(newValue)}
+                                        onChange={(event, newValue) => field.onChange(get(newValue, 'value', newValue))}
                                         options={department}
                                         key={'department-auto'}
                                         renderInput={(param) => (

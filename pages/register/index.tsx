@@ -1,6 +1,6 @@
 // next
 import Head from 'next/head'
-import RegisterForm from '@ku/components/Register/RegisterForm'
+import RegisterForm, { RegisterFormValuesProps } from '@ku/components/Register/RegisterForm'
 import { useLocales } from '@ku/locales'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
@@ -23,7 +23,7 @@ export default function RegisterPage() {
         console.log(t('register_term'))
     }, [])
 
-    const { translate, currentLang, onChangeLang } = useLocales()
+    const { translate } = useLocales()
     const { t } = useTranslation()
     const [isPdpaAccepted, setIsPdpaAccepted] = useState(false)
     const router = useRouter()
@@ -33,9 +33,20 @@ export default function RegisterPage() {
     const onDeclinePdpa = () => {
         router.push(LOGIN_PATH)
     }
-    const onSubmitRegister = () => {
-        setIsPdpaAccepted(true)
-        //TODO: submit form to api
+    const onSubmitRegister = (data: RegisterFormValuesProps) => {
+        const checkIsKuPerson = (typeOfPerson: string) =>
+            ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
+        const checkIsStudent = (position: string) => position.includes('student')
+        const checkIsKuStudent = (position: string, typeOfPerson: string) =>
+            checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+        
+        router.push({
+            pathname: REGISTER_SUCCESS_PATH,
+            query: {
+                name: `${data.firstName} ${data.surName}`,
+                isStudent: checkIsKuStudent(data.position, data.typeOfPerson),
+            },
+        }, REGISTER_SUCCESS_PATH)
     }
     const onBackRegister = () => {
         setIsPdpaAccepted(false)
