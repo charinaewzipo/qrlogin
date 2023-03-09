@@ -1,8 +1,8 @@
-import { FC, useEffect } from 'react';
+import { ChangeEvent, FC, useEffect } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useForm } from 'react-hook-form'
-import Iconify from '@sentry/components/iconify';
+import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
     Alert,
@@ -11,22 +11,20 @@ import {
     Stack,
     Typography,
     TextField,
-    Divider,
     CircularProgress,
     FormHelperText,
     Autocomplete,
     Box,
     Paper,
-    useTheme,
 } from '@mui/material'
 import Image from '@sentry/components/image'
-import FormProvider, { RHFSelect, RHFTextField } from "@sentry/components/hook-form";
-import { Upload, UploadAvatar } from '@sentry/components/upload';
-import { fData } from '@sentry/utils/formatNumber';
-import { clamp, every, get } from 'lodash';
-import { DatePicker } from '@mui/x-date-pickers';
-import { useDispatch, useSelector } from '@ku/redux';
-import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
+import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
+import { Upload, UploadAvatar } from '@sentry/components/upload'
+import { fData } from '@sentry/utils/formatNumber'
+import { clamp, every, get } from 'lodash'
+import { DatePicker } from '@mui/x-date-pickers'
+import { useDispatch, useSelector } from '@ku/redux'
+import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor'
 
 type FormValuesProps = {
     afterSubmit?: string
@@ -44,7 +42,6 @@ type FormValuesProps = {
     studentId: string
     staffId: string
     positionName: string
-    expiryDate: string
     title: string
     otherTitle: string
     firstName: string
@@ -74,7 +71,6 @@ const constant = {
     studentId: 'StudentId *',
     staffId: 'Staff ID',
     positionName: 'Position name *',
-    expiryDate: 'Expiry date *',
     title: 'Title *',
     otherTitle: 'Other title',
     firstName: 'Firstname *',
@@ -87,87 +83,121 @@ const constant = {
     bookingLimit: 'Booking limit *',
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code',
+    supervisorCode: 'Supervisor code *',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 }
 const typeOfPerson = [
-    {value: 'SciKU Student & Staff', label: 'SciKU Student & Staff'},
-    {value: 'KU Student & Staff', label: 'KU Student & Staff'},
-    {value: 'Other University', label: 'Other University'},
-    {value: 'Government office', label: 'Government office'},
-    {value: 'Private company', label: 'Private company'},
+    { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
+    { value: 'KU Student & Staff', label: 'KU Student & Staff' },
+    { value: 'Other University', label: 'Other University' },
+    { value: 'Government office', label: 'Government office' },
+    { value: 'Private company', label: 'Private company' },
 ]
+const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU Student & Staff')
 const position = [
-    {value: 'Lecturer', label: 'Lecturer'},
-    {value: 'Researcher', label: 'Researcher'},
-    {value: 'Ph.D. student', label: 'Ph.D. student'},
-    {value: 'Master student', label: 'Master student'},
-    {value: 'Bachelor student', label: 'Bachelor student'},
-    {value: 'Other', label: 'Other'},
+    { value: 'Lecturer', label: 'Lecturer' },
+    { value: 'Researcher', label: 'Researcher' },
+    { value: 'Ph.D. student', label: 'Ph.D. student' },
+    { value: 'Master student', label: 'Master student' },
+    { value: 'Bachelor student', label: 'Bachelor student' },
+    { value: 'Other', label: 'Other' },
 ]
 const department = [
-    {value: 'Dept. of Applied Radiation and Isotope', label: 'Dept. of Applied Radiation and Isotope'},
-    {value: 'Dept. of Biochemistry', label: 'Dept. of Biochemistry'},
-    {value: 'Dept. of Botany', label: 'Dept. of Botany'},
-    {value: 'Dept. of Chemistry', label: 'Dept. of Chemistry'},
-    {value: 'Dept. of Computer Science', label: 'Dept. of Computer Science'},
-    {value: 'Dept. of Earth Sciences', label: 'Dept. of Earth Sciences'},
-    {value: 'Dept. of Genetics', label: 'Dept. of Genetics'},
-    {value: 'Dept. of Material Science', label: 'Dept. of Material Science'},
-    {value: 'Dept. of Mathematics', label: 'Dept. of Mathematics'},
-    {value: 'Dept. of Microbiology', label: 'Dept. of Microbiology'},
-    {value: 'Dept. of Physics', label: 'Dept. of Physics'},
-    {value: 'Dept. of Statustics', label: 'Dept. of Statustics'},
-    {value: 'Dept. of Zoology', label: 'Dept. of Zoology'},
+    {
+        value: 'Dept. of Applied Radiation and Isotope',
+        label: 'Dept. of Applied Radiation and Isotope',
+    },
+    { value: 'Dept. of Biochemistry', label: 'Dept. of Biochemistry' },
+    { value: 'Dept. of Botany', label: 'Dept. of Botany' },
+    { value: 'Dept. of Chemistry', label: 'Dept. of Chemistry' },
+    { value: 'Dept. of Computer Science', label: 'Dept. of Computer Science' },
+    { value: 'Dept. of Earth Sciences', label: 'Dept. of Earth Sciences' },
+    { value: 'Dept. of Genetics', label: 'Dept. of Genetics' },
+    { value: 'Dept. of Material Science', label: 'Dept. of Material Science' },
+    { value: 'Dept. of Mathematics', label: 'Dept. of Mathematics' },
+    { value: 'Dept. of Microbiology', label: 'Dept. of Microbiology' },
+    { value: 'Dept. of Physics', label: 'Dept. of Physics' },
+    { value: 'Dept. of Statustics', label: 'Dept. of Statustics' },
+    { value: 'Dept. of Zoology', label: 'Dept. of Zoology' },
 ]
 const title = [
-    {value: 'Mr', label: 'Mr'},
-    {value: 'Miss', label: 'Miss'},
-    {value: 'Mrs', label: 'Mrs'},
-    {value: 'Ms', label: 'Ms'},
-    {value: 'Dr', label: 'Dr'},
-    {value: 'Asst.Prof', label: 'Asst.Prof'},
-    {value: 'Assoc.Prof', label: 'Assoc.Prof'},
-    {value: 'Prof', label: 'Prof'},
-    {value: 'Other', label: 'Other'},
+    { value: 'Mr', label: 'Mr' },
+    { value: 'Miss', label: 'Miss' },
+    { value: 'Mrs', label: 'Mrs' },
+    { value: 'Ms', label: 'Ms' },
+    { value: 'Dr', label: 'Dr' },
+    { value: 'Asst.Prof', label: 'Asst.Prof' },
+    { value: 'Assoc.Prof', label: 'Assoc.Prof' },
+    { value: 'Prof', label: 'Prof' },
+    { value: 'Other', label: 'Other' },
 ]
 const accountStatus = [
-    {value: 'Active', label: 'Active'},
-    {value: 'Inactive', label: 'Inactive'},
-    {value: 'Lock', label: 'Lock'},
+    { value: 'Active', label: 'Active' },
+    { value: 'Inactive', label: 'Inactive' },
+    { value: 'Lock', label: 'Lock' },
 ]
 const privillege = [
-    {value: 'User', label: 'User'},
+    { value: 'Admin', label: 'Admin' },
+    { value: 'Finance', label: 'Finance' },
+    { value: 'Supervisor', label: 'Supervisor' },
+    { value: 'User', label: 'User' },
 ]
 interface AccountFormProps {
     onSubmit: () => void
     onCancel: () => void
 }
 interface IIdImageUpload {
-  index: number
+    index: number
 }
 function AccountForm(props: AccountFormProps) {
     const checkIsKuPerson = (typeOfPerson: string) =>
         ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
-    const checkIsStaff = (position: string) => ['Lecturer', 'Researcher',].includes(position)
+    const checkIsStaff = (position: string) => ['Lecturer', 'Researcher'].includes(position)
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
         checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+    const checkIsOther = (check: string) => check === 'Other'
+    const checkIsUser = (privillege: string) => privillege === 'User'
+    const checkIsFinance = (privillege: string) => privillege === 'Finance'
+    const checkIsAdmin = (privillege: string) => privillege === 'Admin'
+    const checkIsSupervisor = (privillege: string) => privillege === 'Supervisor'
+    const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
+    const numberOnlyRegex = /^[0-9\b]+$/
 
     const RegisterSchema = Yup.object().shape({
         privillege: Yup.string().required('Privillege is require'),
         email: Yup.string()
             .email('Email must be a valid email address')
-            .required('Email is required'),
+            .required('Email is required')
+            .when(['position', 'typeOfPerson', 'privillege'], {
+                is: (position, typeOfPerson, privillege) =>
+                    (checkIsKuStudent(position, typeOfPerson) ||
+                    checkIsAdmin(privillege) ||
+                    checkIsFinance(privillege)) &&
+                    !checkIsSupervisor(privillege),
+                then: Yup.string().test({
+                    name: 'email',
+                    message: 'KU student/staff must be @ku.ac.th or @ku.th',
+                    test: (email) => new RegExp(kuStudentEmailRegex).test(email),
+                }),
+            }),
         password: Yup.string(),
         accountStatus: Yup.string().required('Account Status is require'),
-        accountExpiryDate: Yup.string(),
-        avatar: Yup.string().required('Profile image is require'),
+        accountExpiryDate: Yup.string()
+            .nullable()
+            .test({
+                name: 'accountExpiryDate',
+                message: "Account expiry date must be greater than today's date",
+                test: (date) => !date || new Date(date).getTime() > new Date().getTime(),
+            }),
+        avatar: Yup.string(),
         typeOfPerson: Yup.string().required('Type of person is require'),
-        department: Yup.string().nullable().when('typeOfPerson', {
-            is: (position) => checkIsKuPerson(position) || position === '',
-            then: Yup.string().nullable().required('Department is require'),
-        }),
+        department: Yup.string()
+            .nullable()
+            .when('typeOfPerson', {
+                is: (position) => checkIsKuPerson(position) || position === '',
+                then: Yup.string().nullable().required('Department is require'),
+            }),
         universityName: Yup.string().when('typeOfPerson', {
             is: 'Other University',
             then: Yup.string().required('University name is require'),
@@ -180,19 +210,20 @@ function AccountForm(props: AccountFormProps) {
             is: 'Private company',
             then: Yup.string().required('Company name is require'),
         }),
-        position: Yup.string().required('Position is require'),
+        position: Yup.string()
+            .required('Position is require')
+            .when('privillege', {
+                is: (privillege) => checkIsFinance(privillege),
+                then: Yup.string(),
+            }),
         studentId: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
             then: Yup.string().required('Student ID is required'),
         }),
         staffId: Yup.string(),
-        positionName: Yup.string().when('position', {
-            is: 'Other',
+        positionName: Yup.string().when(['position', 'privillege'], {
+            is: (position, privillege) => checkIsOther(position) && !checkIsFinance(privillege),
             then: Yup.string().required('Position is require'),
-        }),
-        expiryDate: Yup.string().when(['position', 'typeOfPerson'], {
-            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required('Expiry date is required'),
         }),
         title: Yup.string().required('Title is require'),
         otherTitle: Yup.string().when('title', {
@@ -202,29 +233,33 @@ function AccountForm(props: AccountFormProps) {
         firstName: Yup.string().required('Firstname is require'),
         surName: Yup.string().required('Surname is require'),
         address: Yup.string().required('Address is require'),
-        phoneNumber: Yup.string().required('Phone number is require'),
-        idImages: Yup.array(Yup.string()).when(['position', 'typeOfPerson'], {
-            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.array(Yup.string()).test({
-                name: 'idImages',
-                message: 'SciKU student & staff ID card are require',
-                test: (idImages) => every(idImages, (img) => img !== ''),
-            }),
-        }),
+        phoneNumber: Yup.string()
+            .required('Phone number is require')
+            .test({
+                name: 'phoneNumber',
+                message: "Phone number must start with '0'",
+                test: (phone) => phone[0] === '0',
+            })
+            .length(10, 'Phone number should be 10 digits'),
+        idImages: Yup.array(Yup.string()),
         creditLimit: Yup.string().required('Credit limit is require'),
         bookingLimit: Yup.string().required('Booking limit is require'),
-        supervisorCode: Yup.string().when(['position', 'typeOfPerson'], {
-            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required('Supervisor code is require, please contact your supervisor for code'),
+        //TODO: CHeck supervisorcode เพิ่มตอน api มา
+        supervisorCode: Yup.string().when(['position', 'typeOfPerson', 'privillege'], {
+            is: (position, typeOfPerson, privillege) =>
+                checkIsKuStudent(position, typeOfPerson) && checkIsUser(privillege),
+            then: Yup.string().required(
+                'Supervisor code is require, please contact your supervisor for code'
+            ),
         }),
     })
 
     const defaultValues = {
-        privillege: privillege[0].value,
+        privillege: 'User',
         avatar: '',
         email: '',
         password: '',
-        accountStatus: accountStatus[0].value,
+        accountStatus: 'Active',
         accountExpiryDate: '',
         typeOfPerson: '',
         department: '',
@@ -233,7 +268,6 @@ function AccountForm(props: AccountFormProps) {
         position: '',
         staffId: '',
         positionName: '',
-        expiryDate: '',
         title: '',
         otherTitle: '',
         firstName: '',
@@ -241,8 +275,8 @@ function AccountForm(props: AccountFormProps) {
         address: '',
         phoneNumber: '',
         idImages: [''],
-        creditLimit: '',
-        bookingLimit: '',
+        creditLimit: '15000',
+        bookingLimit: '5',
         supervisorCode: '',
     }
 
@@ -256,26 +290,39 @@ function AccountForm(props: AccountFormProps) {
         clearErrors,
         handleSubmit,
         getValues,
-        formState: { errors },
+        setValue,
+        formState: { errors, isSubmitted },
         control,
         watch,
+        trigger
     } = methods
 
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
     const watchTitle = watch('title')
     const watchSupervisorCode = watch('supervisorCode')
+    const watchPrivillege = watch('privillege')
     useEffect(() => {
         fetchSupervisorData(watchSupervisorCode)
     }, [watchSupervisorCode])
-    
+    useEffect(() => {
+        if (isSubmitted)
+            trigger()
+        if (isFinance) {
+            if (getValues('typeOfPerson') !== 'KU Student & Staff')
+                setValue('typeOfPerson', '')
+        }
+    }, [watchTypeOfPerson, watchPosition, watchPrivillege])
+
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
     const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
     const isPositionOther = watchPosition === 'Other'
-    const isTitleOther = watchTitle === 'Other' || watchTitle === ''
-
+    const isTitleOther = watchTitle === 'Other'
+    const isUser = checkIsUser(watchPrivillege)
+    const isFinance = checkIsFinance(watchPrivillege)
+    
     useEffect(() => {
         return () => {
             dispatch(clearSupervisor())
@@ -283,34 +330,41 @@ function AccountForm(props: AccountFormProps) {
     }, [])
 
     const dispatch = useDispatch()
-    const supervisorSelector = useSelector(state => state.supervisor)
+    const supervisorSelector = useSelector((state) => state.supervisor)
     useEffect(() => {
-        if (supervisorSelector.isLoading)
-            return
+        if (supervisorSelector.isLoading) return
         if (supervisorSelector.supervisor.code === '500') {
-            setError('supervisorCode', {type: 'custom', message: constant.supervisorNotFound})
+            setError('supervisorCode', { type: 'custom', message: constant.supervisorNotFound })
         } else {
             clearErrors('supervisorCode')
         }
     }, [supervisorSelector.isLoading])
 
     const fetchSupervisorData = (code: string) => {
-        setError('supervisorCode', {type: 'custom', message: ''})
-        if (!code)
-            return
-        if (code.length < 6)
-            return
+        setError('supervisorCode', { type: 'custom', message: '' })
+        if (!code) return
+        if (code.length < 6) return
         dispatch(getSupervisor(code))
     }
 
     const onSubmit = async (data: FormValuesProps) => {
         methods.watch
         const errorOptions: ErrorOption = {
-            message: "errorResponse.data || errorResponse.devMessage"
+            message: 'errorResponse.data || errorResponse.devMessage',
         }
+        //TODO: credit limit เป็น 0 ตอน submit ถ้า previllge เป็น financ
         setError('afterSubmit', errorOptions)
-        console.log(data);
+        console.log(data)
         window.scrollTo(0, 0)
+    }
+
+    const handleChangeNumber = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldName: keyof FormValuesProps) => {
+        const newVal = e.target.value
+        if (newVal === '' || new RegExp(numberOnlyRegex).test(newVal)) {
+            setValue(fieldName, newVal)
+            if (isSubmitted)
+                trigger()
+        }
     }
 
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
@@ -371,7 +425,7 @@ function AccountForm(props: AccountFormProps) {
         )
     }
     const RenderIdImageUpload = () => {
-        const idImageWithoutEmpty = watch('idImages').filter(idImage => idImage)
+        const idImageWithoutEmpty = watch('idImages').filter((idImage) => idImage)
         const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
         return (
             <>
@@ -402,7 +456,7 @@ function AccountForm(props: AccountFormProps) {
             opacity: isShow ? 1 : 0,
         },
     })
-    
+
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
@@ -429,6 +483,7 @@ function AccountForm(props: AccountFormProps) {
                             label={constant.password}
                             placeholder={constant.passwordPlaceholder}
                             InputLabelProps={{ shrink: true }}
+                            inputProps={{ maxLength: 100 }}
                         />
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
@@ -456,6 +511,8 @@ function AccountForm(props: AccountFormProps) {
                                             field.onChange(newValue)
                                         }}
                                         disableMaskedInput
+                                        disablePast
+                                        minDate={new Date().setDate(new Date().getDate() + 1)}
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
@@ -511,17 +568,20 @@ function AccountForm(props: AccountFormProps) {
                                     key={`${''}-typeOfPerson-option`}
                                     hidden
                                 ></option>
-                                {typeOfPerson.map(({ value, label }) => (
-                                    <option value={value} key={`${value}-typeOfPerson-option`}>
-                                        {label}
-                                    </option>
-                                ))}
+                                {(!isFinance ? typeOfPerson : financeTypeOfPerson).map(
+                                    ({ value, label }) => (
+                                        <option value={value} key={`${value}-typeOfPerson-option`}>
+                                            {label}
+                                        </option>
+                                    )
+                                )}
                             </RHFSelect>
                             {{
                                 'Other University': (
                                     <RHFTextField
                                         name="universityName"
                                         label={constant.universityName}
+                                        inputProps={{ maxLength: 100 }}
                                     />
                                 ),
                                 'KU Student & Staff': (
@@ -529,6 +589,7 @@ function AccountForm(props: AccountFormProps) {
                                         name="department"
                                         key={'department-textfield'}
                                         label={constant.department}
+                                        inputProps={{ maxLength: 100 }}
                                     />
                                 ),
                                 'SciKU Student & Staff': (
@@ -555,6 +616,7 @@ function AccountForm(props: AccountFormProps) {
                                                             ''
                                                         )}
                                                         label={constant.department}
+                                                        inputProps={{ maxLength: 100 }}
                                                     />
                                                 )}
                                                 placeholder={constant.department}
@@ -567,6 +629,7 @@ function AccountForm(props: AccountFormProps) {
                                         name="governmentName"
                                         key={'governmentName-textfield'}
                                         label={constant.governmentName}
+                                        inputProps={{ maxLength: 100 }}
                                     />
                                 ),
                                 'Private company': (
@@ -574,6 +637,7 @@ function AccountForm(props: AccountFormProps) {
                                         name="companyName"
                                         key={'companyName-textfield'}
                                         label={constant.companyName}
+                                        inputProps={{ maxLength: 100 }}
                                     />
                                 ),
                             }[watchTypeOfPerson] || (
@@ -581,75 +645,69 @@ function AccountForm(props: AccountFormProps) {
                                     name="department"
                                     key={'department-textfield'}
                                     label={constant.department}
+                                    disabled
                                 />
                             )}
                         </Stack>
-                        <Stack flexDirection={'row'}>
-                            <RHFSelect
-                                name="position"
-                                label={constant.position}
-                                placeholder={constant.position}
-                                sx={{ flex: '100%' }}
-                            >
-                                <option value={''} key={`${''}-position-option`} hidden></option>
-                                {position.map(({ value, label }) => {
-                                    if (
-                                        watchTypeOfPerson === 'SciKU Student & Staff' &&
-                                        value === 'Other'
-                                    )
-                                        return
-                                    return (
-                                        <option value={value} key={`${value}-position-option`}>
-                                            {label}
-                                        </option>
-                                    )
-                                })}
-                            </RHFSelect>
+                        {!isFinance ? (
+                            <Stack flexDirection={'row'}>
+                                <RHFSelect
+                                    name="position"
+                                    label={constant.position}
+                                    placeholder={constant.position}
+                                    sx={{ flex: '100%' }}
+                                >
+                                    <option
+                                        value={''}
+                                        key={`${''}-position-option`}
+                                        hidden
+                                    ></option>
+                                    {position.map(({ value, label }) => {
+                                        if (
+                                            watchTypeOfPerson === 'SciKU Student & Staff' &&
+                                            value === 'Other'
+                                        )
+                                            return
+                                        return (
+                                            <option value={value} key={`${value}-position-option`}>
+                                                {label}
+                                            </option>
+                                        )
+                                    })}
+                                </RHFSelect>
 
-                            <Stack
-                                sx={collapseableInputStyle(
-                                    (isKu || isPositionOther) && watchPosition !== ''
-                                )}
-                            >
-                                {isKuStudent ? (
-                                    <RHFTextField name="studentId" label={constant.studentId} />
-                                ) : isKu && isStaff ? (
-                                    <RHFTextField name="staffId" label={constant.staffId} />
-                                ) : isPositionOther ? (
-                                    <RHFTextField
-                                        name="positionName"
-                                        label={constant.positionName}
-                                    />
-                                ) : (
-                                    <RHFTextField name="studentId" label={constant.studentId} />
-                                )}
+                                <Stack
+                                    sx={collapseableInputStyle(
+                                        (isKu || isPositionOther) && watchPosition !== ''
+                                    )}
+                                >
+                                    {isKuStudent ? (
+                                        <RHFTextField
+                                            name="studentId"
+                                            label={constant.studentId}
+                                            inputProps={{ maxLength: 100 }}
+                                        />
+                                    ) : isKu && isStaff ? (
+                                        <RHFTextField
+                                            name="staffId"
+                                            label={constant.staffId}
+                                            inputProps={{ maxLength: 100 }}
+                                        />
+                                    ) : isPositionOther ? (
+                                        <RHFTextField
+                                            name="positionName"
+                                            label={constant.positionName}
+                                            inputProps={{ maxLength: 100 }}
+                                        />
+                                    ) : (
+                                        <RHFTextField
+                                            name="studentId"
+                                            label={constant.studentId}
+                                            inputProps={{ maxLength: 100 }}
+                                        />
+                                    )}
+                                </Stack>
                             </Stack>
-                        </Stack>
-
-                        {isKu && isStudent ? (
-                            <Controller
-                                name="expiryDate"
-                                control={control}
-                                defaultValue={''}
-                                render={({ field, fieldState: { error } }) => (
-                                    <DatePicker
-                                        inputFormat="dd MMM yyyy"
-                                        label={constant.expiryDate}
-                                        value={field.value || null}
-                                        onChange={(newValue) => {
-                                            field.onChange(newValue)
-                                        }}
-                                        disableMaskedInput
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                error={!!error}
-                                                helperText={error?.message}
-                                            />
-                                        )}
-                                    />
-                                )}
-                            />
                         ) : (
                             <></>
                         )}
@@ -671,28 +729,54 @@ function AccountForm(props: AccountFormProps) {
                                 name={isTitleOther ? 'otherTitle' : ''}
                                 label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
                                 disabled={!isTitleOther}
+                                inputProps={{ maxLength: 100 }}
                             />
-                            <RHFTextField name="firstName" label={constant.firstName} />
+                            <RHFTextField
+                                name="firstName"
+                                label={constant.firstName}
+                                inputProps={{ maxLength: 100 }}
+                            />
                             <RHFTextField
                                 name="surName"
                                 label={constant.surName}
+                                inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
                             name="address"
                             multiline
                             label={constant.address}
+                            inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
-                        <RHFTextField name="phoneNumber" label={constant.phoneNumber} />
-                        <Stack flexDirection={'row'} gap={3}>
-                            <RHFTextField name="creditLimit" label={constant.creditLimit} />
-                            <RHFTextField name="bookingLimit" label={constant.bookingLimit} />
-                        </Stack>
+                        <RHFTextField
+                            name="phoneNumber"
+                            label={constant.phoneNumber}
+                            inputProps={{ maxLength: 10 }}
+                            onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
+                        />
+                        {!isFinance ? (
+                            <Stack flexDirection={'row'} gap={3}>
+                                <RHFTextField
+                                    name="creditLimit"
+                                    label={constant.creditLimit}
+                                    onChange={(e) => handleChangeNumber(e, 'creditLimit')}
+                                    inputProps={{ maxLength: 100 }}
+                                />
+                                <RHFTextField
+                                    name="bookingLimit"
+                                    label={constant.bookingLimit}
+                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit')}
+                                    inputProps={{ maxLength: 100 }}
+                                />
+                            </Stack>
+                        ) : (
+                            <></>
+                        )}
                         <RenderIdImageUpload />
                     </Stack>
                 </Paper>
-                {isKu && isStudent ? (
+                {isKuStudent && isUser ? (
                     <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                         <Stack spacing={2} textAlign={'left'}>
                             <Typography variant="h4">{constant.supervisorDetail}</Typography>
@@ -757,20 +841,20 @@ function AccountForm(props: AccountFormProps) {
                 ) : (
                     <></>
                 )}
-                <Stack flexDirection='row' justifyContent='right' gap={2}>
+                <Stack flexDirection="row" justifyContent="right" gap={2}>
                     <LoadingButton
                         type="button"
                         variant="contained"
-                        size='large'
+                        size="large"
                         onClick={props.onCancel}
-                        color='inherit'
+                        color="inherit"
                     >
                         {constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
                         variant="contained"
-                        size='large'
+                        size="large"
                         onClick={props.onSubmit}
                         // loading={authenticationStore.isFetching}
                     >
