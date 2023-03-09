@@ -126,14 +126,12 @@ function ResetPasswordForm() {
         const prevfield = document.querySelector(`input[name=code${currentIndex - 1}]`);
         if (prevfield !== null) {
             (prevfield as HTMLElement).focus();
-            setCurrentIndex(() => currentIndex - 1)
         }
     }
     const focusNextInput = () => {
         const nextfield = document.querySelector(`input[name=code${currentIndex + 1}]`);
         if (nextfield !== null) {
             (nextfield as HTMLElement).focus();
-            setCurrentIndex(() => currentIndex + 1)
         }
     }
 
@@ -145,11 +143,13 @@ function ResetPasswordForm() {
                 case 'Delete': {
                     e.preventDefault();
                     const fieldIndex = `code${currentIndex}`;
+                    const fieldPrevIndex = `code${currentIndex - 1}`;
                     const value = getValues()
                     if (value[fieldIndex] !== '') {
                         setValue(fieldIndex as ValueNames, '');
                     } else {
                         focusPrevInput();
+                        setValue(fieldPrevIndex as ValueNames, '');
                     }
                     break;
                 }
@@ -170,13 +170,28 @@ function ResetPasswordForm() {
                     break;
                 }
             }
+
+            const handleSelection = (event) => {
+                const selection = event.target.value.substring(
+                    event.target.selectionStart,
+                    event.target.selectionEnd
+                );
+                if (selection.length === 0) {
+                    const fieldIndex = `code${currentIndex}`;
+                    const value = getValues()
+                    if (value[fieldIndex] !== '') {
+                        e.preventDefault();
+                        focusNextInput();
+                    }
+                }
+            }
+            handleSelection(e)
         }
 
     const handleClickResend = () => {
         if (!isReSend) {
             setIsReSend(true)
             setMinutes(10)
-
         }
     }
     const handlePaste = (event: any) => {
@@ -204,6 +219,7 @@ function ResetPasswordForm() {
         }
         handleChange(event);
     };
+
     const handleOnFocus = (event: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement, Element>) => {
         event.target.placeholder = ""
         event.target.select();
