@@ -444,7 +444,7 @@ function AccountForm(props: AccountFormProps) {
                                 </Typography>
                             </Box>
                         }
-                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                         file={field.value}
                         onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
                         onDelete={() => field.onChange('')}
@@ -573,7 +573,7 @@ function AccountForm(props: AccountFormProps) {
                             render={({ field }) => (
                                 <Stack sx={{ mt: 1 }}>
                                     <UploadAvatar
-                                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                                         file={field.value}
                                         onDrop={(files) =>
                                             field.onChange(URL.createObjectURL(files[0]))

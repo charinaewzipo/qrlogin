@@ -336,7 +336,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 </Typography>
                             </Box>
                         }
-                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                         file={field.value}
                         onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
                         onDelete={() => field.onChange('')}
@@ -419,7 +419,7 @@ function RegisterForm(props: RegisterFormProps) {
                     render={({ field }) => (
                         <Stack>
                             <UploadAvatar
-                                accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                                accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                                 file={field.value}
                                 onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
                                 maxSize={200000}
