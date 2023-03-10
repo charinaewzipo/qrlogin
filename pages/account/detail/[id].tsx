@@ -7,11 +7,14 @@ import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useTranslation } from "react-i18next";
 import AccountForm from '@ku/components/Account/AccountForm'
+import {useRouter} from 'next/router'
 
 AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function AccountCreate() {
+    const router = useRouter()
+    const accountId = router.query.id
     const theme = useTheme()
     const { t } = useTranslation();
 
@@ -68,16 +71,23 @@ export function AccountCreate() {
                 >
                     <div className={styles.page}>
                         <div className="wrapper">
-                            <CustomBreadcrumbs
+                            <div className='d-flex'>
+                                <div>
+                                <CustomBreadcrumbs
                                 heading="Account"
                                 links={[
                                     { name: 'Account', href: '/account' },
                                     { name: 'List' },
-                                    { name: '[id]' },
+                                    { name: `${accountId}` },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-
+                                </div>
+                         
+                            <div>btn</div>
+                            </div>
+                            
+                            <div>test</div>
                             <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} />
                         </div>
                     </div>
