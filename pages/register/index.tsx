@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/Register/PDPAForm'
 import { useRouter } from 'next/router'
-import { LOGIN_PATH } from '@ku/constants/routes'
+import { LOGIN_PATH, REGISTER_SUCCESS_PATH } from '@ku/constants/routes'
 import RegisterLayout from '@ku/layouts/register'
 import GuestGuard from '@ku/guard/GuestGuard'
 
