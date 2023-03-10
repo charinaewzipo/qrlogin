@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { ChangeEvent, FC, useEffect } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useForm } from 'react-hook-form'
@@ -126,14 +126,24 @@ function RegisterForm(props: RegisterFormProps) {
     const RegisterSchema = Yup.object().shape({
         email: Yup.string()
             .email('Email must be a valid email address')
-            .required('Email is required'),
+            .required('Email is required')
+            .when(['position', 'typeOfPerson'], {
+                is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
+                then: Yup.string().test({
+                    name: 'email',
+                    message: 'KU student/staff must be @ku.ac.th or @ku.th',
+                    test: (email) => new RegExp(kuStudentEmailRegex).test(email),
+                }),
+            }),
         password: Yup.string().required('Password is require'),
         avatar: Yup.string().required('Profile image is require'),
         typeOfPerson: Yup.string().required('Type of person is require'),
-        department: Yup.string().nullable().when('typeOfPerson', {
-            is: (position) => checkIsKuPerson(position) || position === '',
-            then: Yup.string().nullable().required('Department is require'),
-        }),
+        department: Yup.string()
+            .nullable()
+            .when('typeOfPerson', {
+                is: (position) => checkIsKuPerson(position) || position === '',
+                then: Yup.string().nullable().required('Department is require'),
+            }),
         universityName: Yup.string().when('typeOfPerson', {
             is: 'Other University',
             then: Yup.string().required('University name is require'),
@@ -158,7 +168,20 @@ function RegisterForm(props: RegisterFormProps) {
         }),
         expiryDate: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required('Expiry date is required'),
+            then: Yup.date()
+                .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
+                .nullable()
+                .required('Expiry date is required')
+                .test({
+                    name: 'expiryDate',
+                    message: "Expiry date must be greater than today's date",
+                    test: (date) => {
+                        const datePlusOne = new Date()
+                        datePlusOne.setDate(datePlusOne.getDate() + 1)
+                        datePlusOne.setHours(0, 0, 0, 0)
+                        return date === null || date.getTime() >= datePlusOne.getTime()
+                    },
+                }),
         }),
         title: Yup.string().required('Title is require'),
         otherTitle: Yup.string().when('title', {
@@ -172,7 +195,7 @@ function RegisterForm(props: RegisterFormProps) {
             .required('Phone number is require')
             .test({
                 name: 'phoneNumber',
-                message: "Phone number must be numbers",
+                message: 'Phone number must be numbers',
                 test: (phone) => new RegExp(numberOnlyRegex).test(phone),
             })
             .test({
@@ -191,7 +214,9 @@ function RegisterForm(props: RegisterFormProps) {
         }),
         supervisorCode: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required('Supervisor code is require, please contact your supervisor for code'),
+            then: Yup.string().required(
+                'Supervisor code is require, please contact your supervisor for code'
+            ),
         }),
     })
 
@@ -206,7 +231,7 @@ function RegisterForm(props: RegisterFormProps) {
         position: '',
         staffId: '',
         positionName: '',
-        expiryDate: '',
+        expiryDate: null,
         title: '',
         otherTitle: '',
         firstName: '',
@@ -226,9 +251,11 @@ function RegisterForm(props: RegisterFormProps) {
         clearErrors,
         handleSubmit,
         getValues,
-        formState: { errors },
+        setValue,
+        formState: { errors, isSubmitted },
         control,
         watch,
+        trigger
     } = methods
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
@@ -238,13 +265,17 @@ function RegisterForm(props: RegisterFormProps) {
     useEffect(() => {
         fetchSupervisorData(watchSupervisorCode)
     }, [watchSupervisorCode])
+    useEffect(() => {
+        if (isSubmitted)
+            trigger()
+    }, [watchTypeOfPerson, watchPosition])
     
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
     const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
     const isPositionOther = watchPosition === 'Other'
-    const isTitleOther = watchTitle === 'Other' || watchTitle === ''
+    const isTitleOther = watchTitle === 'Other'
 
     const onSubmit = async (data: RegisterFormValuesProps) => {
         methods.watch
@@ -256,7 +287,16 @@ function RegisterForm(props: RegisterFormProps) {
         window.scrollTo(0, 0)
         props.onSubmit(data)
     }
-
+    const handleChangeNumber = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        fieldName: keyof RegisterFormValuesProps,
+    ) => {
+        const newValue = e.target.value.replace(new RegExp(',', 'g'), '')
+        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValue)) {
+            setValue(fieldName, newValue)
+            if (isSubmitted) trigger()
+        }
+    }
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
         return (
             <Controller
@@ -400,7 +440,11 @@ function RegisterForm(props: RegisterFormProps) {
                     )}
                 />
                 <RHFTextField name="email" label={constant.email} />
-                <RHFTextField name="password" label={constant.password} />
+                <RHFTextField
+                    name="password"
+                    label={constant.password}
+                    inputProps={{ maxLength: 100 }}
+                />
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFSelect
                         name="typeOfPerson"
@@ -434,7 +478,9 @@ function RegisterForm(props: RegisterFormProps) {
                                         {...field}
                                         freeSolo
                                         fullWidth
-                                        onChange={(event, newValue) => field.onChange(get(newValue, 'value', newValue))}
+                                        onChange={(event, newValue) =>
+                                            field.onChange(get(newValue, 'value', newValue))
+                                        }
                                         options={department}
                                         key={'department-auto'}
                                         renderInput={(param) => (
@@ -469,6 +515,7 @@ function RegisterForm(props: RegisterFormProps) {
                             name="department"
                             key={'department-textfield'}
                             label={constant.department}
+                            disabled
                         />
                     )}
                 </Stack>
@@ -497,18 +544,34 @@ function RegisterForm(props: RegisterFormProps) {
                         )}
                     >
                         {isKuStudent ? (
-                            <RHFTextField name="studentId" label={constant.studentId} />
+                            <RHFTextField
+                                name="studentId"
+                                label={constant.studentId}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         ) : isKu && isStaff ? (
-                            <RHFTextField name="staffId" label={constant.staffId} />
+                            <RHFTextField
+                                name="staffId"
+                                label={constant.staffId}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         ) : isPositionOther ? (
-                            <RHFTextField name="positionName" label={constant.positionName} />
+                            <RHFTextField
+                                name="positionName"
+                                label={constant.positionName}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         ) : (
-                            <RHFTextField name="studentId" label={constant.studentId} />
+                            <RHFTextField
+                                name="studentId"
+                                label={constant.studentId}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         )}
                     </Stack>
                 </Stack>
 
-                {isKu && isStudent ? (
+                {isKuStudent ? (
                     <Controller
                         name="expiryDate"
                         control={control}
@@ -522,11 +585,14 @@ function RegisterForm(props: RegisterFormProps) {
                                     field.onChange(newValue)
                                 }}
                                 disableMaskedInput
+                                disablePast
+                                minDate={new Date().setDate(new Date().getDate() + 1)}
                                 renderInput={(params) => (
                                     <TextField
                                         {...params}
                                         error={!!error}
                                         helperText={error?.message}
+                                        fullWidth
                                     />
                                 )}
                             />
@@ -536,12 +602,7 @@ function RegisterForm(props: RegisterFormProps) {
                     <></>
                 )}
                 <Stack flexDirection={'row'} gap={3}>
-                    <RHFSelect
-                        name="title"
-                        label={constant.title}
-                        placeholder={constant.title}
-                        // onBlur={() => clearErrors('otherTitle')}
-                    >
+                    <RHFSelect name="title" label={constant.title} placeholder={constant.title}>
                         <option value={''} key={`${''}-title-option`} hidden></option>
                         {title.map(({ value, label }) => (
                             <option value={value} key={`${value}-title-option`}>
@@ -553,14 +614,34 @@ function RegisterForm(props: RegisterFormProps) {
                         name={isTitleOther ? 'otherTitle' : ''}
                         label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
                         disabled={!isTitleOther}
+                        inputProps={{ maxLength: 100 }}
                     />
                 </Stack>
                 <Stack flexDirection={'row'} gap={3}>
-                    <RHFTextField name="firstName" label={constant.firstName} />
-                    <RHFTextField name="surName" label={constant.surName} />
+                    <RHFTextField
+                        name="firstName"
+                        label={constant.firstName}
+                        inputProps={{ maxLength: 100 }}
+                    />
+                    <RHFTextField
+                        name="surName"
+                        label={constant.surName}
+                        inputProps={{ maxLength: 100 }}
+                    />
                 </Stack>
-                <RHFTextField name="address" multiline label={constant.address} minRows={4} />
-                <RHFTextField name="phoneNumber" label={constant.phoneNumber} />
+                <RHFTextField
+                    name="address"
+                    multiline
+                    label={constant.address}
+                    inputProps={{ maxLength: 200 }}
+                    minRows={4}
+                />
+                <RHFTextField
+                    name="phoneNumber"
+                    label={constant.phoneNumber}
+                    inputProps={{ maxLength: 10 }}
+                    onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
+                />
                 <RenderIdImageUpload />
             </Stack>
 
@@ -638,7 +719,6 @@ function RegisterForm(props: RegisterFormProps) {
                 >
                     {constant.submit}
                 </LoadingButton>
-                {/* <Link variant="subtitle1" href={FORGOT_PASSWORD_PATH}> Register </Link> */}
                 <LoadingButton
                     fullWidth
                     size="large"
