@@ -85,6 +85,9 @@ const constant = {
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
     supervisorCode: 'Supervisor code *',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
+
+    updateAccount:'Update Account',
+    reset: 'Reset'
 }
 const typeOfPerson = [
     { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
@@ -145,6 +148,7 @@ const privillege = [
 interface AccountFormProps {
     onSubmit: () => void
     onCancel: () => void
+    updateMode? : boolean
 }
 interface IIdImageUpload {
     index: number
@@ -879,7 +883,7 @@ function AccountForm(props: AccountFormProps) {
                         onClick={props.onCancel}
                         color="inherit"
                     >
-                        {constant.cancel}
+                        {props.updateMode ? constant.reset : constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
@@ -888,7 +892,7 @@ function AccountForm(props: AccountFormProps) {
                         onClick={props.onSubmit}
                         // loading={authenticationStore.isFetching}
                     >
-                        {constant.createAccount}
+                        {props.updateMode ? constant.updateAccount : constant.createAccount}
                     </LoadingButton>
                 </Stack>
             </Stack>

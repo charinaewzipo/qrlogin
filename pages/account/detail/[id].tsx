@@ -88,7 +88,7 @@ export function AccountCreate() {
                             </div>
                             
                             <div>test</div>
-                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} />
+                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} />
                         </div>
                     </div>
                 </Box>
