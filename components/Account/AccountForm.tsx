@@ -654,7 +654,6 @@ function AccountForm(props: AccountFormProps) {
                                                             ''
                                                         )}
                                                         label={constant.department}
-                                                        inputProps={{ maxLength: 100 }}
                                                     />
                                                 )}
                                                 placeholder={constant.department}
