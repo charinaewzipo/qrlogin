@@ -29,13 +29,13 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
             >
                 <TableCell align="left">
                     <Box>
-                        <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 140 }}>{name}</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 140 }}> {email}</Typography>
+                        <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 135 }}>{name}</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 135 }}> {email}</Typography>
                     </Box>
                 </TableCell>
                 <TableCell align="left"> <Typography variant="body2" >{permission}</Typography></TableCell>
                 <TableCell align="left"> <Typography variant="body2" sx={{ color: 'text.disabled' }} >{studentID}</Typography></TableCell>
-                <TableCell align="left"> <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 120 }}>{supervisorName}</Typography></TableCell>
+                <TableCell align="left"> <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 110 }}>{supervisorName}</Typography></TableCell>
 
                 <TableCell align="right">
                     <Box>
@@ -45,11 +45,10 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
                 </TableCell>
                 <TableCell align="left">
                     <Box
-                        sx={{ display: 'flex' }}
+                        sx={{ display: 'flex', ...styledTextOverFlow, maxWidth: 110 }}
                     >
-
                         <Typography variant="body2" sx={{ color: bookLimit === 10 ? theme.palette.error.dark : 'text.primary' }} >{`${bookLimit} `} </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled' }}> / 10 Time </Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', pl: 0.5 }}> / 10 Time </Typography>
                     </Box>
 
                 </TableCell>

@@ -37,7 +37,7 @@ import { useSnackbar } from 'notistack'
 import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
 
 const TABLE_HEAD = [
-    { id: 'accountName', label: 'Account Name', align: 'left', width: 172 },
+    { id: 'accountName', label: 'Account Name', align: 'left' },
     { id: 'privilege', label: 'Privilege', align: 'left', },
     { id: 'studentID', label: 'Student/Staff ID', align: 'left' },
     { id: 'supervisorName', label: 'Supervisor Name', align: 'left', width: 152 },

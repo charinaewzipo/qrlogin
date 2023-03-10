@@ -56,7 +56,7 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
                     >
 
                         <Typography variant="body2" sx={{ color: bookLimit === 10 ? theme.palette.error.dark : 'text.primary' }} >{`${bookLimit}`}<br /> </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled' }}> / 10 Time </Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', pl: 0.5 }}> / 10 Time </Typography>
                     </Box>
 
                 </TableCell>
