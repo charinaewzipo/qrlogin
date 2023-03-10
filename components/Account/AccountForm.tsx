@@ -20,7 +20,7 @@ import {
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
-import { fData } from '@sentry/utils/formatNumber'
+import { fData, fNumber } from '@sentry/utils/formatNumber'
 import { clamp, every, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDispatch, useSelector } from '@ku/redux'
@@ -358,13 +358,38 @@ function AccountForm(props: AccountFormProps) {
         window.scrollTo(0, 0)
     }
 
-    const handleChangeNumber = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldName: keyof FormValuesProps) => {
-        const newVal = e.target.value
-        if (newVal === '' || new RegExp(numberOnlyRegex).test(newVal)) {
-            setValue(fieldName, newVal)
-            if (isSubmitted)
-                trigger()
+    const handleChangeNumber = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        fieldName: keyof FormValuesProps,
+        addComma?: 'comma'
+    ) => {
+        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
+        const oldValue = getValues(fieldName)
+        let newValue = e.target.value
+        for (let i = 0; i < oldValue.length; i++) {
+            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
+            if (
+                oldValue[i] === ',' &&
+                oldValue[i] !== newValue[i] &&
+                oldValue.length - 1 === newValue.length
+            ) {
+                newValue = newValue.substring(0, i - 1) + newValue.substring(i)
+                break
+            }
         }
+
+        newValue = newValue.replace(new RegExp(',', 'g'), '')
+        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValue)) {
+            const formattedValue = addComma === 'comma' ? fNumber(newValue) : newValue
+            setValue(fieldName, formattedValue)
+            if (isSubmitted) trigger()
+            setTimeout(() => {
+                //set text cursor at same position after setValue
+                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
+                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
+            }, 0)
+        }
+        
     }
 
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
@@ -760,14 +785,14 @@ function AccountForm(props: AccountFormProps) {
                                 <RHFTextField
                                     name="creditLimit"
                                     label={constant.creditLimit}
-                                    onChange={(e) => handleChangeNumber(e, 'creditLimit')}
-                                    inputProps={{ maxLength: 100 }}
+                                    onChange={(e) => handleChangeNumber(e, 'creditLimit', 'comma')}
+                                    inputProps={{ maxLength: 20 }}
                                 />
                                 <RHFTextField
                                     name="bookingLimit"
                                     label={constant.bookingLimit}
-                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit')}
-                                    inputProps={{ maxLength: 100 }}
+                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit', 'comma')}
+                                    inputProps={{ maxLength: 20 }}
                                 />
                             </Stack>
                         ) : (
