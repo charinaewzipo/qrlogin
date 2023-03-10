@@ -12,35 +12,8 @@ AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function AccountCreate() {
-    const theme = useTheme()
     const { t } = useTranslation();
-
-    const { scrollYProgress } = useScroll()
-
-    const scaleX = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
-        restDelta: 0.001,
-    })
-
-
     const permission : PERMISSION = 'Admin'
-
-    const progress = (
-        <m.div
-            style={{
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 3,
-                zIndex: 1999,
-                position: 'fixed',
-                transformOrigin: '0%',
-                backgroundColor: theme.palette.primary.main,
-                scaleX,
-            }}
-        />
-    )
 
     const onFormSubmit = () => {
       //TODO: api submit
@@ -57,7 +30,6 @@ export function AccountCreate() {
             <Head>
                 <title>Account Create | KU</title>
             </Head>
-            {progress}
             <Container>
                 <Box
                     sx={{
