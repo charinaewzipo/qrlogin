@@ -1,12 +1,13 @@
-import { Box, Button, Stack, styled, Typography, useTheme } from '@mui/material'
+import { Box, Stack, styled, Typography, useTheme } from '@mui/material'
 import Head from 'next/head'
 import React, { useEffect } from 'react'
 import Image from '@sentry/components/image';
 import { LOGIN_PATH } from '@ku/constants/routes';
-import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout';
+import { LoadingButton } from '@mui/lab';
+
 
 const ResetPassword = () => {
   const theme = useTheme()
@@ -74,30 +75,21 @@ const ResetPassword = () => {
             }}
           >
           </Box>
-
-          <Button variant="outlined"
-            sx={{
-              border: `1px solid ${theme.palette.divider}`,
-              color: theme.palette.text.primary,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              mt: 3
-            }}
+          <LoadingButton
+            fullWidth
+            size="medium"
+            type="submit"
+            variant="outlined"
+            sx={{ color: theme.palette.text.primary, border: `1px solid ${theme.palette.divider}`, mt: 3 }}
+            onClick={() => router.push(LOGIN_PATH)}
           >
             <Image
               alt="Icon Base"
               src={'/assets/icons/direction/Icon Base.png'}
               sx={{ objectFit: 'cover', height: 20.67, mr: 1 }}
             />
-            <Link
-              href={{
-                pathname: LOGIN_PATH,
-              }}
-              style={{ textDecoration: 'none', color: 'inherit' }} >   Back to Login page</Link>
-
-          </Button>
-
+            Back to Login page
+          </LoadingButton>
 
 
         </Stack>
