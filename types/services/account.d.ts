@@ -10,6 +10,8 @@ interface IAccountUser {
     phone: string
     expiredate: string
     status: STATUS
+    department?:string
+    major?: string
 }
-type STATUS = 'Active' | 'Inactive' | 'Locked'
+type STATUS = 'Active' | 'Inactive' | 'Locked' |'Pending'
 type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'

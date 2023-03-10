@@ -37,10 +37,10 @@ import { useSnackbar } from 'notistack'
 import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
 
 const TABLE_HEAD = [
-    { id: 'accountName', label: 'Account Name', align: 'left' },
+    { id: 'accountName', label: 'Account Name', align: 'left', width: 172 },
     { id: 'privilege', label: 'Privilege', align: 'left', },
     { id: 'studentID', label: 'Student/Staff ID', align: 'left' },
-    { id: 'supervisorName', label: 'Supervisor Name', align: 'left', },
+    { id: 'supervisorName', label: 'Supervisor Name', align: 'left', width: 152 },
     { id: 'creditLimit', label: 'Credit Limit', align: 'left', },
     { id: 'bookLimit', label: 'Book Limit', align: 'left' },
     { id: 'contactNumber', label: 'Contact Number', align: 'left', },
@@ -59,11 +59,24 @@ const ROLE_OPTIONS = [
 const mockTableData: IAccountUser[] = [
     {
         id: "27658a79-ac6c-4003-b927-23b260840208",
-        name: "Eleanor Pena",
-        email: "eleanor.pena@ku.ac.th",
+        name: "Eleanor PenaEleanor PenaEleanor Pena",
+        email: "eleanor.pena@ku.ac.thEleanor PenaEleanor Pena",
         permission: "User",
         studentID: "1579900542880",
-        supervisorName: "Anna Yesman",
+        supervisorName: "Anna YesmanEleanor PenaEleanor Pena",
+        creditLimit: 0,
+        bookLimit: 0,
+        phone: "0854888882",
+        expiredate: new Date().toString(),
+        status: "Active"
+    },
+    {
+        id: "27658a79-ac6c-4003-b927-23b260840208",
+        name: "Eleanor PenaEleanor",
+        email: "eleanor.pena@ku.ac.thEleanor ",
+        permission: "User",
+        studentID: "1579900542880",
+        supervisorName: "Anna ",
         creditLimit: 0,
         bookLimit: 0,
         phone: "0854888882",

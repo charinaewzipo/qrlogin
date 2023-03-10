@@ -3,27 +3,22 @@ import { Stack, InputAdornment, TextField, Button, MenuItem } from '@mui/materia
 import Iconify from '@sentry/components/iconify'
 
 type Props = {
-    optionsRole: string[];
     filterName: string
-    filterRole: string;
     filterStudentID: string;
     filterEmail: string;
     onFilterStudentId: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
     onFilterEmail: (event: React.ChangeEvent<HTMLInputElement>) => void
     onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void
-    onFilterRole: (event: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-export default function AccountAdminToolsbar({
-    filterRole,
+export default function AccountSupervisorToolsbar({
+
     filterName,
     filterStudentID,
     onFilterEmail,
     filterEmail,
     onFilterStudentId,
     onFilterName,
-    onFilterRole,
-    optionsRole
 }: Props) {
     return (
         <Stack
@@ -37,46 +32,13 @@ export default function AccountAdminToolsbar({
         >
             <TextField
                 fullWidth
-                select
-                label="Privilege"
-                value={filterRole}
-                onChange={onFilterRole}
-                SelectProps={{
-                    MenuProps: {
-                        sx: { '& .MuiPaper-root': { maxHeight: 260 } },
-                    },
-                }}
-                sx={{
-                    maxWidth: { sm: 170 },
-                    textTransform: 'capitalize',
-                }}
-            >
-                {optionsRole.map((option) => (
-                    <MenuItem
-                        key={option}
-                        value={option}
-                        sx={{
-                            mx: 1,
-                            my: 0.5,
-                            borderRadius: 0.75,
-                            typography: 'body2',
-                            textTransform: 'capitalize',
-                        }}
-                    >
-                        {option}
-                    </MenuItem>
-                ))}
-            </TextField>
-
-            <TextField
-                fullWidth
                 value={filterStudentID}
                 onChange={(e) => onFilterStudentId(e)}
                 placeholder="Search by student/staff ID"
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Iconify icon="eva:person-fill" width={20} sx={{ color: 'text.disabled' }} />
+                            <Iconify icon="eva:person-fill" sx={{ color: 'text.disabled' }} />
                         </InputAdornment>
                     ),
                 }}
@@ -90,7 +52,7 @@ export default function AccountAdminToolsbar({
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Iconify icon="eva:email-fill" width={20} sx={{ color: 'text.disabled' }} />
+                            <Iconify icon="eva:email-fill" sx={{ color: 'text.disabled' }} />
                         </InputAdornment>
                     ),
                 }}
@@ -103,7 +65,7 @@ export default function AccountAdminToolsbar({
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Iconify icon="eva:search-fill" width={20} sx={{ color: 'text.disabled' }} />
+                            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
                         </InputAdornment>
                     ),
                 }}
