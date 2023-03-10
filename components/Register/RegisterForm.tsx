@@ -120,6 +120,8 @@ function RegisterForm(props: RegisterFormProps) {
     const checkIsStaff = (position: string) => ['Lecturer', 'Researcher',].includes(position)
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
         checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+    const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
+    const numberOnlyRegex = /^[0-9\b]+$/
 
     const RegisterSchema = Yup.object().shape({
         email: Yup.string()
@@ -166,7 +168,19 @@ function RegisterForm(props: RegisterFormProps) {
         firstName: Yup.string().required('Firstname is require'),
         surName: Yup.string().required('Surname is require'),
         address: Yup.string().required('Address is require'),
-        phoneNumber: Yup.string().required('Phone number is require'),
+        phoneNumber: Yup.string()
+            .required('Phone number is require')
+            .test({
+                name: 'phoneNumber',
+                message: "Phone number must be numbers",
+                test: (phone) => new RegExp(numberOnlyRegex).test(phone),
+            })
+            .test({
+                name: 'phoneNumber',
+                message: "Phone number must start with '0'",
+                test: (phone) => phone[0] === '0',
+            })
+            .length(10, 'Phone number must be 10 digits'),
         idImages: Yup.array(Yup.string()).when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
             then: Yup.array(Yup.string()).test({

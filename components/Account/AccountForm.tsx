@@ -21,7 +21,7 @@ import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
 import { fData, fNumber } from '@sentry/utils/formatNumber'
-import { clamp, every, get } from 'lodash'
+import { clamp, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDispatch, useSelector } from '@ku/redux'
 import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor'
@@ -237,10 +237,15 @@ function AccountForm(props: AccountFormProps) {
             .required('Phone number is require')
             .test({
                 name: 'phoneNumber',
+                message: "Phone number must be numbers",
+                test: (phone) => new RegExp(numberOnlyRegex).test(phone),
+            })
+            .test({
+                name: 'phoneNumber',
                 message: "Phone number must start with '0'",
                 test: (phone) => phone[0] === '0',
             })
-            .length(10, 'Phone number should be 10 digits'),
+            .length(10, 'Phone number must be 10 digits'),
         idImages: Yup.array(Yup.string()),
         creditLimit: Yup.string().required('Credit limit is require'),
         bookingLimit: Yup.string().required('Booking limit is require'),
