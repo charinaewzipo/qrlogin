@@ -88,7 +88,7 @@ export function AccountCreate() {
                             </div>
                             
                             <div>test</div>
-                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} />
+                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>
                         </div>
                     </div>
                 </Box>

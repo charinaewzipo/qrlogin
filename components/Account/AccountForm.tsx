@@ -87,7 +87,8 @@ const constant = {
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 
     updateAccount:'Update Account',
-    reset: 'Reset'
+    reset: 'Reset',
+    waitSupervisorApprove: 'Please wait for supervisor approve.',
 }
 const typeOfPerson = [
     { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
@@ -145,10 +146,13 @@ const privillege = [
     { value: 'Supervisor', label: 'Supervisor' },
     { value: 'User', label: 'User' },
 ]
+
+declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
     onSubmit: () => void
     onCancel: () => void
     updateMode? : boolean
+    permission? : PERMISSION
 }
 interface IIdImageUpload {
     index: number
@@ -856,6 +860,40 @@ function AccountForm(props: AccountFormProps) {
                                     ),
                                 }}
                             />
+                            {!supervisorSelector.isLoading &&
+                            supervisorSelector.supervisor.code === '200' ? (
+                                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
+                                    <Image
+                                        alt="Logo"
+                                        src={supervisorSelector.supervisor.pic}
+                                        sx={{ height: 64, width: 64, borderRadius: 1 }}
+                                        disabledEffect
+                                    />
+                                    <Stack>
+                                        <Typography variant="h6">
+                                            {`${supervisorSelector.supervisor.name} (${supervisorSelector.supervisor.code})`}
+                                        </Typography>
+                                        <Typography variant="body1" whiteSpace={'pre-line'}>
+                                            {supervisorSelector.supervisor.email}
+                                        </Typography>
+                                    </Stack>
+                                </Stack>
+                            ) : (
+                                <></>
+                            )}
+                        </Stack>
+                    </Paper>
+                ) : (
+                    <></>
+                )}
+
+                {props.permission === 'User' ? (
+                    <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
+                        <Stack spacing={2} textAlign={'left'}>
+                            <Typography variant="h4">{constant.supervisorDetail}</Typography>
+                            <Typography variant="body1" whiteSpace={'pre-line'}>
+                                {constant.waitSupervisorApprove}
+                            </Typography>
                             {!supervisorSelector.isLoading &&
                             supervisorSelector.supervisor.code === '200' ? (
                                 <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
