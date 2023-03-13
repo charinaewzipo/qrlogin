@@ -176,8 +176,8 @@ function AccountForm(props: AccountFormProps) {
             .when(['position', 'typeOfPerson', 'privillege'], {
                 is: (position, typeOfPerson, privillege) =>
                     (checkIsKuStudent(position, typeOfPerson) ||
-                    checkIsAdmin(privillege) ||
-                    checkIsFinance(privillege)) &&
+                        checkIsAdmin(privillege) ||
+                        checkIsFinance(privillege)) &&
                     !checkIsSupervisor(privillege),
                 then: Yup.string().test({
                     name: 'email',
@@ -187,12 +187,18 @@ function AccountForm(props: AccountFormProps) {
             }),
         password: Yup.string(),
         accountStatus: Yup.string().required('Account Status is require'),
-        accountExpiryDate: Yup.string()
+        accountExpiryDate: Yup.date()
+            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
             .nullable()
             .test({
                 name: 'accountExpiryDate',
                 message: "Account expiry date must be greater than today's date",
-                test: (date) => !date || new Date(date).getTime() > new Date().getTime(),
+                test: (date) => {
+                    const datePlusOne = new Date()
+                    datePlusOne.setDate(datePlusOne.getDate() + 1)
+                    datePlusOne.setHours(0, 0, 0, 0)
+                    return date === null || date.getTime() >= datePlusOne.getTime()
+                },
             }),
         avatar: Yup.string(),
         typeOfPerson: Yup.string().required('Type of person is require'),
@@ -241,7 +247,7 @@ function AccountForm(props: AccountFormProps) {
             .required('Phone number is require')
             .test({
                 name: 'phoneNumber',
-                message: "Phone number must be numbers",
+                message: 'Phone number must be numbers',
                 test: (phone) => new RegExp(numberOnlyRegex).test(phone),
             })
             .test({
@@ -269,7 +275,7 @@ function AccountForm(props: AccountFormProps) {
         email: '',
         password: '',
         accountStatus: 'Active',
-        accountExpiryDate: '',
+        accountExpiryDate: null,
         typeOfPerson: '',
         department: '',
         universityName: '',
@@ -320,6 +326,8 @@ function AccountForm(props: AccountFormProps) {
         if (isFinance) {
             if (getValues('typeOfPerson') !== 'KU Student & Staff')
                 setValue('typeOfPerson', '')
+            //ตอนปรับ privillege เป็น finance 
+            //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
 
@@ -327,8 +335,8 @@ function AccountForm(props: AccountFormProps) {
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
     const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
-    const isPositionOther = watchPosition === 'Other'
-    const isTitleOther = watchTitle === 'Other'
+    const isPositionOther = checkIsOther(watchPosition)
+    const isTitleOther = checkIsOther(watchTitle)
     const isUser = checkIsUser(watchPrivillege)
     const isFinance = checkIsFinance(watchPrivillege)
     
@@ -440,7 +448,7 @@ function AccountForm(props: AccountFormProps) {
                                 </Typography>
                             </Box>
                         }
-                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                         file={field.value}
                         onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
                         onDelete={() => field.onChange('')}
@@ -569,7 +577,7 @@ function AccountForm(props: AccountFormProps) {
                             render={({ field }) => (
                                 <Stack sx={{ mt: 1 }}>
                                     <UploadAvatar
-                                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                                         file={field.value}
                                         onDrop={(files) =>
                                             field.onChange(URL.createObjectURL(files[0]))
@@ -650,7 +658,6 @@ function AccountForm(props: AccountFormProps) {
                                                             ''
                                                         )}
                                                         label={constant.department}
-                                                        inputProps={{ maxLength: 100 }}
                                                     />
                                                 )}
                                                 placeholder={constant.department}
