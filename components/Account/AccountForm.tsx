@@ -294,7 +294,7 @@ function AccountForm(props: AccountFormProps) {
         address: '',
         phoneNumber: '',
         idImages: [''],
-        creditLimit: '15000',
+        creditLimit: '15,000',
         bookingLimit: '5',
         supervisorCode: '',
     }
@@ -388,26 +388,27 @@ function AccountForm(props: AccountFormProps) {
     const handleChangeNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         fieldName: keyof FormValuesProps,
-        addComma?: 'comma'
+        option?: 'comma'
     ) => {
         const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
         const oldValue = getValues(fieldName)
         let newValue = e.target.value
-        for (let i = 0; i < oldValue.length; i++) {
+        if (option === 'comma'){
             //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
-            if (
-                oldValue[i] === ',' &&
-                oldValue[i] !== newValue[i] &&
-                oldValue.length - 1 === newValue.length
-            ) {
-                newValue = newValue.substring(0, i - 1) + newValue.substring(i)
-                break
+            for (let i = 0; i < oldValue.length; i++) {
+                if (
+                    oldValue[i] === ',' &&
+                    oldValue[i] !== newValue[i] &&
+                    oldValue.length - 1 === newValue.length
+                ) {
+                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
+                    break
+                }
             }
         }
-
-        newValue = newValue.replace(new RegExp(',', 'g'), '')
-        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValue)) {
-            const formattedValue = addComma === 'comma' ? fNumber(newValue) : newValue
+        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
+        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
+            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
             setValue(fieldName, formattedValue)
             if (isSubmitted) trigger()
             setTimeout(() => {
@@ -416,7 +417,6 @@ function AccountForm(props: AccountFormProps) {
                 e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
             }, 0)
         }
-        
     }
 
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {

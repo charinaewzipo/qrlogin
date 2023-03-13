@@ -291,10 +291,16 @@ function RegisterForm(props: RegisterFormProps) {
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         fieldName: keyof RegisterFormValuesProps,
     ) => {
-        const newValue = e.target.value.replace(new RegExp(',', 'g'), '')
+        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
+        const newValue = e.target.value.replace(new RegExp(',', 'g'), '') || ''
         if (newValue === '' || new RegExp(numberOnlyRegex).test(newValue)) {
             setValue(fieldName, newValue)
             if (isSubmitted) trigger()
+            setTimeout(() => {
+                //set text cursor at same position after setValue
+                const typingIndexFromStart = newValue.length + typingIndexFromEnd;
+                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
+            }, 0)
         }
     }
     const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
