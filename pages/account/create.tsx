@@ -44,9 +44,9 @@ export function AccountCreate() {
                     <div className={styles.page}>
                         <div className="wrapper">
                             <CustomBreadcrumbs
-                                heading="Account"
+                                heading="Accounts"
                                 links={[
-                                    { name: 'Account', href: '/account' },
+                                    { name: 'Accounts', href: '/account' },
                                     { name: 'List', href: '/account' },
                                     { name: 'Create an account' },
                                 ]}
