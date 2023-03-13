@@ -2,12 +2,14 @@ import { m, useScroll, useSpring } from 'framer-motion'
 import styles from '../../../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
-import { Box, Grid, Container } from '@mui/material'
+import { Box, Grid, Container,Button, } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useTranslation } from "react-i18next";
 import AccountForm from '@ku/components/Account/AccountForm'
 import {useRouter} from 'next/router'
+import NextLink from 'next/link'
+import Iconify from '@sentry/components/iconify'
 
 AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -74,20 +76,29 @@ export function AccountCreate() {
                             <div className='d-flex'>
                                 <div>
                                 <CustomBreadcrumbs
-                                heading="Account"
+                                heading="Accounts"
                                 links={[
-                                    { name: 'Account', href: '/account' },
+                                    { name: 'Accounts', href: '/account' },
                                     { name: 'List' },
                                     { name: `${accountId}` },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
+                                action={
+                                    <NextLink href='/' passHref>
+                                        <Button
+                                            variant="contained"
+                                            color="inherit"
+                                            startIcon={<Iconify icon="eva:settings-2-fill" />}
+                                        >
+                                            Reset Password
+                                        </Button>
+                                    </NextLink>
+                                }
                             />
                                 </div>
                          
-                            <div>btn</div>
+                           
                             </div>
-                            
-                            <div>test</div>
                             <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>
                         </div>
                     </div>

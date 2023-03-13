@@ -893,7 +893,7 @@ function AccountForm(props: AccountFormProps) {
                     <></>
                 )}
 
-                {props.permission === 'User' ? (
+                {props.permission && props.permission === 'User' ? (
                     <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                         <Stack spacing={2} textAlign={'left'}>
                             <Typography variant="h4">{constant.supervisorDetail}</Typography>
@@ -917,6 +917,9 @@ function AccountForm(props: AccountFormProps) {
                                             {supervisorSelector.supervisor.email}
                                         </Typography>
                                     </Stack>
+                                    <Typography variant="body1"  justifyContent="flex-end" whiteSpace={'pre-line'}>
+                                            approved
+                                    </Typography>
                                 </Stack>
                             ) : (
                                 <></>
