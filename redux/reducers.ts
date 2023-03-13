@@ -27,12 +27,6 @@ const rootPersistConfig = {
     whitelist: [],
 };
 
-const supervisorPersistConfig = {
-    key: 'supervisor',
-    storage,
-    keyPrefix: 'redux-'
-};
-
 const rootReducer = combineReducers({
     // e.g. token: tokenReducer
     // user: persistReducer(userPersistConfig, userReducer),
