@@ -36,6 +36,7 @@ import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
 import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
 
+
 const TABLE_HEAD = [
     { id: 'accountName', label: 'Account Name', align: 'left' },
     { id: 'privilege', label: 'Privilege', align: 'left', },
@@ -327,6 +328,7 @@ export default function AccountAdminList() {
                     />
                 </Card>
             </Container>
+
         </>
     )
 }

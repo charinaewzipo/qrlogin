@@ -173,12 +173,13 @@ export default function AccountSupervisorList() {
     setPage(0)
     setFilterStudentID(event.target.value)
 
-    // clearTimeout(countDown);
-    // setCountDown(
-    //     setTimeout(() => {
-    //         setFilterStudentID(event.target.value);
-    //     }, 1000)
-    // );
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        console.log("hello countdown")
+        setFilterStudentID(event.target.value);
+      }, 1000)
+    );
   }
 
   const handleViewRow = (id: string) => {
@@ -286,6 +287,8 @@ export default function AccountSupervisorList() {
           />
         </Card>
       </Container>
+
+
     </>
   )
 }
