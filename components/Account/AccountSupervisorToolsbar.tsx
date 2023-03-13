@@ -6,7 +6,7 @@ type Props = {
     filterName: string
     filterStudentID: string;
     filterEmail: string;
-    onFilterStudentId: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
+    onFilterStudentID: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void
     onFilterEmail: (event: React.ChangeEvent<HTMLInputElement>) => void
     onFilterName: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
@@ -17,7 +17,7 @@ export default function AccountSupervisorToolsbar({
     filterStudentID,
     onFilterEmail,
     filterEmail,
-    onFilterStudentId,
+    onFilterStudentID,
     onFilterName,
 }: Props) {
     return (
@@ -32,8 +32,9 @@ export default function AccountSupervisorToolsbar({
         >
             <TextField
                 fullWidth
+                name='studentID'
                 value={filterStudentID}
-                onChange={(e) => onFilterStudentId(e)}
+                onChange={onFilterStudentID}
                 placeholder="Search by student/staff ID"
                 InputProps={{
                     startAdornment: (
@@ -46,6 +47,7 @@ export default function AccountSupervisorToolsbar({
 
             <TextField
                 fullWidth
+                name='email'
                 value={filterEmail}
                 onChange={onFilterEmail}
                 placeholder="Search by email"
@@ -59,6 +61,7 @@ export default function AccountSupervisorToolsbar({
             />
             <TextField
                 fullWidth
+                name='name'
                 value={filterName}
                 onChange={onFilterName}
                 placeholder="Search by name"

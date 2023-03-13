@@ -155,31 +155,36 @@ export default function AccountSupervisorList() {
     }
   }
 
-  const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
+  const handleCountdown = (value: string, key: string) => {
     setPage(0)
-    setFilterStatus(newValue)
-  }
-
-  const handleFilterName = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(0)
-    setFilterName(event.target.value)
-  }
-  const handleFilterEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(0)
-    setFilterEmail(event.target.value)
-  }
-  const handleFilterStudentID = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    console.log("event", event.target.value)
-    setPage(0)
-    setFilterStudentID(event.target.value)
-
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
-        console.log("hello countdown")
-        setFilterStudentID(event.target.value);
+        console.log(key, ":", value)
       }, 1000)
     );
+  }
+
+  const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
+    setPage(0)
+    setFilterStatus(newValue)
+    console.log("filterStatus", filterStatus)
+  }
+
+  const handleFilterName = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = event.target
+    setFilterName(value);
+    handleCountdown(filterName, name)
+  }
+  const handleFilterEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, name } = event.target
+    setFilterEmail(value)
+    handleCountdown(filterEmail, name)
+  }
+  const handleFilterStudentID = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { value, name } = event.target
+    setFilterStudentID(value);
+    handleCountdown(filterStudentID, name)
   }
 
   const handleViewRow = (id: string) => {
@@ -238,7 +243,7 @@ export default function AccountSupervisorList() {
           <Divider />
           <AccountSupervisorToolsbar
             filterStudentID={filterStudentID}
-            onFilterStudentId={handleFilterStudentID}
+            onFilterStudentID={handleFilterStudentID}
             filterEmail={filterEmail}
             onFilterEmail={handleFilterEmail}
             filterName={filterName}

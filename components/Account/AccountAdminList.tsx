@@ -59,7 +59,7 @@ const ROLE_OPTIONS = [
 ];
 const mockTableData: IAccountUser[] = [
     {
-        id: "27658a79-ac6c-4003-b927-23b260840208",
+        id: "27658a79-ac6c-4003-b927-23b260840201",
         name: "Eleanor PenaEleanor PenaEleanor Pena",
         email: "eleanor.pena@ku.ac.thEleanor PenaEleanor Pena",
         permission: "User",
@@ -176,33 +176,40 @@ export default function AccountAdminList() {
         }
     }
 
-    const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setFilterRole(event.target.value);
+    const handleCountdown = (value: string, key: string) => {
+        setPage(0)
+        clearTimeout(countDown);
+        setCountDown(
+            setTimeout(() => {
+                console.log(key, ":", value)
+            }, 1000)
+        );
+    }
+    const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { value, name } = event.target
+        setFilterRole(value);
+        handleCountdown(filterRole, name)
     };
     const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
         setPage(0)
         setFilterStatus(newValue)
+        console.log("filterStatus", filterStatus)
     }
 
     const handleFilterName = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPage(0)
-        setFilterName(event.target.value)
+        const { value, name } = event.target
+        setFilterName(value)
+        handleCountdown(filterName, name)
     }
     const handleFilterEmail = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setPage(0)
-        setFilterEmail(event.target.value)
+        const { value, name } = event.target
+        setFilterEmail(value)
+        handleCountdown(filterEmail, name)
     }
     const handleFilterStudentID = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        console.log("event", event.target.value)
-        setPage(0)
-        setFilterStudentID(event.target.value)
-
-        // clearTimeout(countDown);
-        // setCountDown(
-        //     setTimeout(() => {
-        //         setFilterStudentID(event.target.value);
-        //     }, 1000)
-        // );
+        const { value, name } = event.target
+        setFilterStudentID(value);
+        handleCountdown(filterStudentID, name)
     }
 
     const handleViewRow = (id: string) => {
@@ -275,7 +282,7 @@ export default function AccountAdminList() {
                         onFilterRole={handleFilterRole}
 
                         filterStudentID={filterStudentID}
-                        onFilterStudentId={handleFilterStudentID}
+                        onFilterStudentID={handleFilterStudentID}
 
                         filterEmail={filterEmail}
                         onFilterEmail={handleFilterEmail}
