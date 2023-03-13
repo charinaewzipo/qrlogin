@@ -345,9 +345,15 @@ function AccountForm(props: AccountFormProps) {
     const isFinance = checkIsFinance(watchPrivillege)
     
     useEffect(() => {
-        return () => {
-            dispatch(clearSupervisor())
+        if(props.permission){
+            if(props.permission === 'User'){
+                dispatch(getSupervisor('123456'))
+            } 
         }
+            return () => {
+                dispatch(clearSupervisor())
+            }
+        
     }, [])
 
     const dispatch = useDispatch()
