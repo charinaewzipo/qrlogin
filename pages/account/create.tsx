@@ -7,6 +7,7 @@ import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useTranslation } from "react-i18next";
 import AccountForm from '@ku/components/Account/AccountForm'
+import { useSnackbar } from '@sentry/components/snackbar'
 
 AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -14,9 +15,11 @@ declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 export function AccountCreate() {
     const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
+    const { enqueueSnackbar } = useSnackbar();
 
     const onFormSubmit = () => {
       //TODO: api submit
+      enqueueSnackbar('Account create success.');
       console.log('submit');
     }
 
