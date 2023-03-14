@@ -1,4 +1,4 @@
-import { ChangeEvent, FC, useEffect } from 'react';
+import { ChangeEvent, FC, useEffect, useState } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, ErrorOption, useForm } from 'react-hook-form'
@@ -11,8 +11,7 @@ import { fData } from '@sentry/utils/formatNumber';
 import { clamp, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
-import { useDispatch, useSelector } from '@ku/redux';
-import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor';
+import { fetchGetSupervisor } from '@ku/services/supervisor';
 
 export interface RegisterFormValuesProps {
     email: string
@@ -114,6 +113,10 @@ interface IIdImageUpload {
   index: number
 }
 function RegisterForm(props: RegisterFormProps) {
+    const [supervisor, setSupervisor] = useState<ISupervisor | null>()
+    const [isSupervisorFetching, setIsSupervisorFetching] = useState(false)
+    const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
+
     const checkIsKuPerson = (typeOfPerson: string) =>
         ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
@@ -263,7 +266,12 @@ function RegisterForm(props: RegisterFormProps) {
     const watchSupervisorCode = watch('supervisorCode')
 
     useEffect(() => {
-        fetchSupervisorData(watchSupervisorCode)
+        clearTimeout(supervisorTimeout);
+        setSupervisorTimeout(
+            setTimeout(() => {
+                fetchSupervisorData(watchSupervisorCode)
+            }, 1000)
+        )
     }, [watchSupervisorCode])
     useEffect(() => {
         if (isSubmitted)
@@ -386,31 +394,24 @@ function RegisterForm(props: RegisterFormProps) {
             opacity: isShow ? 1 : 0,
         },
     })
-    useEffect(() => {
-        return () => {
-            dispatch(clearSupervisor())
-        }
-    }, [])
-    
-    const dispatch = useDispatch()
-    const supervisorSelector = useSelector(state => state.supervisor)
-    useEffect(() => {
-        if (supervisorSelector.isLoading)
-            return
-        if (supervisorSelector.supervisor.code === '500') {
-            setError('supervisorCode', {type: 'custom', message: constant.supervisorNotFound})
-        } else {
-            clearErrors('supervisorCode')
-        }
-    }, [supervisorSelector.isLoading])
 
-    const fetchSupervisorData = (code: string) => {
-        setError('supervisorCode', {type: 'custom', message: ''})
-        if (!code)
-            return
-        if (code.length < 6)
-            return
-        dispatch(getSupervisor(code))
+    const fetchSupervisorData = async (code: string) => {
+        if (!code) return
+        if (code.length < 6) return
+        try {
+            setIsSupervisorFetching(true)
+            const response = await fetchGetSupervisor(code)
+            if (response.code === 200) {
+                setSupervisor(response.data)
+                clearErrors('supervisorCode')
+            } else {
+                setError('supervisorCode', { type: 'custom', message: constant.supervisorNotFound })
+                setSupervisor(null)
+            }
+            setIsSupervisorFetching(false)
+        } catch (error) {
+            console.log(error);
+        }
     }
     
     return (
@@ -668,7 +669,7 @@ function RegisterForm(props: RegisterFormProps) {
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        {supervisorSelector.isLoading ? (
+                                        {isSupervisorFetching ? (
                                             <CircularProgress
                                                 size={16}
                                                 sx={{ color: 'text.primary' }}
@@ -689,21 +690,20 @@ function RegisterForm(props: RegisterFormProps) {
                                 ),
                             }}
                         />
-                        {!supervisorSelector.isLoading &&
-                        supervisorSelector.supervisor.code === '200' ? (
+                        {supervisor ? (
                             <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                 <Image
                                     alt="Logo"
-                                    src={supervisorSelector.supervisor.pic}
+                                    src={supervisor.pic}
                                     sx={{ height: 64, width: 64, borderRadius: 1 }}
                                     disabledEffect
                                 />
                                 <Stack>
                                     <Typography variant="h6">
-                                        {`${supervisorSelector.supervisor.name} (${supervisorSelector.supervisor.code})`}
+                                        {`${supervisor.name} (${supervisor.code})`}
                                     </Typography>
                                     <Typography variant="body1" whiteSpace={'pre-line'}>
-                                        {supervisorSelector.supervisor.email}
+                                        {supervisor.email}
                                     </Typography>
                                 </Stack>
                             </Stack>
