@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material'
 // routes
-import { ROOT_PATH, LOGIN_PATH } from '@ku/constants/routes'
+import { ROOT_PATH, PROFILE_PATH, LOGIN_PATH } from '@ku/constants/routes'
 // auth
 import { useAuthContext } from '@ku/contexts/useAuthContext'
 // components
@@ -23,7 +23,7 @@ const OPTIONS = [
     },
     {
         label: 'Profile',
-        linkTo: ROOT_PATH,
+        linkTo: PROFILE_PATH,
     },
 ]
 
@@ -81,7 +81,6 @@ export default function AccountPopover() {
                     }),
                 }}
             >
-                {/* TODO: */}
                 <CustomAvatar
                     src={user.uiPersonPicture}
                     alt={user.uFirstname}
