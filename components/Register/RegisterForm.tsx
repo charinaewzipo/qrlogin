@@ -34,6 +34,7 @@ export interface RegisterFormValuesProps {
     phoneNumber: string
     idImages: string[]
     supervisorCode: string
+    supervisorStatus: 'found' | 'notFound' | 'waiting'
 }
 const constant = {
     submit: 'Submit',
@@ -169,23 +170,26 @@ function RegisterForm(props: RegisterFormProps) {
             is: 'Other',
             then: Yup.string().required('Position is require'),
         }),
-        expiryDate: Yup.string().when(['position', 'typeOfPerson'], {
-            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.date()
-                .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
-                .nullable()
-                .required('Expiry date is required')
-                .test({
-                    name: 'expiryDate',
-                    message: "Expiry date must be greater than today's date",
-                    test: (date) => {
-                        const datePlusOne = new Date()
-                        datePlusOne.setDate(datePlusOne.getDate() + 1)
-                        datePlusOne.setHours(0, 0, 0, 0)
-                        return date === null || date.getTime() >= datePlusOne.getTime()
-                    },
-                }),
-        }),
+        expiryDate: Yup.date()
+            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
+            .nullable()
+            .when(['position', 'typeOfPerson'], {
+                is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
+                then: Yup.date()
+                    .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
+                    .nullable()
+                    .required('Expiry date is required')
+                    .test({
+                        name: 'expiryDate',
+                        message: "Expiry date must be greater than today's date",
+                        test: (date) => {
+                            const datePlusOne = new Date()
+                            datePlusOne.setDate(datePlusOne.getDate() + 1)
+                            datePlusOne.setHours(0, 0, 0, 0)
+                            return date === null || date.getTime() >= datePlusOne.getTime()
+                        },
+                    }),
+            }),
         title: Yup.string().required('Title is require'),
         otherTitle: Yup.string().when('title', {
             is: (title) => title === 'Other' || title === '',
@@ -217,9 +221,18 @@ function RegisterForm(props: RegisterFormProps) {
         }),
         supervisorCode: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required(
-                'Supervisor code is require, please contact your supervisor for code'
-            ),
+            then: Yup.string()
+                .required('Supervisor code is require, please contact your supervisor for code')
+                .test({
+                    name: 'supervisorCode',
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'waiting',
+                })
+                .test({
+                    name: 'supervisorCode',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
+                }),
         }),
     })
 
@@ -242,6 +255,8 @@ function RegisterForm(props: RegisterFormProps) {
         address: '',
         phoneNumber: '',
         idImages: [''],
+        supervisorCode: '',
+        supervisorStatus: null,
     }
 
     const methods = useForm<RegisterFormValuesProps>({
@@ -250,7 +265,6 @@ function RegisterForm(props: RegisterFormProps) {
     })
 
     const {
-        setError,
         clearErrors,
         handleSubmit,
         getValues,
@@ -267,6 +281,7 @@ function RegisterForm(props: RegisterFormProps) {
 
     useEffect(() => {
         clearTimeout(supervisorTimeout);
+        setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(
             setTimeout(() => {
                 fetchSupervisorData(watchSupervisorCode)
@@ -391,22 +406,24 @@ function RegisterForm(props: RegisterFormProps) {
     })
 
     const fetchSupervisorData = async (code: string) => {
+        clearErrors()
         if (!code) return
         if (code.length < 6) return
         try {
             setIsSupervisorFetching(true)
             const response = await fetchGetSupervisor(code)
             if (response.code === 200) {
+                setValue('supervisorStatus', 'found')
                 setSupervisor(response.data)
-                clearErrors('supervisorCode')
             } else {
-                setError('supervisorCode', { type: 'custom', message: constant.supervisorNotFound })
                 setSupervisor(null)
+                setValue('supervisorStatus', 'notFound')
             }
             setIsSupervisorFetching(false)
         } catch (error) {
             console.log(error);
         }
+        trigger()
     }
     
     return (

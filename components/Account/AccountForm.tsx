@@ -50,6 +50,7 @@ export interface IAccountFormValuesProps {
     creditLimit: string
     bookingLimit: string
     supervisorCode: string
+    supervisorStatus: 'found' | 'notFound' | 'waiting'
 }
 const constant = {
     createAccount: 'Create Account',
@@ -187,7 +188,7 @@ function AccountForm(props: AccountFormProps) {
         password: Yup.string(),
         accountStatus: Yup.string().required('Account Status is require'),
         accountExpiryDate: Yup.date()
-            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
+            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
             .nullable()
             .test({
                 name: 'accountExpiryDate',
@@ -262,9 +263,18 @@ function AccountForm(props: AccountFormProps) {
         supervisorCode: Yup.string().when(['position', 'typeOfPerson', 'privillege'], {
             is: (position, typeOfPerson, privillege) =>
                 checkIsKuStudent(position, typeOfPerson) && checkIsUser(privillege),
-            then: Yup.string().required(
-                'Supervisor code is require, please contact your supervisor for code'
-            ),
+            then: Yup.string()
+                .required('Supervisor code is require, please contact your supervisor for code')
+                .test({
+                    name: 'supervisorCode',
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'waiting',
+                })
+                .test({
+                    name: 'supervisorCode',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
+                }),
         }),
     })
 
@@ -292,6 +302,7 @@ function AccountForm(props: AccountFormProps) {
         creditLimit: '15,000',
         bookingLimit: '5',
         supervisorCode: '',
+        supervisorStatus: null,
     }
 
     const methods = useForm<IAccountFormValuesProps>({
@@ -300,7 +311,6 @@ function AccountForm(props: AccountFormProps) {
     })
 
     const {
-        setError,
         clearErrors,
         handleSubmit,
         getValues,
@@ -319,6 +329,7 @@ function AccountForm(props: AccountFormProps) {
 
     useEffect(() => {
         clearTimeout(supervisorTimeout);
+        setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(
             setTimeout(() => {
                 fetchSupervisorData(watchSupervisorCode)
@@ -347,24 +358,26 @@ function AccountForm(props: AccountFormProps) {
     const isFinance = checkIsFinance(watchPrivillege)
 
     const fetchSupervisorData = async (code: string) => {
+        clearErrors()
         if (!code) return
         if (code.length < 6) return
         try {
             setIsSupervisorFetching(true)
             const response = await fetchGetSupervisor(code)
             if (response.code === 200) {
+                setValue('supervisorStatus', 'found')
                 setSupervisor(response.data)
-                clearErrors('supervisorCode')
             } else {
-                setError('supervisorCode', { type: 'custom', message: constant.supervisorNotFound })
                 setSupervisor(null)
+                setValue('supervisorStatus', 'notFound')
             }
             setIsSupervisorFetching(false)
         } catch (error) {
             console.log(error);
         }
+        trigger()
     }
-
+    
     const onSubmit = async (data: IAccountFormValuesProps) => {
         methods.watch
         if (checkIsFinance(data.privillege)) {
@@ -757,7 +770,6 @@ function AccountForm(props: AccountFormProps) {
                                 name="title"
                                 label={constant.title}
                                 placeholder={constant.title}
-                                // onBlur={() => clearErrors('otherTitle')}
                             >
                                 <option value={''} key={`${''}-title-option`} hidden></option>
                                 {title.map(({ value, label }) => (
