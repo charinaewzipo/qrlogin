@@ -5,6 +5,7 @@ import { initReactI18next } from 'react-i18next'
 import { defaultLang } from './config'
 //
 import enLocales from './langs/en'
+import thLocales from './langs/th'
 
 // ----------------------------------------------------------------------
 
@@ -19,6 +20,7 @@ i18n.use(LanguageDetector)
     .init({
         resources: {
             en: { translations: enLocales },
+            th:{ translations: thLocales }
         },
         lng,
         fallbackLng: defaultLang.value,

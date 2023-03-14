@@ -56,6 +56,10 @@ const en = {
     other_cases: `other cases`,
     item_by_roles: `item by roles`,
     only_admin_can_see_this_item: `Only admin can see this item`,
+
+    //Account
+    create_an_account:'Create an account',
+    accounts:'Accounts',
 }
 
 export default en

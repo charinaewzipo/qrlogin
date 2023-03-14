@@ -29,12 +29,11 @@ import {
     TableHeadCustom,
     TablePaginationCustom,
 } from '@sentry/components/table'
-
 import AccountAdminRow from '@ku/components/Account/AccountAdminRow'
-
 import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
 import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
+import { useLocales } from '@ku/locales'
 
 
 const TABLE_HEAD = [
@@ -48,7 +47,6 @@ const TABLE_HEAD = [
     { id: 'accountExpiry', label: 'Account Expiry', align: 'left', },
     { id: 'status', label: 'Status', align: 'left', },
 ]
-
 const ROLE_OPTIONS = [
     'All',
     'Admin',
@@ -132,6 +130,7 @@ export default function AccountAdminList() {
     const { enqueueSnackbar } = useSnackbar()
     const { push } = useRouter()
 
+    const { translate } = useLocales();
     const { dense, page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } = useTable({
         defaultOrderBy: 'createDate',
     }) // TODO: please change createDate
@@ -228,14 +227,14 @@ export default function AccountAdminList() {
 
             <Container>
                 <CustomBreadcrumbs
-                    heading="Accounts"
+                    heading={translate('accounts')}
                     links={[
                         {
-                            name: 'Accounts',
+                            name: translate('accounts'),
                             href: ACCOUNT_PATH,
                         },
                         {
-                            name: 'List',
+                            name: translate('list'),
                         },
                     ]}
                     action={
@@ -244,7 +243,7 @@ export default function AccountAdminList() {
                                 variant="contained"
                                 startIcon={<Iconify icon="eva:plus-fill" />}
                             >
-                                Create an account
+                                {translate('create_an_account')}
                             </Button>
                         </NextLink>
                     }
