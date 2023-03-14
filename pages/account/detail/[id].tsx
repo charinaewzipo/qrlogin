@@ -10,15 +10,17 @@ import AccountForm from '@ku/components/Account/AccountForm'
 import {useRouter} from 'next/router'
 import NextLink from 'next/link'
 import Iconify from '@sentry/components/iconify'
+import { useSnackbar } from '@sentry/components/snackbar'
 
-AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+AccountDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
-export function AccountCreate() {
+export function AccountDetail() {
     const router = useRouter()
     const accountId = router.query.id
     const theme = useTheme()
     const { t } = useTranslation();
+    const { enqueueSnackbar } = useSnackbar();
 
     const { scrollYProgress } = useScroll()
 
@@ -49,6 +51,7 @@ export function AccountCreate() {
 
     const onFormSubmit = () => {
       //TODO: api submit
+      enqueueSnackbar('Account saved.');
       console.log('submit');
     }
 
@@ -108,4 +111,4 @@ export function AccountCreate() {
     )
 }
 
-export default AccountCreate
+export default AccountDetail
