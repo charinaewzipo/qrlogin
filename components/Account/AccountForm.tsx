@@ -16,6 +16,7 @@ import {
     Autocomplete,
     Box,
     Paper,
+    Button,
 } from '@mui/material'
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
@@ -89,6 +90,7 @@ const constant = {
     updateAccount:'Update Account',
     reset: 'Reset',
     waitSupervisorApprove: 'Please wait for supervisor approve.',
+    approve: 'Approve',
 }
 const typeOfPerson = [
     { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
@@ -909,6 +911,7 @@ function AccountForm(props: AccountFormProps) {
                                         sx={{ height: 64, width: 64, borderRadius: 1 }}
                                         disabledEffect
                                     />
+                                     <Box sx={{ flexGrow: 1 }}>
                                     <Stack>
                                         <Typography variant="h6">
                                             {`${supervisorSelector.supervisor.name} (${supervisorSelector.supervisor.code})`}
@@ -917,9 +920,18 @@ function AccountForm(props: AccountFormProps) {
                                             {supervisorSelector.supervisor.email}
                                         </Typography>
                                     </Stack>
-                                    <Typography variant="body1"  justifyContent="flex-end" whiteSpace={'pre-line'}>
-                                            approved
-                                    </Typography>
+                                    </Box>
+                                   
+                                    <Box sx={{ flexShrink: 0}}>
+                                            <Button
+                                                variant="contained"
+                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>} 
+                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
+                                                disableElevation
+                                            >
+                                                {constant.approve}
+                                            </Button>     
+                                    </Box>
                                 </Stack>
                             ) : (
                                 <></>
