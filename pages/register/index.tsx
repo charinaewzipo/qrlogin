@@ -26,6 +26,7 @@ export default function RegisterPage() {
     const { translate } = useLocales()
     const { t } = useTranslation()
     const [isPdpaAccepted, setIsPdpaAccepted] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
     const router = useRouter()
     const onAcceptPdpa = () => {
         setIsPdpaAccepted(true)
@@ -34,6 +35,8 @@ export default function RegisterPage() {
         router.push(LOGIN_PATH)
     }
     const onSubmitRegister = (data: RegisterFormValuesProps) => {
+        console.log(data);
+        
         const checkIsKuPerson = (typeOfPerson: string) =>
             ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
         const checkIsStudent = (position: string) => position.includes('student')
@@ -47,6 +50,8 @@ export default function RegisterPage() {
                 isStudent: checkIsKuStudent(data.position, data.typeOfPerson),
             },
         }, REGISTER_SUCCESS_PATH)
+
+        setErrorMsg('error msg')
     }
     const onBackRegister = () => {
         setIsPdpaAccepted(false)
@@ -66,7 +71,7 @@ export default function RegisterPage() {
                     {!isPdpaAccepted ? (
                         <PDPAForm onAccept={onAcceptPdpa} onDecline={onDeclinePdpa} />
                     ) : (
-                        <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} />
+                        <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} errorMsg={errorMsg} />
                     )}
                 </RegisterLayout>
             </GuestGuard>
