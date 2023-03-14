@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, ErrorOption, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -319,21 +319,31 @@ function AccountForm(props: AccountFormProps) {
         trigger
     } = methods
 
-    const watchIdImages = watch('idImages')
-    const watchTypeOfPerson = watch('typeOfPerson')
-    const watchPosition = watch('position')
-    const watchTitle = watch('title')
-    const watchSupervisorCode = watch('supervisorCode')
-    const watchPrivillege = watch('privillege')
-    const watchSupervisorStatus = watch('supervisorStatus')
-
+    const [
+        watchIdImages,
+        watchTypeOfPerson,
+        watchPosition,
+        watchTitle,
+        watchSupervisorCode,
+        watchSupervisorStatus,
+        watchPrivillege
+    ] = watch([
+        'idImages',
+        'typeOfPerson',
+        'position',
+        'title',
+        'supervisorCode',
+        'supervisorStatus',
+        'privillege',
+    ])
+    
     useEffect(() => {
         clearTimeout(supervisorTimeout);
         setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(
             setTimeout(() => {
                 fetchSupervisorData(watchSupervisorCode)
-            }, 1000)
+            }, 500)
         )
     }, [watchSupervisorCode])
 
@@ -421,83 +431,8 @@ function AccountForm(props: AccountFormProps) {
         }
     }
 
-    const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
-        return (
-            <Controller
-                name={`idImages.${index}`}
-                control={control}
-                render={({ field }) => (
-                    <Upload
-                        dropzoneHelper={
-                            <Box sx={{ py: 3, px: 1 }}>
-                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
-                                    {isKu || watchTypeOfPerson === ''
-                                        ? constant.studentIdImage
-                                        : constant.citizenIdImage}
-                                </Typography>
-
-                                <Typography
-                                    variant="body2"
-                                    component="p"
-                                    whiteSpace="pre-line"
-                                    sx={{ ml: -2 }}
-                                >
-                                    Drop files here or click
-                                    <Typography
-                                        variant="body2"
-                                        component="span"
-                                        sx={{
-                                            mx: 0.5,
-                                            color: 'primary.main',
-                                            textDecoration: 'underline',
-                                        }}
-                                    >
-                                        {`browse\n`}
-                                    </Typography>
-                                    {`thorough your machine.\n\n`}
-                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                    {`Max size of 200KB`}
-                                </Typography>
-                            </Box>
-                        }
-                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-                        file={field.value}
-                        onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
-                        onDelete={() => field.onChange('')}
-                        sx={{
-                            width: get(field, 'value', '') === '' ? 264 : '100%',
-                            flex: get(field, 'value', '') === '' ? '' : '50%',
-                            '& > div > div': {
-                                flexDirection: 'column',
-                                textAlign: 'center',
-                            },
-                        }}
-                        maxSize={200000}
-                    />
-                )}
-            />
-        )
-    }
-    const RenderIdImageUpload = () => {
-        const idImageWithoutEmpty = watchIdImages.filter((idImage) => idImage)
-        const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
-        return (
-            <>
-                <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                    {[...Array(idImageLength).keys()].map((i) => (
-                        <IdImageUpload key={`id-image-upload-${i}`} index={i} />
-                    ))}
-                </Stack>
-                {errors.idImages?.message ? (
-                    <FormHelperText error sx={{ textAlign: 'center ' }}>
-                        {errors.idImages?.message}
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-            </>
-        )
-    }
+    const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
+    const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
     const collapseableInputStyle = (isShow: boolean) => ({
         flex: isShow ? '100%' : '0%',
@@ -823,7 +758,76 @@ function AccountForm(props: AccountFormProps) {
                         ) : (
                             <></>
                         )}
-                        <RenderIdImageUpload />
+
+                        <Stack
+                            flexDirection={'row'}
+                            flexWrap={'wrap'}
+                            justifyContent={'center'}
+                            gap={1.5}
+                        >
+                            {[...Array(idImageLength).keys()].map((i) => (
+                                <Controller
+                                    key={`id-image-upload-${i}`}
+                                    name={`idImages.${i}`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Upload
+                                            dropzoneHelper={
+                                                <Box sx={{ py: 3, px: 1 }}>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="h5"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        {isKu || watchTypeOfPerson === ''
+                                                            ? constant.studentIdImage
+                                                            : constant.citizenIdImage}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        component="p"
+                                                        whiteSpace="pre-line"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        Drop files here or click
+                                                        <Typography
+                                                            variant="body2"
+                                                            component="span"
+                                                            sx={{
+                                                                mx: 0.5,
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline',
+                                                            }}
+                                                        >
+                                                            {`browse\n`}
+                                                        </Typography>
+                                                        {`thorough your machine.\n\n`}
+                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                                        {`Max size of 200KB`}
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
+                                            file={field.value}
+                                            onDrop={(files) =>
+                                                field.onChange(URL.createObjectURL(files[0]))
+                                            }
+                                            onDelete={() => field.onChange('')}
+                                            sx={{
+                                                width:
+                                                    get(field, 'value', '') === '' ? 264 : '100%',
+                                                flex: get(field, 'value', '') === '' ? '' : '50%',
+                                                '& > div > div': {
+                                                    flexDirection: 'column',
+                                                    textAlign: 'center',
+                                                },
+                                            }}
+                                            maxSize={200000}
+                                        />
+                                    )}
+                                />
+                            ))}
+                        </Stack>
                     </Stack>
                 </Paper>
                 {isKuStudent && isUser ? (
