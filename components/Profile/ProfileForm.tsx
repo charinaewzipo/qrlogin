@@ -1,7 +1,6 @@
 import * as Yup from 'yup'
 import { useCallback, useMemo } from 'react'
 // next
-import { useRouter } from 'next/router'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { Controller, useForm } from 'react-hook-form'
 import { LoadingButton } from '@mui/lab'
@@ -11,9 +10,11 @@ import FormProvider, {
     RHFTextField,
     RHFAutocomplete,
     RHFUploadAvatar,
+    RHFUpload,
 } from '@sentry/components/hook-form'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fData } from '@sentry/utils/formatNumber'
+import SupervisorSection from './SupervisorSection'
 
 const PRIVILLEGE_OPTION = ['Admin', 'Finance', 'Supervisor', 'User']
 const STATUS_OPTION = ['Active', 'Inactive']
@@ -53,7 +54,7 @@ export type FormValuesProps = {
     accountStatus: string
     accountExpiryDate: Date | null
 
-    profileImage: File | null | undefined
+    profileImage: File | null | string
     typeOfPerson: string
     department: string
     position: string
@@ -66,6 +67,9 @@ export type FormValuesProps = {
     surname: string
     address: string
     phoneNumber: string
+
+    cardImage1: File | null | string
+    cardImage2: File | null | string
 
     afterSubmit?: string
 }
@@ -116,6 +120,21 @@ export default function ProfileForm() {
             .min(10, 'Phone number is required minimum 10 character')
             .max(10, 'Phone number is required maximum 10 character')
             .required('Phone number is required'),
+
+        cardImage1: Yup.mixed()
+            .test('fileSize', 'The file is too large', (file) => file && file.size <= MAX_FILE_SIZE)
+            .test(
+                'fileFormat',
+                'Unsupported Format',
+                (file) => file && FILE_FORMATS.includes(file.type)
+            ),
+        cardImage2: Yup.mixed()
+            .test('fileSize', 'The file is too large', (file) => file && file.size <= MAX_FILE_SIZE)
+            .test(
+                'fileFormat',
+                'Unsupported Format',
+                (file) => file && FILE_FORMATS.includes(file.type)
+            ),
     })
 
     const defaultValues: FormValuesProps = useMemo(
@@ -125,7 +144,8 @@ export default function ProfileForm() {
             password: '********** (Auto Genarated)',
             accountStatus: 'Active',
             accountExpiryDate: null,
-            profileImage: null,
+            profileImage:
+                'https://api-prod-minimal-v4.vercel.app/assets/images/avatars/avatar_1.jpg',
             typeOfPerson: '',
             department: '',
             position: '',
@@ -139,6 +159,11 @@ export default function ProfileForm() {
             surname: '',
             address: '',
             phoneNumber: '',
+
+            cardImage1:
+                'https://api-prod-minimal-v4.vercel.app/assets/images/avatars/avatar_10.jpg',
+            cardImage2:
+                'https://api-prod-minimal-v4.vercel.app/assets/images/avatars/avatar_11.jpg',
         }),
         [] // TODO: Put profile data here.
     )
@@ -186,6 +211,15 @@ export default function ProfileForm() {
         },
         [setValue]
     )
+
+    const handleRemoveFile = (inputFile: File | string) => {
+        // const filtered = values.cardImage1 && values.cardImage1?.filter((file) => file !== inputFile);
+        // setValue('cardImage1', filtered);
+    }
+
+    const handleRemoveAllFiles = () => {
+        // setValue('cardImage1', [])
+    }
 
     return (
         <>
@@ -435,7 +469,39 @@ export default function ProfileForm() {
 
                                 <RHFTextField name="address" label="Address *" multiline />
                                 <RHFTextField name="phoneNumber" label="Phone number *" />
+
+                                <Stack
+                                    spacing={{ sx: 2, sm: 2 }}
+                                    direction={{ xs: 'column', sm: 'row' }}
+                                >
+                                    <RHFUpload
+                                        disabled
+                                        thumbnail
+                                        name="cardImage1"
+                                        maxSize={MAX_FILE_SIZE}
+                                        onDrop={handleDrop}
+                                        onRemove={handleRemoveFile}
+                                        onRemoveAll={handleRemoveAllFiles}
+                                        onUpload={() => console.log('ON UPLOAD')}
+                                    />
+                                    <RHFUpload
+                                        disabled
+                                        thumbnail
+                                        name="cardImage2"
+                                        maxSize={MAX_FILE_SIZE}
+                                        onDrop={handleDrop}
+                                        onRemove={handleRemoveFile}
+                                        onRemoveAll={handleRemoveAllFiles}
+                                        onUpload={() => console.log('ON UPLOAD')}
+                                    />
+                                </Stack>
                             </Stack>
+                        </Card>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Card sx={{ p: 3 }}>
+                            <SupervisorSection />
                         </Card>
                     </Grid>
 
