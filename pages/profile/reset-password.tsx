@@ -12,7 +12,7 @@ ProfileResetPasswordPage.getLayout = (page: React.ReactElement) => (
 
 export default function ProfileResetPasswordPage() {
     const { user } = useAuthContext()
-
+    const userFullName = `${user.uFirstname || ''} ${user.uSurname || ''}`
     return (
         <>
             <Head>
@@ -28,7 +28,7 @@ export default function ProfileResetPasswordPage() {
                             href: PROFILE_PATH,
                         },
                         {
-                            name: user.name || '',
+                            name: userFullName,
                             href: PROFILE_PATH,
                         },
                         {

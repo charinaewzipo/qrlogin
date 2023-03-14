@@ -36,6 +36,8 @@ export default function ProfilePage() {
         }
     }
 
+    const userFullName = `${user.uFirstname || ''} ${user.uSurname || ''}`
+
     return (
         <>
             <Head>
@@ -51,7 +53,7 @@ export default function ProfilePage() {
                             href: PROFILE_PATH,
                         },
                         {
-                            name: user.name || '',
+                            name: userFullName,
                         },
                     ]}
                     action={
