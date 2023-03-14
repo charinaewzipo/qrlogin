@@ -50,7 +50,7 @@ export interface IAccountFormValuesProps {
     creditLimit: string
     bookingLimit: string
     supervisorCode: string
-    supervisorStatus: 'found' | 'notFound' | 'waiting'
+    supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
 }
 const constant = {
     createAccount: 'Create Account',
@@ -151,7 +151,6 @@ interface IIdImageUpload {
 }
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
-    const [isSupervisorFetching, setIsSupervisorFetching] = useState(false)
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
 
     const checkIsKuPerson = (typeOfPerson: string) =>
@@ -267,14 +266,14 @@ function AccountForm(props: AccountFormProps) {
                 .required('Supervisor code is require, please contact your supervisor for code')
                 .test({
                     name: 'supervisorCode',
-                    message: '',
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'waiting',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
                 })
                 .test({
                     name: 'supervisorCode',
-                    message: constant.supervisorNotFound,
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
-                }),
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
+                })
         }),
     })
 
@@ -311,7 +310,6 @@ function AccountForm(props: AccountFormProps) {
     })
 
     const {
-        clearErrors,
         handleSubmit,
         getValues,
         setValue,
@@ -321,11 +319,13 @@ function AccountForm(props: AccountFormProps) {
         trigger
     } = methods
 
+    const watchIdImages = watch('idImages')
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
     const watchTitle = watch('title')
     const watchSupervisorCode = watch('supervisorCode')
     const watchPrivillege = watch('privillege')
+    const watchSupervisorStatus = watch('supervisorStatus')
 
     useEffect(() => {
         clearTimeout(supervisorTimeout);
@@ -358,11 +358,11 @@ function AccountForm(props: AccountFormProps) {
     const isFinance = checkIsFinance(watchPrivillege)
 
     const fetchSupervisorData = async (code: string) => {
-        clearErrors()
+        setValue('supervisorStatus', null)
         if (!code) return
         if (code.length < 6) return
         try {
-            setIsSupervisorFetching(true)
+            setValue('supervisorStatus', 'fetching')
             const response = await fetchGetSupervisor(code)
             if (response.code === 200) {
                 setValue('supervisorStatus', 'found')
@@ -371,15 +371,14 @@ function AccountForm(props: AccountFormProps) {
                 setSupervisor(null)
                 setValue('supervisorStatus', 'notFound')
             }
-            setIsSupervisorFetching(false)
         } catch (error) {
             console.log(error);
+            setValue('supervisorStatus', null)
         }
-        trigger()
+        trigger('supervisorCode')
     }
-    
+
     const onSubmit = async (data: IAccountFormValuesProps) => {
-        methods.watch
         if (checkIsFinance(data.privillege)) {
             data.creditLimit = '0'
             data.bookingLimit = '0'
@@ -480,7 +479,7 @@ function AccountForm(props: AccountFormProps) {
         )
     }
     const RenderIdImageUpload = () => {
-        const idImageWithoutEmpty = watch('idImages').filter((idImage) => idImage)
+        const idImageWithoutEmpty = watchIdImages.filter((idImage) => idImage)
         const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
         return (
             <>
@@ -515,9 +514,7 @@ function AccountForm(props: AccountFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
-                {!!props.errorMsg && (
-                    <Alert severity="error">{props.errorMsg}</Alert>
-                )}
+                {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         <RHFSelect
@@ -838,19 +835,18 @@ function AccountForm(props: AccountFormProps) {
                             </Typography>
                             <RHFTextField
                                 name="supervisorCode"
-                                defaultValue=""
                                 label={constant.supervisorCode}
                                 error={!!errors.supervisorCode}
                                 helperText={get(errors?.supervisorCode, 'message', '')}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            {isSupervisorFetching ? (
+                                            {watchSupervisorStatus === 'fetching' ? (
                                                 <CircularProgress
                                                     size={16}
                                                     sx={{ color: 'text.primary' }}
                                                 />
-                                            ) : !!errors.supervisorCode ? (
+                                            ) : watchSupervisorStatus === 'notFound' ? (
                                                 <IconButton
                                                     onClick={() =>
                                                         fetchSupervisorData(
@@ -868,7 +864,7 @@ function AccountForm(props: AccountFormProps) {
                                     ),
                                 }}
                             />
-                            {supervisor ? (
+                            {supervisor && watchSupervisorStatus === 'found' ? (
                                 <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                     <Image
                                         alt="Logo"

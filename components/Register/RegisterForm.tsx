@@ -34,7 +34,7 @@ export interface RegisterFormValuesProps {
     phoneNumber: string
     idImages: string[]
     supervisorCode: string
-    supervisorStatus: 'found' | 'notFound' | 'waiting'
+    supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
 }
 const constant = {
     submit: 'Submit',
@@ -115,7 +115,6 @@ interface IIdImageUpload {
 }
 function RegisterForm(props: RegisterFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
-    const [isSupervisorFetching, setIsSupervisorFetching] = useState(false)
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
 
     const checkIsKuPerson = (typeOfPerson: string) =>
@@ -225,13 +224,13 @@ function RegisterForm(props: RegisterFormProps) {
                 .required('Supervisor code is require, please contact your supervisor for code')
                 .test({
                     name: 'supervisorCode',
-                    message: '',
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'waiting',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
                 })
                 .test({
                     name: 'supervisorCode',
-                    message: constant.supervisorNotFound,
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
                 }),
         }),
     })
@@ -272,12 +271,16 @@ function RegisterForm(props: RegisterFormProps) {
         formState: { errors, isSubmitted },
         control,
         watch,
-        trigger
+        trigger,
     } = methods
+
+    
+    const watchIdImages = watch('idImages')
     const watchTypeOfPerson = watch('typeOfPerson')
     const watchPosition = watch('position')
     const watchTitle = watch('title')
     const watchSupervisorCode = watch('supervisorCode')
+    const watchSupervisorStatus = watch('supervisorStatus')
 
     useEffect(() => {
         clearTimeout(supervisorTimeout);
@@ -301,7 +304,6 @@ function RegisterForm(props: RegisterFormProps) {
     const isTitleOther = watchTitle === 'Other'
 
     const onSubmit = async (data: RegisterFormValuesProps) => {
-        methods.watch
         window.scrollTo(0, 0)
         props.onSubmit(data)
     }
@@ -406,11 +408,11 @@ function RegisterForm(props: RegisterFormProps) {
     })
 
     const fetchSupervisorData = async (code: string) => {
-        clearErrors()
+        setValue('supervisorStatus', null)
         if (!code) return
         if (code.length < 6) return
         try {
-            setIsSupervisorFetching(true)
+            setValue('supervisorStatus', 'fetching')
             const response = await fetchGetSupervisor(code)
             if (response.code === 200) {
                 setValue('supervisorStatus', 'found')
@@ -419,19 +421,17 @@ function RegisterForm(props: RegisterFormProps) {
                 setSupervisor(null)
                 setValue('supervisorStatus', 'notFound')
             }
-            setIsSupervisorFetching(false)
         } catch (error) {
             console.log(error);
+            setValue('supervisorStatus', null)
         }
-        trigger()
+        trigger('supervisorCode')
     }
     
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
-                {!!props.errorMsg && (
-                    <Alert severity="error">{props.errorMsg}</Alert>
-                )}
+                {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Controller
                     name="avatar"
                     control={control}
@@ -664,7 +664,7 @@ function RegisterForm(props: RegisterFormProps) {
                 <RenderIdImageUpload />
             </Stack>
 
-            {isKu && isStudent ? (
+            {isKuStudent ? (
                 <>
                     <Divider sx={{ marginY: 8 }} />
                     <Stack spacing={2} textAlign={'left'}>
@@ -674,19 +674,18 @@ function RegisterForm(props: RegisterFormProps) {
                         </Typography>
                         <RHFTextField
                             name="supervisorCode"
-                            defaultValue=""
                             label={constant.supervisorCode}
                             error={!!errors.supervisorCode}
                             helperText={get(errors?.supervisorCode, 'message', '')}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
-                                        {isSupervisorFetching ? (
+                                        {watchSupervisorStatus === 'fetching' ? (
                                             <CircularProgress
                                                 size={16}
                                                 sx={{ color: 'text.primary' }}
                                             />
-                                        ) : !!errors.supervisorCode ? (
+                                        ) : watchSupervisorStatus === 'notFound' ? (
                                             <IconButton
                                                 onClick={() =>
                                                     fetchSupervisorData(getValues('supervisorCode'))
@@ -702,7 +701,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 ),
                             }}
                         />
-                        {supervisor ? (
+                        {supervisor && watchSupervisorStatus === 'found' ? (
                             <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                 <Image
                                     alt="Logo"
