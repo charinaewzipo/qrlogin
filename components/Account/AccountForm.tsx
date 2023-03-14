@@ -25,8 +25,7 @@ import { clamp, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 
-type FormValuesProps = {
-    afterSubmit?: string
+export interface IAccountFormValuesProps {
     privillege: string
     email: string
     password: string
@@ -142,8 +141,9 @@ const privillege = [
     { value: 'User', label: 'User' },
 ]
 interface AccountFormProps {
-    onSubmit: () => void
+    onSubmit: (data: IAccountFormValuesProps) => void
     onCancel: () => void
+    errorMsg: string
 }
 interface IIdImageUpload {
     index: number
@@ -294,7 +294,7 @@ function AccountForm(props: AccountFormProps) {
         supervisorCode: '',
     }
 
-    const methods = useForm<FormValuesProps>({
+    const methods = useForm<IAccountFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
         defaultValues,
     })
@@ -365,20 +365,19 @@ function AccountForm(props: AccountFormProps) {
         }
     }
 
-    const onSubmit = async (data: FormValuesProps) => {
+    const onSubmit = async (data: IAccountFormValuesProps) => {
         methods.watch
-        const errorOptions: ErrorOption = {
-            message: 'errorResponse.data || errorResponse.devMessage',
+        if (checkIsFinance(data.privillege)) {
+            data.creditLimit = '0'
+            data.bookingLimit = '0'
         }
-        //TODO: credit limit เป็น 0 ตอน submit ถ้า previllge เป็น financ
-        setError('afterSubmit', errorOptions)
-        console.log(data)
+        props.onSubmit(data)
         window.scrollTo(0, 0)
     }
 
     const handleChangeNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        fieldName: keyof FormValuesProps,
+        fieldName: keyof IAccountFormValuesProps,
         option?: 'comma'
     ) => {
         const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
@@ -503,8 +502,8 @@ function AccountForm(props: AccountFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
-                {!!errors.afterSubmit && (
-                    <Alert severity="error">{errors.afterSubmit.message}</Alert>
+                {!!props.errorMsg && (
+                    <Alert severity="error">{props.errorMsg}</Alert>
                 )}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
@@ -896,7 +895,6 @@ function AccountForm(props: AccountFormProps) {
                         type="submit"
                         variant="contained"
                         size="large"
-                        onClick={props.onSubmit}
                         // loading={authenticationStore.isFetching}
                     >
                         {constant.createAccount}

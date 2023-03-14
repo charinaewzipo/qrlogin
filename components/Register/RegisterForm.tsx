@@ -16,7 +16,6 @@ import { fetchGetSupervisor } from '@ku/services/supervisor';
 export interface RegisterFormValuesProps {
     email: string
     password: string
-    afterSubmit?: string
     typeOfPerson: string
     avatar: string
     department: string
@@ -108,6 +107,7 @@ const title = [
 interface RegisterFormProps {
     onSubmit: (data: RegisterFormValuesProps) => void
     onBack: () => void
+    errorMsg: string
 }
 interface IIdImageUpload {
   index: number
@@ -287,11 +287,6 @@ function RegisterForm(props: RegisterFormProps) {
 
     const onSubmit = async (data: RegisterFormValuesProps) => {
         methods.watch
-        const errorOptions: ErrorOption = {
-            message: "errorResponse.data || errorResponse.devMessage"
-        }
-        setError('afterSubmit', errorOptions)
-        console.log(data);
         window.scrollTo(0, 0)
         props.onSubmit(data)
     }
@@ -417,8 +412,8 @@ function RegisterForm(props: RegisterFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
-                {!!errors.afterSubmit && (
-                    <Alert severity="error">{errors.afterSubmit.message}</Alert>
+                {!!props.errorMsg && (
+                    <Alert severity="error">{props.errorMsg}</Alert>
                 )}
                 <Controller
                     name="avatar"
