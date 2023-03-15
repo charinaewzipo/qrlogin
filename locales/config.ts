@@ -11,12 +11,6 @@ export const allLangs = [
         systemValue: enUS,
         icon: '/assets/icons/flags/ic_flag_en.svg',
     },
-    {
-        label: 'Thailand',
-        value: 'th',
-        systemValue: thTH,
-        icon: '/assets/icons/flags/ic_flag_fr.svg',
-    },
 ]
 
 export const defaultLang = allLangs[0] // English

@@ -1,5 +1,4 @@
-import { Button, TableRow, TableCell, Box } from '@mui/material'
-import { fDate } from '@sentry/utils/formatTime'
+import { TableRow, TableCell, Box } from '@mui/material'
 import Label from '@sentry/components/label'
 import { Typography } from '@mui/material'
 import { format } from 'date-fns'

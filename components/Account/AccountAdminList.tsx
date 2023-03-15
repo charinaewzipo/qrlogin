@@ -14,7 +14,7 @@ import {
     Container,
     TableContainer,
 } from '@mui/material'
-import { ACCOUNT_PATH, ASSESSMENT_PATH, MERGE_PATH, REGISTER_PATH } from '@ku/constants/routes'
+import { ACCOUNT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
 import Label from '@sentry/components/label'
@@ -33,7 +33,6 @@ import AccountAdminRow from '@ku/components/Account/AccountAdminRow'
 import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
 import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
-import { useLocales } from '@ku/locales'
 
 
 const TABLE_HEAD = [
@@ -129,8 +128,6 @@ AccountAdminList.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{pa
 export default function AccountAdminList() {
     const { enqueueSnackbar } = useSnackbar()
     const { push } = useRouter()
-
-    const { translate } = useLocales();
     const { dense, page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } = useTable({
         defaultOrderBy: 'createDate',
     }) // TODO: please change createDate
@@ -212,7 +209,7 @@ export default function AccountAdminList() {
     }
 
     const handleViewRow = (id: string) => {
-        push(MERGE_PATH(ASSESSMENT_PATH, 'detail', id))
+        push(MERGE_PATH(ACCOUNT_PATH, 'detail', id))
     }
 
     // const handleResetFilter = () => {
@@ -227,23 +224,23 @@ export default function AccountAdminList() {
 
             <Container>
                 <CustomBreadcrumbs
-                    heading={translate('accounts')}
+                    heading={'Accounts'}
                     links={[
                         {
-                            name: translate('accounts'),
+                            name: 'Accounts',
                             href: ACCOUNT_PATH,
                         },
                         {
-                            name: translate('list'),
+                            name: 'List',
                         },
                     ]}
                     action={
-                        <NextLink href={MERGE_PATH(REGISTER_PATH)} passHref>
+                        <NextLink href={MERGE_PATH(ACCOUNT_PATH, 'create')} passHref>
                             <Button
                                 variant="contained"
                                 startIcon={<Iconify icon="eva:plus-fill" />}
                             >
-                                {translate('create_an_account')}
+                                Create an account
                             </Button>
                         </NextLink>
                     }

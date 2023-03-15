@@ -12,7 +12,7 @@ import {
   Container,
   TableContainer,
 } from '@mui/material'
-import { ACCOUNT_PATH, ASSESSMENT_PATH, MERGE_PATH, REGISTER_PATH } from '@ku/constants/routes'
+import { ACCOUNT_PATH, ASSESSMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
 import Label from '@sentry/components/label'
@@ -188,7 +188,7 @@ export default function AccountSupervisorList() {
   }
 
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(ASSESSMENT_PATH, 'detail', id))
+    push(MERGE_PATH(ACCOUNT_PATH, 'detail', id))
   }
 
   // const handleResetFilter = () => {
