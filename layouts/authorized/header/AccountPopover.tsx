@@ -5,7 +5,7 @@ import { useRouter } from 'next/router'
 import { alpha } from '@mui/material/styles'
 import { Box, Divider, Typography, Stack, MenuItem } from '@mui/material'
 // routes
-import { ROOT_PATH, LOGIN_PATH } from '@ku/constants/routes'
+import { ROOT_PATH, PROFILE_PATH, LOGIN_PATH } from '@ku/constants/routes'
 // auth
 import { useAuthContext } from '@ku/contexts/useAuthContext'
 // components
@@ -23,7 +23,7 @@ const OPTIONS = [
     },
     {
         label: 'Profile',
-        linkTo: ROOT_PATH,
+        linkTo: PROFILE_PATH,
     },
 ]
 
@@ -81,23 +81,21 @@ export default function AccountPopover() {
                     }),
                 }}
             >
-                {/* TODO: */}
                 <CustomAvatar
-                    src={user.name} 
-                    alt={user.name}
-                    name={user.name}
+                    src={user.uiPersonPicture}
+                    alt={user.uFirstname}
+                    name={user.uFirstname}
                 />
             </IconButtonAnimate>
 
             <MenuPopover open={openPopover} onClose={handleClosePopover} sx={{ width: 200, p: 0 }}>
                 <Box sx={{ my: 1.5, px: 2.5 }}>
                     <Typography variant="subtitle2" noWrap>
-                        {user.name}
+                        {user.uFirstname} {user.uSurname}
                     </Typography>
 
                     <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                        {/* {user?.email} */}
-                        {user.name}
+                        {user.authEmail}
                     </Typography>
                 </Box>
 
