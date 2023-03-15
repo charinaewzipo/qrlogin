@@ -338,6 +338,9 @@ function AccountForm(props: AccountFormProps) {
     const watchPrivillege = watch('privillege')
 
     useEffect(() => {
+        if(props.permission && props.permission === 'User'){
+            fetchSupervisorData('123456')
+        }
         clearTimeout(supervisorTimeout);
         setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(

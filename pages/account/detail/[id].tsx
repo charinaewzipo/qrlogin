@@ -102,7 +102,7 @@ export function AccountDetail() {
                          
                            
                             </div>
-                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>
+                            <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>
                         </div>
                     </div>
                 </Box>
