@@ -758,13 +758,7 @@ function AccountForm(props: AccountFormProps) {
                         ) : (
                             <></>
                         )}
-
-                        <Stack
-                            flexDirection={'row'}
-                            flexWrap={'wrap'}
-                            justifyContent={'center'}
-                            gap={1.5}
-                        >
+                        <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
                             {[...Array(idImageLength).keys()].map((i) => (
                                 <Controller
                                     key={`id-image-upload-${i}`}
