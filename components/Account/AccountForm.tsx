@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, ErrorOption, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -51,7 +51,7 @@ export interface IAccountFormValuesProps {
     creditLimit: string
     bookingLimit: string
     supervisorCode: string
-    supervisorStatus: 'found' | 'notFound' | 'waiting'
+    supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
 }
 const constant = {
     createAccount: 'Create Account',
@@ -161,7 +161,6 @@ interface IIdImageUpload {
 }
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
-    const [isSupervisorFetching, setIsSupervisorFetching] = useState(false)
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
 
     const checkIsKuPerson = (typeOfPerson: string) =>
@@ -277,14 +276,14 @@ function AccountForm(props: AccountFormProps) {
                 .required('Supervisor code is require, please contact your supervisor for code')
                 .test({
                     name: 'supervisorCode',
-                    message: '',
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'waiting',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
                 })
                 .test({
                     name: 'supervisorCode',
-                    message: constant.supervisorNotFound,
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
-                }),
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
+                })
         }),
     })
 
@@ -321,7 +320,6 @@ function AccountForm(props: AccountFormProps) {
     })
 
     const {
-        clearErrors,
         handleSubmit,
         getValues,
         setValue,
@@ -331,12 +329,24 @@ function AccountForm(props: AccountFormProps) {
         trigger
     } = methods
 
-    const watchTypeOfPerson = watch('typeOfPerson')
-    const watchPosition = watch('position')
-    const watchTitle = watch('title')
-    const watchSupervisorCode = watch('supervisorCode')
-    const watchPrivillege = watch('privillege')
-
+    const [
+        watchIdImages,
+        watchTypeOfPerson,
+        watchPosition,
+        watchTitle,
+        watchSupervisorCode,
+        watchSupervisorStatus,
+        watchPrivillege
+    ] = watch([
+        'idImages',
+        'typeOfPerson',
+        'position',
+        'title',
+        'supervisorCode',
+        'supervisorStatus',
+        'privillege',
+    ])
+    
     useEffect(() => {
         if(props.permission && props.permission === 'User'){
             fetchSupervisorData('123456')
@@ -346,7 +356,7 @@ function AccountForm(props: AccountFormProps) {
         setSupervisorTimeout(
             setTimeout(() => {
                 fetchSupervisorData(watchSupervisorCode)
-            }, 1000)
+            }, 500)
         )
     }, [watchSupervisorCode])
 
@@ -372,11 +382,11 @@ function AccountForm(props: AccountFormProps) {
     
 
     const fetchSupervisorData = async (code: string) => {
-        clearErrors()
+        setValue('supervisorStatus', null)
         if (!code) return
         if (code.length < 6) return
         try {
-            setIsSupervisorFetching(true)
+            setValue('supervisorStatus', 'fetching')
             const response = await fetchGetSupervisor(code)
             if (response.code === 200) {
                 setValue('supervisorStatus', 'found')
@@ -385,15 +395,14 @@ function AccountForm(props: AccountFormProps) {
                 setSupervisor(null)
                 setValue('supervisorStatus', 'notFound')
             }
-            setIsSupervisorFetching(false)
         } catch (error) {
             console.log(error);
+            setValue('supervisorStatus', null)
         }
-        trigger()
+        trigger('supervisorCode')
     }
-    
+
     const onSubmit = async (data: IAccountFormValuesProps) => {
-        methods.watch
         if (checkIsFinance(data.privillege)) {
             data.creditLimit = '0'
             data.bookingLimit = '0'
@@ -436,83 +445,8 @@ function AccountForm(props: AccountFormProps) {
         }
     }
 
-    const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
-        return (
-            <Controller
-                name={`idImages.${index}`}
-                control={control}
-                render={({ field }) => (
-                    <Upload
-                        dropzoneHelper={
-                            <Box sx={{ py: 3, px: 1 }}>
-                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
-                                    {isKu || watchTypeOfPerson === ''
-                                        ? constant.studentIdImage
-                                        : constant.citizenIdImage}
-                                </Typography>
-
-                                <Typography
-                                    variant="body2"
-                                    component="p"
-                                    whiteSpace="pre-line"
-                                    sx={{ ml: -2 }}
-                                >
-                                    Drop files here or click
-                                    <Typography
-                                        variant="body2"
-                                        component="span"
-                                        sx={{
-                                            mx: 0.5,
-                                            color: 'primary.main',
-                                            textDecoration: 'underline',
-                                        }}
-                                    >
-                                        {`browse\n`}
-                                    </Typography>
-                                    {`thorough your machine.\n\n`}
-                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                    {`Max size of 200KB`}
-                                </Typography>
-                            </Box>
-                        }
-                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-                        file={field.value}
-                        onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
-                        onDelete={() => field.onChange('')}
-                        sx={{
-                            width: get(field, 'value', '') === '' ? 264 : '100%',
-                            flex: get(field, 'value', '') === '' ? '' : '50%',
-                            '& > div > div': {
-                                flexDirection: 'column',
-                                textAlign: 'center',
-                            },
-                        }}
-                        maxSize={200000}
-                    />
-                )}
-            />
-        )
-    }
-    const RenderIdImageUpload = () => {
-        const idImageWithoutEmpty = watch('idImages').filter((idImage) => idImage)
-        const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
-        return (
-            <>
-                <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                    {[...Array(idImageLength).keys()].map((i) => (
-                        <IdImageUpload key={`id-image-upload-${i}`} index={i} />
-                    ))}
-                </Stack>
-                {errors.idImages?.message ? (
-                    <FormHelperText error sx={{ textAlign: 'center ' }}>
-                        {errors.idImages?.message}
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-            </>
-        )
-    }
+    const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
+    const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
     const collapseableInputStyle = (isShow: boolean) => ({
         flex: isShow ? '100%' : '0%',
@@ -529,9 +463,7 @@ function AccountForm(props: AccountFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
-                {!!props.errorMsg && (
-                    <Alert severity="error">{props.errorMsg}</Alert>
-                )}
+                {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         <RHFSelect
@@ -840,7 +772,70 @@ function AccountForm(props: AccountFormProps) {
                         ) : (
                             <></>
                         )}
-                        <RenderIdImageUpload />
+                        <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
+                            {[...Array(idImageLength).keys()].map((i) => (
+                                <Controller
+                                    key={`id-image-upload-${i}`}
+                                    name={`idImages.${i}`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Upload
+                                            dropzoneHelper={
+                                                <Box sx={{ py: 3, px: 1 }}>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="h5"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        {isKu || watchTypeOfPerson === ''
+                                                            ? constant.studentIdImage
+                                                            : constant.citizenIdImage}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        component="p"
+                                                        whiteSpace="pre-line"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        Drop files here or click
+                                                        <Typography
+                                                            variant="body2"
+                                                            component="span"
+                                                            sx={{
+                                                                mx: 0.5,
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline',
+                                                            }}
+                                                        >
+                                                            {`browse\n`}
+                                                        </Typography>
+                                                        {`thorough your machine.\n\n`}
+                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                                        {`Max size of 200KB`}
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
+                                            file={field.value}
+                                            onDrop={(files) =>
+                                                field.onChange(URL.createObjectURL(files[0]))
+                                            }
+                                            onDelete={() => field.onChange('')}
+                                            sx={{
+                                                width:
+                                                    get(field, 'value', '') === '' ? 264 : '100%',
+                                                flex: get(field, 'value', '') === '' ? '' : '50%',
+                                                '& > div > div': {
+                                                    flexDirection: 'column',
+                                                    textAlign: 'center',
+                                                },
+                                            }}
+                                            maxSize={200000}
+                                        />
+                                    )}
+                                />
+                            ))}
+                        </Stack>
                     </Stack>
                 </Paper>
                 {isKuStudent && isUser ? (
@@ -852,19 +847,18 @@ function AccountForm(props: AccountFormProps) {
                             </Typography>
                             <RHFTextField
                                 name="supervisorCode"
-                                defaultValue=""
                                 label={constant.supervisorCode}
                                 error={!!errors.supervisorCode}
                                 helperText={get(errors?.supervisorCode, 'message', '')}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            {isSupervisorFetching ? (
+                                            {watchSupervisorStatus === 'fetching' ? (
                                                 <CircularProgress
                                                     size={16}
                                                     sx={{ color: 'text.primary' }}
                                                 />
-                                            ) : !!errors.supervisorCode ? (
+                                            ) : watchSupervisorStatus === 'notFound' ? (
                                                 <IconButton
                                                     onClick={() =>
                                                         fetchSupervisorData(
@@ -882,7 +876,7 @@ function AccountForm(props: AccountFormProps) {
                                     ),
                                 }}
                             />
-                            {supervisor ? (
+                            {supervisor && watchSupervisorStatus === 'found' ? (
                                 <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                     <Image
                                         alt="Logo"
