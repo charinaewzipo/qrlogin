@@ -1,19 +1,15 @@
 import uuidv4 from "@sentry/utils/uuidv4"
+import { fetchGetUser } from "./user"
 
 const fetchLogin = (requestData: ILogin): Promise<IResponse<{ accessToken: string, user: IUser }>> => {
-    return new Promise((resolve, reject) => {
-        const response: IResponse<{ accessToken: string, user: IUser }> = {
-            code: 200000,
-            message: `OK`,
+    return fetchGetUser().then((userResponse) => {
+        return {
+            ...userResponse,
             data: {
                 accessToken: uuidv4(),
-                user: {
-                    name: requestData.email,
-                    role: 'member'
-                }
+                user: userResponse.data
             }
         }
-        resolve(response)
     })
 }
 
