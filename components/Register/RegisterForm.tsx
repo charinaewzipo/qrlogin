@@ -8,7 +8,7 @@ import { Alert, IconButton, InputAdornment, Stack, Typography, TextField, Divide
 import FormProvider, { RHFSelect, RHFTextField } from "@sentry/components/hook-form";
 import { Upload, UploadAvatar } from '@sentry/components/upload';
 import { fData } from '@sentry/utils/formatNumber';
-import { clamp, every, get } from 'lodash';
+import { clamp, cloneDeep, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { fetchGetSupervisor } from '@ku/services/supervisor';
@@ -298,11 +298,17 @@ function RegisterForm(props: RegisterFormProps) {
             }, 500)
         )
     }, [watchSupervisorCode])
+    
     useEffect(() => {
         if (isSubmitted)
             trigger()
     }, [watchTypeOfPerson, watchPosition])
-    
+
+    useEffect(() => {
+        if (props.errorMsg !== '')
+            window.scrollTo(0, 0)
+    }, [props.errorMsg])
+
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
@@ -311,8 +317,8 @@ function RegisterForm(props: RegisterFormProps) {
     const isTitleOther = watchTitle === 'Other'
 
     const onSubmit = async (data: RegisterFormValuesProps) => {
-        window.scrollTo(0, 0)
-        props.onSubmit(data)
+        const submitData = cloneDeep(data)
+        props.onSubmit(submitData)
     }
     const handleChangeNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
