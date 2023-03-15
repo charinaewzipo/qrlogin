@@ -22,7 +22,7 @@ import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
 import { fData, fNumber } from '@sentry/utils/formatNumber'
-import { clamp, get } from 'lodash'
+import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 
@@ -371,6 +371,11 @@ function AccountForm(props: AccountFormProps) {
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
 
+    useEffect(() => {
+        if (props.errorMsg !== '')
+            window.scrollTo(0, 0)
+    }, [props.errorMsg])
+    
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
@@ -403,12 +408,12 @@ function AccountForm(props: AccountFormProps) {
     }
 
     const onSubmit = async (data: IAccountFormValuesProps) => {
-        if (checkIsFinance(data.privillege)) {
-            data.creditLimit = '0'
-            data.bookingLimit = '0'
+        const submitData = cloneDeep(data)
+        if (checkIsFinance(submitData.privillege)) {
+            submitData.creditLimit = '0'
+            submitData.bookingLimit = '0'
         }
-        props.onSubmit(data)
-        window.scrollTo(0, 0)
+        props.onSubmit(submitData)
     }
 
     const handleChangeNumber = (
