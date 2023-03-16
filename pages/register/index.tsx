@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
 import PDPAForm from '@ku/components/Register/PDPAForm'
 import { useRouter } from 'next/router'
-import { LOGIN_PATH } from '@ku/constants/routes'
+import { LOGIN_PATH, MERGE_PATH, REGISTER_PATH } from '@ku/constants/routes'
 import RegisterLayout from '@ku/layouts/register'
 import GuestGuard from '@ku/guard/GuestGuard'
 
@@ -26,6 +26,7 @@ export default function RegisterPage() {
     const { translate } = useLocales()
     const { t } = useTranslation()
     const [isPdpaAccepted, setIsPdpaAccepted] = useState(false)
+    const [errorMsg, setErrorMsg] = useState('')
     const router = useRouter()
     const onAcceptPdpa = () => {
         setIsPdpaAccepted(true)
@@ -34,19 +35,22 @@ export default function RegisterPage() {
         router.push(LOGIN_PATH)
     }
     const onSubmitRegister = (data: RegisterFormValuesProps) => {
+        console.log(data);
+        
         const checkIsKuPerson = (typeOfPerson: string) =>
             ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
         const checkIsStudent = (position: string) => position.includes('student')
         const checkIsKuStudent = (position: string, typeOfPerson: string) =>
             checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
-        
+
         router.push({
-            pathname: REGISTER_SUCCESS_PATH,
+            pathname: MERGE_PATH(REGISTER_PATH, 'success'),
             query: {
                 name: `${data.firstName} ${data.surName}`,
                 isStudent: checkIsKuStudent(data.position, data.typeOfPerson),
             },
-        }, REGISTER_SUCCESS_PATH)
+        }, MERGE_PATH(REGISTER_PATH, 'success'))
+        setErrorMsg('error msg')
     }
     const onBackRegister = () => {
         setIsPdpaAccepted(false)
@@ -66,7 +70,7 @@ export default function RegisterPage() {
                     {!isPdpaAccepted ? (
                         <PDPAForm onAccept={onAcceptPdpa} onDecline={onDeclinePdpa} />
                     ) : (
-                        <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} />
+                        <RegisterForm onSubmit={onSubmitRegister} onBack={onBackRegister} errorMsg={errorMsg} />
                     )}
                 </RegisterLayout>
             </GuestGuard>

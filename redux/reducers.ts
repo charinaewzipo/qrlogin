@@ -4,7 +4,6 @@ import createWebStorage from 'redux-persist/lib/storage/createWebStorage'
 
 // Reducers
 // import userReducer from './user'
-import supervisorReducer from './supervisor'
 // TODO: Put any reducer here
 
 const createNoopStorage = () => ({
@@ -28,16 +27,9 @@ const rootPersistConfig = {
     whitelist: [],
 };
 
-const supervisorPersistConfig = {
-    key: 'supervisor',
-    storage,
-    keyPrefix: 'redux-'
-};
-
 const rootReducer = combineReducers({
     // e.g. token: tokenReducer
     // user: persistReducer(userPersistConfig, userReducer),
-    supervisor: persistReducer(supervisorPersistConfig, supervisorReducer),
 })
 
 export { rootPersistConfig, rootReducer }

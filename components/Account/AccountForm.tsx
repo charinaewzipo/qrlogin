@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useEffect } from 'react'
+import { ChangeEvent, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, ErrorOption, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -16,18 +16,17 @@ import {
     Autocomplete,
     Box,
     Paper,
+    Button,
 } from '@mui/material'
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
-import { fData } from '@sentry/utils/formatNumber'
-import { clamp, every, get } from 'lodash'
+import { fData, fNumber } from '@sentry/utils/formatNumber'
+import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
-import { useDispatch, useSelector } from '@ku/redux'
-import { clearSupervisor, getSupervisor } from '@ku/redux/supervisor'
+import { fetchGetSupervisor } from '@ku/services/supervisor'
 
-type FormValuesProps = {
-    afterSubmit?: string
+export interface IAccountFormValuesProps {
     privillege: string
     email: string
     password: string
@@ -52,39 +51,45 @@ type FormValuesProps = {
     creditLimit: string
     bookingLimit: string
     supervisorCode: string
+    supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
 }
 const constant = {
     createAccount: 'Create Account',
     cancel: 'Cancel',
-    privillege: 'Privillege *',
-    accountStatus: 'Account Status *',
+    privillege: 'Privillege',
+    accountStatus: 'Account Status',
     accountExpiryDate: 'Account expiry date',
-    email: 'Email *',
+    email: 'Email',
     password: 'Password',
     passwordPlaceholder: '********** (Auto Generated)',
-    typeOfPerson: 'Type of person *',
-    department: 'Department *',
-    governmentName: 'Government name *',
-    universityName: 'University name *',
-    companyName: 'Company name *',
-    position: 'Position *',
-    studentId: 'StudentId *',
+    typeOfPerson: 'Type of person',
+    department: 'Department',
+    governmentName: 'Government name',
+    universityName: 'University name',
+    companyName: 'Company name',
+    position: 'Position',
+    studentId: 'StudentId',
     staffId: 'Staff ID',
-    positionName: 'Position name *',
-    title: 'Title *',
+    positionName: 'Position name',
+    title: 'Title',
     otherTitle: 'Other title',
-    firstName: 'Firstname *',
-    surName: 'Surname *',
-    address: 'Address *',
-    phoneNumber: 'Phone number *',
+    firstName: 'Firstname',
+    surName: 'Surname',
+    address: 'Address',
+    phoneNumber: 'Phone number',
     studentIdImage: 'Student/Staff ID Image',
     citizenIdImage: 'Citizen ID Image',
-    creditLimit: 'Credit limit *',
-    bookingLimit: 'Booking limit *',
+    creditLimit: 'Credit limit',
+    bookingLimit: 'Booking limit',
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code *',
+    supervisorCode: 'Supervisor code',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
+
+    updateAccount:'Update Account',
+    reset: 'Reset',
+    waitSupervisorApprove: 'Please wait for supervisor approve.',
+    approve: 'Approve',
 }
 const typeOfPerson = [
     { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
@@ -142,14 +147,22 @@ const privillege = [
     { value: 'Supervisor', label: 'Supervisor' },
     { value: 'User', label: 'User' },
 ]
+
+declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
-    onSubmit: () => void
+    onSubmit: (data: IAccountFormValuesProps) => void
     onCancel: () => void
+    updateMode? : boolean
+    permission? : PERMISSION
+    errorMsg: string
 }
 interface IIdImageUpload {
     index: number
 }
 function AccountForm(props: AccountFormProps) {
+    const [supervisor, setSupervisor] = useState<ISupervisor | null>()
+    const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
+
     const checkIsKuPerson = (typeOfPerson: string) =>
         ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
@@ -172,8 +185,8 @@ function AccountForm(props: AccountFormProps) {
             .when(['position', 'typeOfPerson', 'privillege'], {
                 is: (position, typeOfPerson, privillege) =>
                     (checkIsKuStudent(position, typeOfPerson) ||
-                    checkIsAdmin(privillege) ||
-                    checkIsFinance(privillege)) &&
+                        checkIsAdmin(privillege) ||
+                        checkIsFinance(privillege)) &&
                     !checkIsSupervisor(privillege),
                 then: Yup.string().test({
                     name: 'email',
@@ -183,12 +196,18 @@ function AccountForm(props: AccountFormProps) {
             }),
         password: Yup.string(),
         accountStatus: Yup.string().required('Account Status is require'),
-        accountExpiryDate: Yup.string()
+        accountExpiryDate: Yup.date()
+            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
             .nullable()
             .test({
                 name: 'accountExpiryDate',
                 message: "Account expiry date must be greater than today's date",
-                test: (date) => !date || new Date(date).getTime() > new Date().getTime(),
+                test: (date) => {
+                    const datePlusOne = new Date()
+                    datePlusOne.setDate(datePlusOne.getDate() + 1)
+                    datePlusOne.setHours(0, 0, 0, 0)
+                    return date === null || date.getTime() >= datePlusOne.getTime()
+                },
             }),
         avatar: Yup.string(),
         typeOfPerson: Yup.string().required('Type of person is require'),
@@ -237,10 +256,15 @@ function AccountForm(props: AccountFormProps) {
             .required('Phone number is require')
             .test({
                 name: 'phoneNumber',
+                message: 'Phone number must be numbers',
+                test: (phone) => new RegExp(numberOnlyRegex).test(phone),
+            })
+            .test({
+                name: 'phoneNumber',
                 message: "Phone number must start with '0'",
                 test: (phone) => phone[0] === '0',
             })
-            .length(10, 'Phone number should be 10 digits'),
+            .length(10, 'Phone number must be 10 digits'),
         idImages: Yup.array(Yup.string()),
         creditLimit: Yup.string().required('Credit limit is require'),
         bookingLimit: Yup.string().required('Booking limit is require'),
@@ -248,9 +272,18 @@ function AccountForm(props: AccountFormProps) {
         supervisorCode: Yup.string().when(['position', 'typeOfPerson', 'privillege'], {
             is: (position, typeOfPerson, privillege) =>
                 checkIsKuStudent(position, typeOfPerson) && checkIsUser(privillege),
-            then: Yup.string().required(
-                'Supervisor code is require, please contact your supervisor for code'
-            ),
+            then: Yup.string()
+                .required('Supervisor code is require, please contact your supervisor for code')
+                .test({
+                    name: 'supervisorCode',
+                    message: constant.supervisorNotFound,
+                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
+                })
+                .test({
+                    name: 'supervisorCode',
+                    message: '',
+                    test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
+                })
         }),
     })
 
@@ -260,7 +293,7 @@ function AccountForm(props: AccountFormProps) {
         email: '',
         password: '',
         accountStatus: 'Active',
-        accountExpiryDate: '',
+        accountExpiryDate: null,
         typeOfPerson: '',
         department: '',
         universityName: '',
@@ -268,6 +301,7 @@ function AccountForm(props: AccountFormProps) {
         position: '',
         staffId: '',
         positionName: '',
+        companyName: '',
         title: '',
         otherTitle: '',
         firstName: '',
@@ -275,19 +309,18 @@ function AccountForm(props: AccountFormProps) {
         address: '',
         phoneNumber: '',
         idImages: [''],
-        creditLimit: '15000',
+        creditLimit: '15,000',
         bookingLimit: '5',
         supervisorCode: '',
+        supervisorStatus: null,
     }
 
-    const methods = useForm<FormValuesProps>({
+    const methods = useForm<IAccountFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
         defaultValues,
     })
 
     const {
-        setError,
-        clearErrors,
         handleSubmit,
         getValues,
         setValue,
@@ -297,152 +330,134 @@ function AccountForm(props: AccountFormProps) {
         trigger
     } = methods
 
-    const watchTypeOfPerson = watch('typeOfPerson')
-    const watchPosition = watch('position')
-    const watchTitle = watch('title')
-    const watchSupervisorCode = watch('supervisorCode')
-    const watchPrivillege = watch('privillege')
+    const [
+        watchIdImages,
+        watchTypeOfPerson,
+        watchPosition,
+        watchTitle,
+        watchSupervisorCode,
+        watchSupervisorStatus,
+        watchPrivillege
+    ] = watch([
+        'idImages',
+        'typeOfPerson',
+        'position',
+        'title',
+        'supervisorCode',
+        'supervisorStatus',
+        'privillege',
+    ])
+    
     useEffect(() => {
-        fetchSupervisorData(watchSupervisorCode)
+        if(props.permission && props.permission === 'User'){
+            fetchSupervisorData('123456')
+        }
+        clearTimeout(supervisorTimeout);
+        setValue('supervisorStatus', 'waiting')
+        setSupervisorTimeout(
+            setTimeout(() => {
+                fetchSupervisorData(watchSupervisorCode)
+            }, 500)
+        )
     }, [watchSupervisorCode])
+
     useEffect(() => {
         if (isSubmitted)
             trigger()
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
+            setValue('position', '')
         if (isFinance) {
             if (getValues('typeOfPerson') !== 'KU Student & Staff')
                 setValue('typeOfPerson', '')
+            //ตอนปรับ privillege เป็น finance 
+            //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
 
+    useEffect(() => {
+        if (props.errorMsg !== '')
+            window.scrollTo(0, 0)
+    }, [props.errorMsg])
+    
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
     const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
-    const isPositionOther = watchPosition === 'Other'
-    const isTitleOther = watchTitle === 'Other'
+    const isPositionOther = checkIsOther(watchPosition)
+    const isTitleOther = checkIsOther(watchTitle)
     const isUser = checkIsUser(watchPrivillege)
     const isFinance = checkIsFinance(watchPrivillege)
     
-    useEffect(() => {
-        return () => {
-            dispatch(clearSupervisor())
-        }
-    }, [])
 
-    const dispatch = useDispatch()
-    const supervisorSelector = useSelector((state) => state.supervisor)
-    useEffect(() => {
-        if (supervisorSelector.isLoading) return
-        if (supervisorSelector.supervisor.code === '500') {
-            setError('supervisorCode', { type: 'custom', message: constant.supervisorNotFound })
-        } else {
-            clearErrors('supervisorCode')
-        }
-    }, [supervisorSelector.isLoading])
-
-    const fetchSupervisorData = (code: string) => {
-        setError('supervisorCode', { type: 'custom', message: '' })
+    const fetchSupervisorData = async (code: string) => {
+        setValue('supervisorStatus', null)
         if (!code) return
         if (code.length < 6) return
-        dispatch(getSupervisor(code))
-    }
-
-    const onSubmit = async (data: FormValuesProps) => {
-        methods.watch
-        const errorOptions: ErrorOption = {
-            message: 'errorResponse.data || errorResponse.devMessage',
+        try {
+            setValue('supervisorStatus', 'fetching')
+            const response = await fetchGetSupervisor(code)
+            if (response.code === 200) {
+                setValue('supervisorStatus', 'found')
+                setSupervisor(response.data)
+            } else {
+                setSupervisor(null)
+                setValue('supervisorStatus', 'notFound')
+            }
+        } catch (error) {
+            console.log(error);
+            setValue('supervisorStatus', null)
         }
-        //TODO: credit limit เป็น 0 ตอน submit ถ้า previllge เป็น financ
-        setError('afterSubmit', errorOptions)
-        console.log(data)
-        window.scrollTo(0, 0)
+        trigger('supervisorCode')
     }
 
-    const handleChangeNumber = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, fieldName: keyof FormValuesProps) => {
-        const newVal = e.target.value
-        if (newVal === '' || new RegExp(numberOnlyRegex).test(newVal)) {
-            setValue(fieldName, newVal)
-            if (isSubmitted)
-                trigger()
+    const onSubmit = async (data: IAccountFormValuesProps) => {
+        const submitData = cloneDeep(data)
+        if (checkIsFinance(submitData.privillege)) {
+            submitData.creditLimit = '0'
+            submitData.bookingLimit = '0'
+        }
+        props.onSubmit(submitData)
+    }
+
+    const handleChangeNumber = (
+        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        fieldName: keyof IAccountFormValuesProps,
+        option?: 'comma'
+    ) => {
+        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
+        const oldValue = getValues(fieldName)
+        let newValue = e.target.value
+        if (option === 'comma'){
+            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
+            for (let i = 0; i < oldValue.length; i++) {
+                if (
+                    oldValue[i] === ',' &&
+                    oldValue[i] !== newValue[i] &&
+                    oldValue.length - 1 === newValue.length
+                ) {
+                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
+                    break
+                }
+            }
+        }
+        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
+        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
+            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
+            setValue(fieldName, formattedValue)
+            if (isSubmitted) trigger()
+            setTimeout(() => {
+                //set text cursor at same position after setValue
+                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
+                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
+            }, 0)
         }
     }
 
-    const IdImageUpload: FC<IIdImageUpload> = ({ index }) => {
-        return (
-            <Controller
-                name={`idImages.${index}`}
-                control={control}
-                render={({ field }) => (
-                    <Upload
-                        dropzoneHelper={
-                            <Box sx={{ py: 3, px: 1 }}>
-                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
-                                    {isKu || watchTypeOfPerson === ''
-                                        ? constant.studentIdImage
-                                        : constant.citizenIdImage}
-                                </Typography>
+    const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
+    const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
-                                <Typography
-                                    variant="body2"
-                                    component="p"
-                                    whiteSpace="pre-line"
-                                    sx={{ ml: -2 }}
-                                >
-                                    Drop files here or click
-                                    <Typography
-                                        variant="body2"
-                                        component="span"
-                                        sx={{
-                                            mx: 0.5,
-                                            color: 'primary.main',
-                                            textDecoration: 'underline',
-                                        }}
-                                    >
-                                        {`browse\n`}
-                                    </Typography>
-                                    {`thorough your machine.\n\n`}
-                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                    {`Max size of 200KB`}
-                                </Typography>
-                            </Box>
-                        }
-                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
-                        file={field.value}
-                        onDrop={(files) => field.onChange(URL.createObjectURL(files[0]))}
-                        onDelete={() => field.onChange('')}
-                        sx={{
-                            width: get(field, 'value', '') === '' ? 264 : '100%',
-                            flex: get(field, 'value', '') === '' ? '' : '50%',
-                            '& > div > div': {
-                                flexDirection: 'column',
-                                textAlign: 'center',
-                            },
-                        }}
-                        maxSize={200000}
-                    />
-                )}
-            />
-        )
-    }
-    const RenderIdImageUpload = () => {
-        const idImageWithoutEmpty = watch('idImages').filter((idImage) => idImage)
-        const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
-        return (
-            <>
-                <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                    {[...Array(idImageLength).keys()].map((i) => (
-                        <IdImageUpload key={`id-image-upload-${i}`} index={i} />
-                    ))}
-                </Stack>
-                {errors.idImages?.message ? (
-                    <FormHelperText error sx={{ textAlign: 'center ' }}>
-                        {errors.idImages?.message}
-                    </FormHelperText>
-                ) : (
-                    <></>
-                )}
-            </>
-        )
+    const isRequire = (label: string, isRequire: boolean = true) => {
+        return `${label} ${isRequire ? '*' : ''}`
     }
 
     const collapseableInputStyle = (isShow: boolean) => ({
@@ -460,15 +475,12 @@ function AccountForm(props: AccountFormProps) {
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
-                {!!errors.afterSubmit && (
-                    <Alert severity="error">{errors.afterSubmit.message}</Alert>
-                )}
+                {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         <RHFSelect
                             name="privillege"
-                            label={constant.privillege}
-                            placeholder={constant.privillege}
+                            label={isRequire(constant.privillege)}
                             InputLabelProps={{ shrink: true }}
                         >
                             {privillege.map(({ value, label }) => (
@@ -477,7 +489,7 @@ function AccountForm(props: AccountFormProps) {
                                 </option>
                             ))}
                         </RHFSelect>
-                        <RHFTextField name="email" label={constant.email} />
+                        <RHFTextField name="email" label={isRequire(constant.email)} />
                         <RHFTextField
                             name="password"
                             label={constant.password}
@@ -488,8 +500,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
                                 name="accountStatus"
-                                label={constant.accountStatus}
-                                placeholder={constant.accountStatus}
+                                label={isRequire(constant.accountStatus)}
                                 InputLabelProps={{ shrink: true }}
                             >
                                 {accountStatus.map(({ value, label }) => (
@@ -535,7 +546,7 @@ function AccountForm(props: AccountFormProps) {
                             render={({ field }) => (
                                 <Stack sx={{ mt: 1 }}>
                                     <UploadAvatar
-                                        accept={{ 'image/*': ['.jpeg, .jpg, .png, .gif'] }}
+                                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                                         file={field.value}
                                         onDrop={(files) =>
                                             field.onChange(URL.createObjectURL(files[0]))
@@ -560,8 +571,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack flexDirection={'row'} gap={3}>
                             <RHFSelect
                                 name="typeOfPerson"
-                                label={constant.typeOfPerson}
-                                placeholder={constant.typeOfPerson}
+                                label={isRequire(constant.typeOfPerson)}
                             >
                                 <option
                                     value={''}
@@ -580,7 +590,7 @@ function AccountForm(props: AccountFormProps) {
                                 'Other University': (
                                     <RHFTextField
                                         name="universityName"
-                                        label={constant.universityName}
+                                        label={isRequire(constant.universityName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -588,7 +598,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="department"
                                         key={'department-textfield'}
-                                        label={constant.department}
+                                        label={isRequire(constant.department)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -600,9 +610,11 @@ function AccountForm(props: AccountFormProps) {
                                             <Autocomplete
                                                 {...field}
                                                 freeSolo
+                                                clearOnBlur
                                                 fullWidth
-                                                onChange={(event, newValue) =>
-                                                    field.onChange(get(newValue, 'value', newValue))
+                                                onChange={(event, newValue) =>{
+                                                    console.log(newValue)
+                                                    field.onChange(get(newValue, 'value', newValue))}
                                                 }
                                                 options={department}
                                                 key={'department-auto'}
@@ -615,11 +627,12 @@ function AccountForm(props: AccountFormProps) {
                                                             'message',
                                                             ''
                                                         )}
-                                                        label={constant.department}
-                                                        inputProps={{ maxLength: 100 }}
+                                                        label={isRequire(constant.department)}
+                                                        onChange={(event) =>{
+                                                            field.onChange(event.target.value)}
+                                                        }
                                                     />
                                                 )}
-                                                placeholder={constant.department}
                                             />
                                         )}
                                     />
@@ -628,7 +641,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="governmentName"
                                         key={'governmentName-textfield'}
-                                        label={constant.governmentName}
+                                        label={isRequire(constant.governmentName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -636,7 +649,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="companyName"
                                         key={'companyName-textfield'}
-                                        label={constant.companyName}
+                                        label={isRequire(constant.companyName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -644,7 +657,7 @@ function AccountForm(props: AccountFormProps) {
                                 <RHFTextField
                                     name="department"
                                     key={'department-textfield'}
-                                    label={constant.department}
+                                    label={isRequire(constant.department)}
                                     disabled
                                 />
                             )}
@@ -653,8 +666,7 @@ function AccountForm(props: AccountFormProps) {
                             <Stack flexDirection={'row'}>
                                 <RHFSelect
                                     name="position"
-                                    label={constant.position}
-                                    placeholder={constant.position}
+                                    label={isRequire(constant.position)}
                                     sx={{ flex: '100%' }}
                                 >
                                     <option
@@ -684,7 +696,7 @@ function AccountForm(props: AccountFormProps) {
                                     {isKuStudent ? (
                                         <RHFTextField
                                             name="studentId"
-                                            label={constant.studentId}
+                                            label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isKu && isStaff ? (
@@ -696,13 +708,13 @@ function AccountForm(props: AccountFormProps) {
                                     ) : isPositionOther ? (
                                         <RHFTextField
                                             name="positionName"
-                                            label={constant.positionName}
+                                            label={isRequire(constant.positionName)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : (
                                         <RHFTextField
                                             name="studentId"
-                                            label={constant.studentId}
+                                            label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     )}
@@ -714,9 +726,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack flexDirection={'row'} gap={3}>
                             <RHFSelect
                                 name="title"
-                                label={constant.title}
-                                placeholder={constant.title}
-                                // onBlur={() => clearErrors('otherTitle')}
+                                label={isRequire(constant.title)}
                             >
                                 <option value={''} key={`${''}-title-option`} hidden></option>
                                 {title.map(({ value, label }) => (
@@ -727,31 +737,31 @@ function AccountForm(props: AccountFormProps) {
                             </RHFSelect>
                             <RHFTextField
                                 name={isTitleOther ? 'otherTitle' : ''}
-                                label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
+                                label={isRequire(constant.otherTitle, isTitleOther)}
                                 disabled={!isTitleOther}
                                 inputProps={{ maxLength: 100 }}
                             />
                             <RHFTextField
                                 name="firstName"
-                                label={constant.firstName}
+                                label={isRequire(constant.firstName)}
                                 inputProps={{ maxLength: 100 }}
                             />
                             <RHFTextField
                                 name="surName"
-                                label={constant.surName}
+                                label={isRequire(constant.surName)}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
                             name="address"
                             multiline
-                            label={constant.address}
+                            label={isRequire(constant.address)}
                             inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
                         <RHFTextField
                             name="phoneNumber"
-                            label={constant.phoneNumber}
+                            label={isRequire(constant.phoneNumber)}
                             inputProps={{ maxLength: 10 }}
                             onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
                         />
@@ -759,21 +769,84 @@ function AccountForm(props: AccountFormProps) {
                             <Stack flexDirection={'row'} gap={3}>
                                 <RHFTextField
                                     name="creditLimit"
-                                    label={constant.creditLimit}
-                                    onChange={(e) => handleChangeNumber(e, 'creditLimit')}
-                                    inputProps={{ maxLength: 100 }}
+                                    label={isRequire(constant.creditLimit)}
+                                    onChange={(e) => handleChangeNumber(e, 'creditLimit', 'comma')}
+                                    inputProps={{ maxLength: 20 }}
                                 />
                                 <RHFTextField
                                     name="bookingLimit"
-                                    label={constant.bookingLimit}
-                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit')}
-                                    inputProps={{ maxLength: 100 }}
+                                    label={isRequire(constant.bookingLimit)}
+                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit', 'comma')}
+                                    inputProps={{ maxLength: 20 }}
                                 />
                             </Stack>
                         ) : (
                             <></>
                         )}
-                        <RenderIdImageUpload />
+                        <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
+                            {[...Array(idImageLength).keys()].map((i) => (
+                                <Controller
+                                    key={`id-image-upload-${i}`}
+                                    name={`idImages.${i}`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Upload
+                                            dropzoneHelper={
+                                                <Box sx={{ py: 3, px: 1 }}>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="h5"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        {isKu || watchTypeOfPerson === ''
+                                                            ? constant.studentIdImage
+                                                            : constant.citizenIdImage}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        component="p"
+                                                        whiteSpace="pre-line"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        Drop files here or click
+                                                        <Typography
+                                                            variant="body2"
+                                                            component="span"
+                                                            sx={{
+                                                                mx: 0.5,
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline',
+                                                            }}
+                                                        >
+                                                            {`browse\n`}
+                                                        </Typography>
+                                                        {`thorough your machine.\n\n`}
+                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                                        {`Max size of 200KB`}
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
+                                            file={field.value}
+                                            onDrop={(files) =>
+                                                field.onChange(URL.createObjectURL(files[0]))
+                                            }
+                                            onDelete={() => field.onChange('')}
+                                            sx={{
+                                                width:
+                                                    get(field, 'value', '') === '' ? 264 : '100%',
+                                                flex: get(field, 'value', '') === '' ? '' : '50%',
+                                                '& > div > div': {
+                                                    flexDirection: 'column',
+                                                    textAlign: 'center',
+                                                },
+                                            }}
+                                            maxSize={200000}
+                                        />
+                                    )}
+                                />
+                            ))}
+                        </Stack>
                     </Stack>
                 </Paper>
                 {isKuStudent && isUser ? (
@@ -785,19 +858,18 @@ function AccountForm(props: AccountFormProps) {
                             </Typography>
                             <RHFTextField
                                 name="supervisorCode"
-                                defaultValue=""
-                                label={constant.supervisorCode}
+                                label={isRequire(constant.supervisorCode)}
                                 error={!!errors.supervisorCode}
                                 helperText={get(errors?.supervisorCode, 'message', '')}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
-                                            {supervisorSelector.isLoading ? (
+                                            {watchSupervisorStatus === 'fetching' ? (
                                                 <CircularProgress
                                                     size={16}
                                                     sx={{ color: 'text.primary' }}
                                                 />
-                                            ) : !!errors.supervisorCode ? (
+                                            ) : watchSupervisorStatus === 'notFound' ? (
                                                 <IconButton
                                                     onClick={() =>
                                                         fetchSupervisorData(
@@ -815,23 +887,68 @@ function AccountForm(props: AccountFormProps) {
                                     ),
                                 }}
                             />
-                            {!supervisorSelector.isLoading &&
-                            supervisorSelector.supervisor.code === '200' ? (
+                            {supervisor && watchSupervisorStatus === 'found' ? (
                                 <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
                                     <Image
                                         alt="Logo"
-                                        src={supervisorSelector.supervisor.pic}
+                                        src={supervisor.pic}
                                         sx={{ height: 64, width: 64, borderRadius: 1 }}
                                         disabledEffect
                                     />
                                     <Stack>
                                         <Typography variant="h6">
-                                            {`${supervisorSelector.supervisor.name} (${supervisorSelector.supervisor.code})`}
+                                            {`${supervisor.name} (${supervisor.code})`}
                                         </Typography>
                                         <Typography variant="body1" whiteSpace={'pre-line'}>
-                                            {supervisorSelector.supervisor.email}
+                                            {supervisor.email}
                                         </Typography>
                                     </Stack>
+                                </Stack>
+                            ) : (
+                                <></>
+                            )}
+                        </Stack>
+                    </Paper>
+                ) : (
+                    <></>
+                )}
+
+                {props.permission && props.permission === 'User' ? (
+                    <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
+                        <Stack spacing={2} textAlign={'left'}>
+                            <Typography variant="h4">{constant.supervisorDetail}</Typography>
+                            <Typography variant="body1" whiteSpace={'pre-line'}>
+                                {constant.waitSupervisorApprove}
+                            </Typography>
+                            {supervisor ? (
+                                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
+                                    <Image
+                                        alt="Logo"
+                                        src={supervisor.pic}
+                                        sx={{ height: 64, width: 64, borderRadius: 1 }}
+                                        disabledEffect
+                                    />
+                                     <Box sx={{ flexGrow: 1 }}>
+                                    <Stack>
+                                        <Typography variant="h6">
+                                            {`${supervisor.name} (${supervisor.code})`}
+                                        </Typography>
+                                        <Typography variant="body1" whiteSpace={'pre-line'}>
+                                            {supervisor.email}
+                                        </Typography>
+                                    </Stack>
+                                    </Box>
+                                   
+                                    <Box sx={{ flexShrink: 0}}>
+                                            <Button
+                                                variant="contained"
+                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>} 
+                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
+                                                disableElevation
+                                            >
+                                                {constant.approve}
+                                            </Button>     
+                                    </Box>
                                 </Stack>
                             ) : (
                                 <></>
@@ -849,16 +966,15 @@ function AccountForm(props: AccountFormProps) {
                         onClick={props.onCancel}
                         color="inherit"
                     >
-                        {constant.cancel}
+                        {props.updateMode ? constant.reset : constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
                         variant="contained"
                         size="large"
-                        onClick={props.onSubmit}
                         // loading={authenticationStore.isFetching}
                     >
-                        {constant.createAccount}
+                        {props.updateMode ? constant.updateAccount : constant.createAccount}
                     </LoadingButton>
                 </Stack>
             </Stack>

@@ -2,7 +2,7 @@ import { m, useScroll, useSpring } from 'framer-motion'
 import styles from '../../../styles/index.module.scss'
 import Head from 'next/head'
 import { useTheme } from '@mui/material/styles'
-import { Box, Grid, Container, Tabs, Tab } from '@mui/material'
+import { Box, Grid, Container, Tabs, Tab, Button } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useTranslation } from "react-i18next";
@@ -14,17 +14,21 @@ import Assessment from '@ku/components/Account/Assessment'
 import { useRouter } from 'next/router'
 import { get } from 'lodash'
 import Booking from '@ku/components/Account/Booking'
+import NextLink from 'next/link'
+import { useSnackbar } from '@sentry/components/snackbar'
 
-AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+AccountDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
-export function AccountCreate() {
+export function AccountDetail() {
+    const router = useRouter()
+    const accountId = router.query.id
     const theme = useTheme()
     const { t } = useTranslation();
     const [currentTab, setCurrentTab] = useState('Account-detail');
-    const { scrollYProgress } = useScroll()
+    const { enqueueSnackbar } = useSnackbar();
 
-    const router = useRouter()
+    const { scrollYProgress } = useScroll()
 
     const scaleX = useSpring(scrollYProgress, {
         stiffness: 100,
@@ -52,6 +56,7 @@ export function AccountCreate() {
 
     const onFormSubmit = () => {
       //TODO: api submit
+      enqueueSnackbar('Account saved.');
       console.log('submit');
     }
 
@@ -65,7 +70,7 @@ export function AccountCreate() {
           value: 'Account-detail',
           label: 'Account detail',
           icon: <Iconify icon="ic:round-account-box" />,
-          component: <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} />,
+          component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
         },
         user:{
           value: 'User-Supervise',
@@ -109,12 +114,28 @@ export function AccountCreate() {
                 >
                     <div className={styles.page}>
                         <div className="wrapper">
-                            <CustomBreadcrumbs
-                                heading="Account"
-                                links={[ { name: 'Account', href: '/account' }, { name: 'List' }, { name: '[id]' } ]}
-                                sx={{ mt: 3, mb: 5, height: 72 }}
-                            />
-
+                            <div className='d-flex'>
+                                <CustomBreadcrumbs
+                                    heading="Accounts"
+                                    links={[
+                                        { name: 'Accounts', href: '/account' },
+                                        { name: 'List' },
+                                        { name: `${accountId}` },
+                                    ]}
+                                    sx={{ mt: 3, mb: 5, height: 72 }}
+                                    action={
+                                        <NextLink href='/' passHref>
+                                            <Button
+                                                variant="contained"
+                                                color="inherit"
+                                                startIcon={<Iconify icon="eva:settings-2-fill" />}
+                                            >
+                                                Reset Password
+                                            </Button>
+                                        </NextLink>
+                                    }
+                                />
+                            </div>
                             <Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
                                 {get(listPermissionTab,permission,[]).map((tab) => (
                                     <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
@@ -129,8 +150,6 @@ export function AccountCreate() {
                                     </Box>
                                     )
                             )}
-
-                            
                         </div>
                     </div>
                 </Box>
@@ -139,4 +158,4 @@ export function AccountCreate() {
     )
 }
 
-export default AccountCreate
+export default AccountDetail

@@ -8,7 +8,7 @@ import useResponsive from '@sentry/hooks/useResponsive'
 // config
 import { NAV } from '@sentry/components/layout'
 // components
-import Logo from '@sentry/components/logo'
+import Logo from '@ku/components/Logo'
 import Scrollbar from '@sentry/components/scrollbar'
 import { NavSectionVertical } from '@sentry/components/nav-section'
 //
@@ -54,7 +54,7 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
                     flexShrink: 0,
                 }}
             >
-                <Logo />
+                <Logo logoType="full"/>
 
                 <NavAccount />
             </Stack>

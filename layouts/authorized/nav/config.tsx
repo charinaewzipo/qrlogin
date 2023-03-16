@@ -1,5 +1,14 @@
 // routes
-import { ROOT_PATH, DASHBOARD_PATH, ACCOUNT_PATH, PRIVACY_POLICIES_PATH, ASSESSMENT_PATH } from '@ku/constants/routes'
+import {
+    DASHBOARD_PATH,
+    ACCOUNT_PATH,
+    PRIVACY_POLICIES_PATH,
+    ASSESSMENT_PATH,
+    BOOKING_PATH,
+    BOOKING_REPORT_PATH,
+    MY_BOOKING_PATH,
+    EQUIPMENT_PATH,
+} from '@ku/constants/routes'
 // components
 import SvgColor from '@sentry/components/svg-color'
 
@@ -40,10 +49,10 @@ const navConfig = [
         items: [
             { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
             { title: 'Accounts', path: ACCOUNT_PATH, icon: ICONS.person },
-            { title: 'Booking', path: ROOT_PATH, icon: ICONS.booking },
-            { title: 'Booking Report', path: ROOT_PATH, icon: ICONS.bookingReport },
-            { title: 'My Booking', path: ROOT_PATH, icon: ICONS.myBooking },
-            { title: 'Equipments', path: ROOT_PATH, icon: ICONS.equipment },
+            { title: 'Booking', path: BOOKING_PATH, icon: ICONS.booking },
+            { title: 'Booking Report', path: BOOKING_REPORT_PATH, icon: ICONS.bookingReport },
+            { title: 'My Booking', path: MY_BOOKING_PATH, icon: ICONS.myBooking },
+            { title: 'Equipments', path: EQUIPMENT_PATH, icon: ICONS.equipment },
             { title: 'Assessments', path: ASSESSMENT_PATH, icon: ICONS.assessments },
             { title: 'Privacy Policies', path: PRIVACY_POLICIES_PATH, icon: ICONS.privacy },
         ],

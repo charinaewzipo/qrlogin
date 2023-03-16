@@ -1,55 +1,34 @@
-import { m, useScroll, useSpring } from 'framer-motion'
 import styles from '../../styles/index.module.scss'
 import Head from 'next/head'
-import { useTheme } from '@mui/material/styles'
-import { Box, Grid, Container } from '@mui/material'
+import { Box, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
-import { useTranslation } from "react-i18next";
-import AccountForm from '@ku/components/Account/AccountForm'
+// import { useTranslation } from "next-i18next";
+import AccountForm, { IAccountFormValuesProps } from '@ku/components/Account/AccountForm'
+import { useSnackbar } from '@sentry/components/snackbar'
+import { useRouter } from 'next/router'
+import { ACCOUNT_PATH } from '@ku/constants/routes'
+import { useState } from 'react'
 
 AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function AccountCreate() {
-    const theme = useTheme()
-    const { t } = useTranslation();
-
-    const { scrollYProgress } = useScroll()
-
-    const scaleX = useSpring(scrollYProgress, {
-        stiffness: 100,
-        damping: 30,
-        restDelta: 0.001,
-    })
-
-
+    // const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
+    const { enqueueSnackbar } = useSnackbar();
+    const router = useRouter()
+    const [errorMsg, setErrorMsg] = useState('')
 
-    const progress = (
-        <m.div
-            style={{
-                top: 0,
-                left: 0,
-                right: 0,
-                height: 3,
-                zIndex: 1999,
-                position: 'fixed',
-                transformOrigin: '0%',
-                backgroundColor: theme.palette.primary.main,
-                scaleX,
-            }}
-        />
-    )
-
-    const onFormSubmit = () => {
-      //TODO: api submit
-      console.log('submit');
+    const onFormSubmit = (data: IAccountFormValuesProps) => {
+        //TODO: api submit
+        enqueueSnackbar('Account create success.')
+        setErrorMsg('error msg')
+        console.log('submit', data)
     }
 
     const onFormCancel = () => {
-      //TODO: cancel form
-      console.log('canncel');
+        router.push(ACCOUNT_PATH)
     }
 
     return (
@@ -57,7 +36,6 @@ export function AccountCreate() {
             <Head>
                 <title>Account Create | KU</title>
             </Head>
-            {progress}
             <Container>
                 <Box
                     sx={{
@@ -69,16 +47,15 @@ export function AccountCreate() {
                     <div className={styles.page}>
                         <div className="wrapper">
                             <CustomBreadcrumbs
-                                heading="Account"
+                                heading="Accounts"
                                 links={[
-                                    { name: 'Account', href: '/account' },
+                                    { name: 'Accounts', href: '/account' },
                                     { name: 'List', href: '/account' },
                                     { name: 'Create an account' },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-
-                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} />
+                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} />
                         </div>
                     </div>
                 </Box>
