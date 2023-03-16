@@ -39,24 +39,24 @@ export interface RegisterFormValuesProps {
 const constant = {
     submit: 'Submit',
     back: 'Back',
-    email: 'Email *',
-    password: 'Password *',
-    typeOfPerson: 'Type of person *',
-    department: 'Department *',
-    governmentName: 'Government name *',
-    universityName: 'University name *',
-    companyName: 'Company name *',
-    position: 'Position *',
-    studentId: 'StudentId *',
+    email: 'Email',
+    password: 'Password',
+    typeOfPerson: 'Type of person',
+    department: 'Department',
+    governmentName: 'Government name',
+    universityName: 'University name',
+    companyName: 'Company name',
+    position: 'Position',
+    studentId: 'StudentId',
     staffId: 'Staff ID',
-    positionName: 'Position name *',
-    expiryDate: 'Expiry date *',
-    title: 'Title *',
+    positionName: 'Position name',
+    expiryDate: 'Expiry date',
+    title: 'Title',
     otherTitle: 'Other title',
-    firstName: 'Firstname *',
-    surName: 'Surname *',
-    address: 'Address *',
-    phoneNumber: 'Phone number *',
+    firstName: 'Firstname',
+    surName: 'Surname',
+    address: 'Address',
+    phoneNumber: 'Phone number',
     studentIdImage: 'Student/Staff ID Image',
     citizenIdImage: 'Citizen ID Image',
     supervisorDetail: 'Supervisor/Advisor Detail',
@@ -246,6 +246,7 @@ function RegisterForm(props: RegisterFormProps) {
         position: '',
         staffId: '',
         positionName: '',
+        companyName: '',
         expiryDate: null,
         title: '',
         otherTitle: '',
@@ -302,6 +303,8 @@ function RegisterForm(props: RegisterFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
+            setValue('position', '')
     }, [watchTypeOfPerson, watchPosition])
 
     useEffect(() => {
@@ -339,6 +342,10 @@ function RegisterForm(props: RegisterFormProps) {
 
     const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
     const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
+
+    const isRequire = (label: string, isRequire: boolean = true) => {
+        return `${label} ${isRequire ? '*' : ''}`
+    }
 
     const collapseableInputStyle = (isShow: boolean) => ({
         flex: isShow ? '100%' : '0%',
@@ -403,17 +410,16 @@ function RegisterForm(props: RegisterFormProps) {
                         </Stack>
                     )}
                 />
-                <RHFTextField name="email" label={constant.email} />
+                <RHFTextField name="email" label={isRequire(constant.email)} />
                 <RHFTextField
                     name="password"
-                    label={constant.password}
+                    label={isRequire(constant.password)}
                     inputProps={{ maxLength: 100 }}
                 />
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFSelect
                         name="typeOfPerson"
-                        label={constant.typeOfPerson}
-                        placeholder={constant.typeOfPerson}
+                        label={isRequire(constant.typeOfPerson)}
                     >
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
                         {typeOfPerson.map(({ value, label }) => (
@@ -424,13 +430,13 @@ function RegisterForm(props: RegisterFormProps) {
                     </RHFSelect>
                     {{
                         'Other University': (
-                            <RHFTextField name="universityName" label={constant.universityName} />
+                            <RHFTextField name="universityName" label={isRequire(constant.universityName)} />
                         ),
                         'KU Student & Staff': (
                             <RHFTextField
                                 name="department"
                                 key={'department-textfield'}
-                                label={constant.department}
+                                label={isRequire(constant.department)}
                             />
                         ),
                         'SciKU Student & Staff': (
@@ -452,10 +458,9 @@ function RegisterForm(props: RegisterFormProps) {
                                                 {...param}
                                                 error={!!errors?.department}
                                                 helperText={get(errors?.department, 'message', '')}
-                                                label={constant.department}
+                                                label={isRequire(constant.department)}
                                             />
                                         )}
-                                        placeholder={constant.department}
                                     />
                                 )}
                             />
@@ -464,21 +469,21 @@ function RegisterForm(props: RegisterFormProps) {
                             <RHFTextField
                                 name="governmentName"
                                 key={'governmentName-textfield'}
-                                label={constant.governmentName}
+                                label={isRequire(constant.governmentName)}
                             />
                         ),
                         'Private company': (
                             <RHFTextField
                                 name="companyName"
                                 key={'companyName-textfield'}
-                                label={constant.companyName}
+                                label={isRequire(constant.companyName)}
                             />
                         ),
                     }[watchTypeOfPerson] || (
                         <RHFTextField
                             name="department"
                             key={'department-textfield'}
-                            label={constant.department}
+                            label={isRequire(constant.department)}
                             disabled
                         />
                     )}
@@ -486,8 +491,7 @@ function RegisterForm(props: RegisterFormProps) {
                 <Stack flexDirection={'row'}>
                     <RHFSelect
                         name="position"
-                        label={constant.position}
-                        placeholder={constant.position}
+                        label={isRequire(constant.position)}
                         sx={{ flex: '100%' }}
                     >
                         <option value={''} key={`${''}-position-option`} hidden></option>
@@ -510,7 +514,7 @@ function RegisterForm(props: RegisterFormProps) {
                         {isKuStudent ? (
                             <RHFTextField
                                 name="studentId"
-                                label={constant.studentId}
+                                label={isRequire(constant.studentId)}
                                 inputProps={{ maxLength: 100 }}
                             />
                         ) : isKu && isStaff ? (
@@ -522,13 +526,13 @@ function RegisterForm(props: RegisterFormProps) {
                         ) : isPositionOther ? (
                             <RHFTextField
                                 name="positionName"
-                                label={constant.positionName}
+                                label={isRequire(constant.positionName)}
                                 inputProps={{ maxLength: 100 }}
                             />
                         ) : (
                             <RHFTextField
                                 name="studentId"
-                                label={constant.studentId}
+                                label={isRequire(constant.studentId)}
                                 inputProps={{ maxLength: 100 }}
                             />
                         )}
@@ -543,7 +547,7 @@ function RegisterForm(props: RegisterFormProps) {
                         render={({ field, fieldState: { error } }) => (
                             <DatePicker
                                 inputFormat="dd MMM yyyy"
-                                label={constant.expiryDate}
+                                label={isRequire(constant.expiryDate)}
                                 value={field.value || null}
                                 onChange={(newValue) => {
                                     field.onChange(newValue)
@@ -566,7 +570,7 @@ function RegisterForm(props: RegisterFormProps) {
                     <></>
                 )}
                 <Stack flexDirection={'row'} gap={3}>
-                    <RHFSelect name="title" label={constant.title} placeholder={constant.title}>
+                    <RHFSelect name="title" label={isRequire(constant.title)}>
                         <option value={''} key={`${''}-title-option`} hidden></option>
                         {title.map(({ value, label }) => (
                             <option value={value} key={`${value}-title-option`}>
@@ -576,7 +580,7 @@ function RegisterForm(props: RegisterFormProps) {
                     </RHFSelect>
                     <RHFTextField
                         name={isTitleOther ? 'otherTitle' : ''}
-                        label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
+                        label={isRequire(constant.otherTitle, isTitleOther)}
                         disabled={!isTitleOther}
                         inputProps={{ maxLength: 100 }}
                     />
@@ -584,25 +588,25 @@ function RegisterForm(props: RegisterFormProps) {
                 <Stack flexDirection={'row'} gap={3}>
                     <RHFTextField
                         name="firstName"
-                        label={constant.firstName}
+                        label={isRequire(constant.firstName)}
                         inputProps={{ maxLength: 100 }}
                     />
                     <RHFTextField
                         name="surName"
-                        label={constant.surName}
+                        label={isRequire(constant.surName)}
                         inputProps={{ maxLength: 100 }}
                     />
                 </Stack>
                 <RHFTextField
                     name="address"
                     multiline
-                    label={constant.address}
+                    label={isRequire(constant.address)}
                     inputProps={{ maxLength: 200 }}
                     minRows={4}
                 />
                 <RHFTextField
                     name="phoneNumber"
-                    label={constant.phoneNumber}
+                    label={isRequire(constant.phoneNumber)}
                     inputProps={{ maxLength: 10 }}
                     onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
                 />
@@ -680,7 +684,7 @@ function RegisterForm(props: RegisterFormProps) {
                         </Typography>
                         <RHFTextField
                             name="supervisorCode"
-                            label={constant.supervisorCode}
+                            label={isRequire(constant.supervisorCode)}
                             error={!!errors.supervisorCode}
                             helperText={get(errors?.supervisorCode, 'message', '')}
                             InputProps={{

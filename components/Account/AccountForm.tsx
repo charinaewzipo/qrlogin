@@ -56,34 +56,34 @@ export interface IAccountFormValuesProps {
 const constant = {
     createAccount: 'Create Account',
     cancel: 'Cancel',
-    privillege: 'Privillege *',
-    accountStatus: 'Account Status *',
+    privillege: 'Privillege',
+    accountStatus: 'Account Status',
     accountExpiryDate: 'Account expiry date',
-    email: 'Email *',
+    email: 'Email',
     password: 'Password',
     passwordPlaceholder: '********** (Auto Generated)',
-    typeOfPerson: 'Type of person *',
-    department: 'Department *',
-    governmentName: 'Government name *',
-    universityName: 'University name *',
-    companyName: 'Company name *',
-    position: 'Position *',
-    studentId: 'StudentId *',
+    typeOfPerson: 'Type of person',
+    department: 'Department',
+    governmentName: 'Government name',
+    universityName: 'University name',
+    companyName: 'Company name',
+    position: 'Position',
+    studentId: 'StudentId',
     staffId: 'Staff ID',
-    positionName: 'Position name *',
-    title: 'Title *',
+    positionName: 'Position name',
+    title: 'Title',
     otherTitle: 'Other title',
-    firstName: 'Firstname *',
-    surName: 'Surname *',
-    address: 'Address *',
-    phoneNumber: 'Phone number *',
+    firstName: 'Firstname',
+    surName: 'Surname',
+    address: 'Address',
+    phoneNumber: 'Phone number',
     studentIdImage: 'Student/Staff ID Image',
     citizenIdImage: 'Citizen ID Image',
-    creditLimit: 'Credit limit *',
-    bookingLimit: 'Booking limit *',
+    creditLimit: 'Credit limit',
+    bookingLimit: 'Booking limit',
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code *',
+    supervisorCode: 'Supervisor code',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 
     updateAccount:'Update Account',
@@ -301,6 +301,7 @@ function AccountForm(props: AccountFormProps) {
         position: '',
         staffId: '',
         positionName: '',
+        companyName: '',
         title: '',
         otherTitle: '',
         firstName: '',
@@ -363,6 +364,8 @@ function AccountForm(props: AccountFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
+            setValue('position', '')
         if (isFinance) {
             if (getValues('typeOfPerson') !== 'KU Student & Staff')
                 setValue('typeOfPerson', '')
@@ -453,6 +456,10 @@ function AccountForm(props: AccountFormProps) {
     const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
     const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
+    const isRequire = (label: string, isRequire: boolean = true) => {
+        return `${label} ${isRequire ? '*' : ''}`
+    }
+
     const collapseableInputStyle = (isShow: boolean) => ({
         flex: isShow ? '100%' : '0%',
         transform: `scaleZ(${isShow ? '1' : '0'})`,
@@ -473,8 +480,7 @@ function AccountForm(props: AccountFormProps) {
                     <Stack spacing={3}>
                         <RHFSelect
                             name="privillege"
-                            label={constant.privillege}
-                            placeholder={constant.privillege}
+                            label={isRequire(constant.privillege)}
                             InputLabelProps={{ shrink: true }}
                         >
                             {privillege.map(({ value, label }) => (
@@ -483,7 +489,7 @@ function AccountForm(props: AccountFormProps) {
                                 </option>
                             ))}
                         </RHFSelect>
-                        <RHFTextField name="email" label={constant.email} />
+                        <RHFTextField name="email" label={isRequire(constant.email)} />
                         <RHFTextField
                             name="password"
                             label={constant.password}
@@ -494,8 +500,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
                                 name="accountStatus"
-                                label={constant.accountStatus}
-                                placeholder={constant.accountStatus}
+                                label={isRequire(constant.accountStatus)}
                                 InputLabelProps={{ shrink: true }}
                             >
                                 {accountStatus.map(({ value, label }) => (
@@ -566,8 +571,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack flexDirection={'row'} gap={3}>
                             <RHFSelect
                                 name="typeOfPerson"
-                                label={constant.typeOfPerson}
-                                placeholder={constant.typeOfPerson}
+                                label={isRequire(constant.typeOfPerson)}
                             >
                                 <option
                                     value={''}
@@ -586,7 +590,7 @@ function AccountForm(props: AccountFormProps) {
                                 'Other University': (
                                     <RHFTextField
                                         name="universityName"
-                                        label={constant.universityName}
+                                        label={isRequire(constant.universityName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -594,7 +598,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="department"
                                         key={'department-textfield'}
-                                        label={constant.department}
+                                        label={isRequire(constant.department)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -606,9 +610,11 @@ function AccountForm(props: AccountFormProps) {
                                             <Autocomplete
                                                 {...field}
                                                 freeSolo
+                                                clearOnBlur
                                                 fullWidth
-                                                onChange={(event, newValue) =>
-                                                    field.onChange(get(newValue, 'value', newValue))
+                                                onChange={(event, newValue) =>{
+                                                    console.log(newValue)
+                                                    field.onChange(get(newValue, 'value', newValue))}
                                                 }
                                                 options={department}
                                                 key={'department-auto'}
@@ -621,10 +627,12 @@ function AccountForm(props: AccountFormProps) {
                                                             'message',
                                                             ''
                                                         )}
-                                                        label={constant.department}
+                                                        label={isRequire(constant.department)}
+                                                        onChange={(event) =>{
+                                                            field.onChange(event.target.value)}
+                                                        }
                                                     />
                                                 )}
-                                                placeholder={constant.department}
                                             />
                                         )}
                                     />
@@ -633,7 +641,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="governmentName"
                                         key={'governmentName-textfield'}
-                                        label={constant.governmentName}
+                                        label={isRequire(constant.governmentName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -641,7 +649,7 @@ function AccountForm(props: AccountFormProps) {
                                     <RHFTextField
                                         name="companyName"
                                         key={'companyName-textfield'}
-                                        label={constant.companyName}
+                                        label={isRequire(constant.companyName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
@@ -649,7 +657,7 @@ function AccountForm(props: AccountFormProps) {
                                 <RHFTextField
                                     name="department"
                                     key={'department-textfield'}
-                                    label={constant.department}
+                                    label={isRequire(constant.department)}
                                     disabled
                                 />
                             )}
@@ -658,8 +666,7 @@ function AccountForm(props: AccountFormProps) {
                             <Stack flexDirection={'row'}>
                                 <RHFSelect
                                     name="position"
-                                    label={constant.position}
-                                    placeholder={constant.position}
+                                    label={isRequire(constant.position)}
                                     sx={{ flex: '100%' }}
                                 >
                                     <option
@@ -689,7 +696,7 @@ function AccountForm(props: AccountFormProps) {
                                     {isKuStudent ? (
                                         <RHFTextField
                                             name="studentId"
-                                            label={constant.studentId}
+                                            label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isKu && isStaff ? (
@@ -701,13 +708,13 @@ function AccountForm(props: AccountFormProps) {
                                     ) : isPositionOther ? (
                                         <RHFTextField
                                             name="positionName"
-                                            label={constant.positionName}
+                                            label={isRequire(constant.positionName)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : (
                                         <RHFTextField
                                             name="studentId"
-                                            label={constant.studentId}
+                                            label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     )}
@@ -719,8 +726,7 @@ function AccountForm(props: AccountFormProps) {
                         <Stack flexDirection={'row'} gap={3}>
                             <RHFSelect
                                 name="title"
-                                label={constant.title}
-                                placeholder={constant.title}
+                                label={isRequire(constant.title)}
                             >
                                 <option value={''} key={`${''}-title-option`} hidden></option>
                                 {title.map(({ value, label }) => (
@@ -731,31 +737,31 @@ function AccountForm(props: AccountFormProps) {
                             </RHFSelect>
                             <RHFTextField
                                 name={isTitleOther ? 'otherTitle' : ''}
-                                label={`${constant.otherTitle} ${isTitleOther ? '*' : ''}`}
+                                label={isRequire(constant.otherTitle, isTitleOther)}
                                 disabled={!isTitleOther}
                                 inputProps={{ maxLength: 100 }}
                             />
                             <RHFTextField
                                 name="firstName"
-                                label={constant.firstName}
+                                label={isRequire(constant.firstName)}
                                 inputProps={{ maxLength: 100 }}
                             />
                             <RHFTextField
                                 name="surName"
-                                label={constant.surName}
+                                label={isRequire(constant.surName)}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
                             name="address"
                             multiline
-                            label={constant.address}
+                            label={isRequire(constant.address)}
                             inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
                         <RHFTextField
                             name="phoneNumber"
-                            label={constant.phoneNumber}
+                            label={isRequire(constant.phoneNumber)}
                             inputProps={{ maxLength: 10 }}
                             onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
                         />
@@ -763,13 +769,13 @@ function AccountForm(props: AccountFormProps) {
                             <Stack flexDirection={'row'} gap={3}>
                                 <RHFTextField
                                     name="creditLimit"
-                                    label={constant.creditLimit}
+                                    label={isRequire(constant.creditLimit)}
                                     onChange={(e) => handleChangeNumber(e, 'creditLimit', 'comma')}
                                     inputProps={{ maxLength: 20 }}
                                 />
                                 <RHFTextField
                                     name="bookingLimit"
-                                    label={constant.bookingLimit}
+                                    label={isRequire(constant.bookingLimit)}
                                     onChange={(e) => handleChangeNumber(e, 'bookingLimit', 'comma')}
                                     inputProps={{ maxLength: 20 }}
                                 />
@@ -852,7 +858,7 @@ function AccountForm(props: AccountFormProps) {
                             </Typography>
                             <RHFTextField
                                 name="supervisorCode"
-                                label={constant.supervisorCode}
+                                label={isRequire(constant.supervisorCode)}
                                 error={!!errors.supervisorCode}
                                 helperText={get(errors?.supervisorCode, 'message', '')}
                                 InputProps={{
