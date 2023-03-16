@@ -351,12 +351,14 @@ function AccountForm(props: AccountFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
-        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
-            setValue('position', '')
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
+            if (isPositionOther) setValue('position', '')
+            if (!department.map((d) => d.value).includes(getValues('department')))
+                setValue('department', '')
+        }
         if (isFinance) {
-            if (getValues('typeOfPerson') !== 'KU Student & Staff')
-                setValue('typeOfPerson', '')
-            //ตอนปรับ privillege เป็น finance 
+            if (getValues('typeOfPerson') !== 'KU Student & Staff') setValue('typeOfPerson', '')
+            //ตอนปรับ privillege เป็น finance
             //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
@@ -614,9 +616,6 @@ function AccountForm(props: AccountFormProps) {
                                                             ''
                                                         )}
                                                         label={isRequire(constant.department)}
-                                                        onChange={(event) =>{
-                                                            field.onChange(event.target.value)}
-                                                        }
                                                     />
                                                 )}
                                             />
