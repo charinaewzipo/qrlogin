@@ -350,6 +350,8 @@ function AccountForm(props: AccountFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
+            setValue('position', '')
         if (isFinance) {
             if (getValues('typeOfPerson') !== 'KU Student & Staff')
                 setValue('typeOfPerson', '')

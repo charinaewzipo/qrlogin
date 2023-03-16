@@ -302,6 +302,8 @@ function RegisterForm(props: RegisterFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
+            setValue('position', '')
     }, [watchTypeOfPerson, watchPosition])
 
     useEffect(() => {
