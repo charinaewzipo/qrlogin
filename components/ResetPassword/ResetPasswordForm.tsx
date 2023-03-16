@@ -9,9 +9,7 @@ import FormProvider, { RHFTextField } from "@sentry/components/hook-form";
 import { FormHelperText } from '@mui/material';
 import { useRouter } from 'next/router';
 import { get, isEmpty } from 'lodash';
-import { RESET_PASSWORD_SUCCESS_PATH } from '@ku/constants/routes';
-
-
+import { MERGE_PATH, RESET_PASSWORD_PATH } from '@ku/constants/routes';
 
 type FormValuesProps = {
     email: string
@@ -115,7 +113,7 @@ function ResetPasswordForm() {
     const onSubmit = async (data: FormValuesProps) => {
         console.log("data", data)
 
-        router.push({ pathname: RESET_PASSWORD_SUCCESS_PATH, query: { id: data.email } })
+        router.push({ pathname: MERGE_PATH(RESET_PASSWORD_PATH, 'success'), query: { id: data.email } })
         const errorOptions: ErrorOption = {
             message: "errorResponse.data || errorResponse.devMessage"
         }

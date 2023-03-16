@@ -3,12 +3,12 @@ import NextLink from 'next/link'
 // @mui
 import { styled, alpha } from '@mui/material/styles'
 import { Box, Link, Typography } from '@mui/material'
-// auth
-// import { useAuthContext } from '../../../contexts/useAuthContext'
 // routes
-import { DASHBOARD_PATH } from '@ku/constants/routes'
+import { PROFILE_PATH } from '@ku/constants/routes'
 // components
 import { CustomAvatar } from '@sentry/components/custom-avatar'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
+import { sentenceCase } from 'change-case'
 
 // ----------------------------------------------------------------------
 
@@ -26,25 +26,25 @@ const StyledRoot = styled('div')(({ theme }) => ({
 // ----------------------------------------------------------------------
 
 export default function NavAccount() {
-    // const { user } = useAuthContext()
+    const { user } = useAuthContext()
 
     return (
-        <NextLink href={DASHBOARD_PATH} passHref>
+        <NextLink href={PROFILE_PATH} passHref>
             <Link underline="none" color="inherit">
                 <StyledRoot>
                     <CustomAvatar
-                    // src={user?.photoURL}
-                    // alt={user?.displayName}
-                    // name={user?.displayName}
+                        src={user.uiPersonPicture}
+                        alt={user.uFirstname}
+                        name={`${user.uFirstname || ''} ${user.uSurname || ''}`}
                     />
 
                     <Box sx={{ ml: 2, minWidth: 0 }}>
                         <Typography variant="subtitle2" noWrap>
-                            {/* {user?.displayName} */}
+                            {`${user.uFirstname} ${user.uSurname}`}
                         </Typography>
 
                         <Typography variant="body2" noWrap sx={{ color: 'text.secondary' }}>
-                            {/* {user?.role} */}
+                            {sentenceCase(user.authPermission)}
                         </Typography>
                     </Box>
                 </StyledRoot>

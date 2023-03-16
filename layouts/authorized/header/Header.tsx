@@ -15,7 +15,6 @@ import { useSettingsContext } from '@sentry/components/settings'
 //
 import AccountPopover from './AccountPopover'
 import LanguagePopover from './LanguagePopover'
-import NotificationsPopover from './NotificationsPopover'
 
 // ----------------------------------------------------------------------
 
@@ -54,9 +53,6 @@ export default function Header({ onOpenNav }: Props) {
                 spacing={{ xs: 0.5, sm: 1.5 }}
             >
                 <LanguagePopover />
-
-                <NotificationsPopover />
-
                 <AccountPopover />
             </Stack>
         </>

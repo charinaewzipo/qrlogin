@@ -5,7 +5,7 @@ import { NAV } from '@sentry/components/layout'
 // utils
 import { hideScrollbarX } from '@sentry/utils/cssStyles'
 // components
-import Logo from '@sentry/components/logo'
+import Logo from '@ku/components/Logo'
 import { NavSectionMini } from '@sentry/components/nav-section'
 //
 import navConfig from './config'
@@ -31,7 +31,7 @@ export default function NavMini() {
                     ...hideScrollbarX,
                 }}
             >
-                <Logo sx={{ mx: 'auto', my: 2 }} />
+                <Logo logoType="full" sx={{ mx: 'auto', my: 2 }} />
 
                 <NavSectionMini data={navConfig} />
             </Stack>
