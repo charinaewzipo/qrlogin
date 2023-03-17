@@ -9,11 +9,11 @@ import { useTranslation } from "react-i18next";
 import { useState } from 'react'
 import Iconify from '@sentry/components/iconify'
 import AccountForm from '@ku/components/Account/AccountForm'
-import UserSupervise from '@ku/components/Account/UserSupervise'
-import Assessment from '@ku/components/Account/Assessment'
+import UserSupervise from '@ku/components/Account/TableAccountDetail/UserSupervise'
+import Assessment from '@ku/components/Account/TableAccountDetail/Assessment'
 import { useRouter } from 'next/router'
 import { get } from 'lodash'
-import Booking from '@ku/components/Account/Booking'
+import Booking from '@ku/components/Account/TableAccountDetail/Booking'
 import NextLink from 'next/link'
 import { useSnackbar } from '@sentry/components/snackbar'
 
@@ -23,6 +23,7 @@ declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 export function AccountDetail() {
     const router = useRouter()
     const accountId = router.query.id
+    const permissionUser = 'Supervisor'
     const theme = useTheme()
     const { t } = useTranslation();
     const [currentTab, setCurrentTab] = useState('Account-detail');
@@ -36,7 +37,7 @@ export function AccountDetail() {
         restDelta: 0.001,
     })
 
-    const permission : PERMISSION = get(router.query,"id",'Admin') as PERMISSION
+    const permissionMe : PERMISSION = 'Admin'
 
     const progress = (
         <m.div
@@ -65,6 +66,8 @@ export function AccountDetail() {
       console.log('canncel');
     }
 
+
+
     const listAllTab = {
         account:{
           value: 'Account-detail',
@@ -91,11 +94,18 @@ export function AccountDetail() {
           component: <Assessment />,
         },
     }
+    const permissionTab = ():PERMISSION => {
+        if ( permissionMe === 'Supervisor' ) {
+            return 'Admin'
+        } else {
+            return permissionUser
+        }
+    }
     const listPermissionTab: { [key in PERMISSION] } = {
-        Supervisor : [listAllTab.account,listAllTab.user,listAllTab.booking,listAllTab.assessments],
-        User : [listAllTab.account,listAllTab.booking,listAllTab.assessments],
+        Supervisor : [listAllTab.account, listAllTab.user, listAllTab.booking, listAllTab.assessments],
+        User : [listAllTab.account, listAllTab.booking, listAllTab.assessments],
         Finance : [listAllTab.account],
-        Admin : [listAllTab.account,listAllTab.booking]
+        Admin : [listAllTab.account, listAllTab.booking]
     }
 
     return (
@@ -137,12 +147,12 @@ export function AccountDetail() {
                                 />
                             </div>
                             <Tabs value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
-                                {get(listPermissionTab,permission,[]).map((tab) => (
+                                {get(listPermissionTab,permissionTab(),[]).map((tab) => (
                                     <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
                                 ))}
                             </Tabs>
 
-                            {get(listPermissionTab,permission,[]).map(
+                            {get(listPermissionTab,permissionTab(),[]).map(
                                 (tab) =>
                                     tab.value === currentTab && (
                                     <Box key={tab.value} sx={{ mt: 5 }}>

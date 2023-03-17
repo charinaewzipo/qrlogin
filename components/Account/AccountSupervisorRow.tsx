@@ -3,7 +3,7 @@ import { fDate } from '@sentry/utils/formatTime'
 import Label from '@sentry/components/label'
 import { Typography } from '@mui/material'
 import { format } from 'date-fns'
-import { isEmpty } from 'lodash'
+import { isEmpty, noop } from 'lodash'
 import { useTheme } from '@mui/material'
 import { formatPhoneNumber } from '@ku/utils/formatNumber'
 import Iconify from '@sentry/components/iconify/Iconify'
@@ -11,13 +11,14 @@ import Iconify from '@sentry/components/iconify/Iconify'
 type Props = {
     row: IAccountUser
     onViewRow: VoidFunction
+    onRemove?: VoidFunction
     // onCopyLink: VoidFunction
 }
 
 const styledTextOverFlow = {
     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
 }
-export default function InvoiceTableRow({ row, onViewRow }: Props) {
+export default function InvoiceTableRow({ row, onViewRow, onRemove }: Props) {
     const { name, email, department, major, studentID, supervisorName, creditLimit, bookLimit, phone, expiredate, status } = row
     const theme = useTheme()
     return (
@@ -76,7 +77,10 @@ export default function InvoiceTableRow({ row, onViewRow }: Props) {
                     <Button
                         color="error"
                         sx={{ flexShrink: 0 }}
-                        onClick={(e) => e.stopPropagation()}
+                        onClick={(e) => {
+                            e.stopPropagation()
+                            onRemove?onRemove():noop
+                        }}
                         startIcon={<Iconify icon="eva:trash-2-outline" />}
                     >
                         Remove

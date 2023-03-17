@@ -8,7 +8,7 @@ import AccountSupervisorList from '../../components/Account/AccountSupervisorLis
 AccountPageGuard.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 export default function AccountPageGuard() {
-  const permission = 'Admin'
+  const permission = 'Supervisor'
   const { user } = useAuthContext()
 
   const CheckPermission = () => {

@@ -17,3 +17,18 @@ interface IAssessmentParticipation {
     assessDate: string
     status: 'Done' | 'Pending'
 }
+
+interface IBooking {
+    id: string
+    no: string
+    name: string
+    equipement: string
+    bookingDate: string
+    time: string
+    requestDate: string
+    paymentDate: string
+    price: string
+    status: IBookingStatus
+}
+
+type IBookingStatus = 'Pending' | 'Confirm' | 'Waiting for payment' | 'Finish'

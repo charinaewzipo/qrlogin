@@ -4,12 +4,13 @@ import Label from '@sentry/components/label'
 import Scrollbar from '@sentry/components/scrollbar'
 import { emptyRows, TableEmptyRows, TableHeadCustom, TableNoData, TablePaginationCustom, useTable } from '@sentry/components/table'
 import { useState, useEffect } from 'react'
-import AssessmentRow from '../Assessment/AssessmentRow'
 import { useSnackbar } from 'notistack'
-import { isEmpty } from 'lodash'
-import ConfirmDialog from '../ConfirmDialog'
+import { get, isEmpty } from 'lodash'
+import ConfirmDialog from '@ku/components/ConfirmDialog'
 import palette from '@sentry/theme/palette'
 import BookingToolsbar from './BookingToolsbar'
+import BookingRow from './BookingRow'
+import { LoadingButton } from '@mui/lab'
 
 const TABLE_HEAD = [
     { id: 'no', label: 'No', align: 'left' },
@@ -20,16 +21,74 @@ const TABLE_HEAD = [
     { id: 'paymentDate', label: 'Payment Date', align: 'left' },
     { id: 'price', label: 'Price', align: 'right' },
     { id: 'status', label: 'Status', align: 'left' },
-    { id: 'menu', label: '', align: 'left', width: 140 },
+    { id: 'menu', label: '', align: 'left', width: 80 },
 ]
+
+const MockData:IBooking[] = [{
+    id: "0001",
+    no: "170400061",
+    name: "Eleanor Pena",
+    time:'09:00 - 09:59',
+    equipement: "CM1",
+    bookingDate: "15 May 2022",
+    requestDate: "15 May 2022",
+    paymentDate: "15 May 2022",
+    price : "45,000.00 B",
+    status: 'Confirm'
+},{
+    id: "0001",
+    no: "170400061",
+    name: "Eleanor Pena",
+    time:'09:00 - 09:59',
+    equipement: "CM1",
+    bookingDate: "15 May 2022",
+    requestDate: "15 May 2022",
+    paymentDate: "15 May 2022",
+    price : "45,000.00 B",
+    status: 'Pending'
+},{
+    id: "0001",
+    no: "170400061",
+    name: "Eleanor Pena",
+    time:'09:00 - 09:59',
+    equipement: "CM1",
+    bookingDate: "15 May 2022",
+    requestDate: "15 May 2022",
+    paymentDate: "15 May 2022",
+    price : "45,000.00 B",
+    status: 'Waiting for payment'
+},{
+    id: "0001",
+    no: "170400061",
+    name: "Eleanor Pena",
+    time:'09:00 - 09:59',
+    equipement: "CM1",
+    bookingDate: "15 May 2022",
+    requestDate: "15 May 2022",
+    paymentDate: "15 May 2022",
+    price : "45,000.00 B",
+    status: 'Finish'
+},{
+    id: "0001",
+    no: "170400061",
+    name: "Eleanor Pena",
+    time:'09:00 - 09:59',
+    equipement: "CM1",
+    bookingDate: "15 May 2022",
+    requestDate: "15 May 2022",
+    paymentDate: "15 May 2022",
+    price : "45,000.00 B",
+    status: 'Finish'
+}]
 
 export default function Booking() {
     const { enqueueSnackbar } = useSnackbar()
     const [filterStatus, setFilterStatus] = useState('all')
-    const [tableData, setTableData] = useState<IAssessment[]>([])
+    const [tableData, setTableData] = useState<IBooking[]>([])
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
 
     const [filterName, setFilterName] = useState('')
+    const [detailUser, setDetailUser] = useState(null)
     
     const { dense, page, rowsPerPage, setPage, onChangePage, onChangeRowsPerPage } = useTable({
         defaultOrderBy: 'createDate',
@@ -39,25 +98,26 @@ export default function Booking() {
     const isFiltered = filterName !== ''
 
     useEffect(() => {
-        setTimeout(()=>{
-            getAssessmentList('Done')
-        },2000)
+        // setTimeout(()=>{
+        //     getAssessmentList('Done')
+        // },2000)
+        setTableData(MockData)
     }, [])
 
     useEffect(() => {
         console.log("filterStatus",filterStatus);
-        getAssessmentList(filterStatus)
+        // getAssessmentList(filterStatus)
     }, [filterStatus])
 
-    const getAssessmentList = async (query:string) => {
-        // TODO: Add filter parameter
-        const response = await fetchGetAssessments()
-        console.log("query",query);
+    // const getAssessmentList = async (query:string) => {
+    //     // TODO: Add filter parameter
+    //     const response = await fetchGetAssessments()
+    //     console.log("query",query);
         
-        if (response.data) {
-            setTableData(response.data)
-        }
-    }
+    //     if (response.data) {
+    //         setTableData(response.data)
+    //     }
+    // }
     
     const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
         setPage(0)
@@ -79,6 +139,11 @@ export default function Booking() {
     }
     const handleResetFilter = () => {
         setFilterName('')
+    }
+
+    const handleRemove = (data:IBooking) => {
+        setDetailUser(data)
+        setOpenPleaseContact(true)
     }
 
     const TABS = [
@@ -115,8 +180,6 @@ export default function Booking() {
 
             <Divider />
 
-            <Box onClick={()=>{setOpenPleaseContact(true)}}>123</Box>
-
             <BookingToolsbar
                 isFiltered={isFiltered}
                 filterName={filterName}
@@ -136,13 +199,13 @@ export default function Booking() {
                             {tableData
                                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                 .map((row) => (
-                                    <AssessmentRow
+                                    <BookingRow
                                         key={row.id}
                                         row={row}
                                         onViewRow={() => {
                                             // handleViewRow(row.id)
                                         }}
-                                        onCopyLink={() => handleCopyLink(row.link)}
+                                        onRemove={()=>handleRemove(row)}
                                     />
                                 ))
                             }
@@ -168,45 +231,45 @@ export default function Booking() {
             />
         </Card>
         <ConfirmDialog
-                open={openPleaseContact}
-                textCancel="Try it now"
-                onClose={() => {
-                    setOpenPleaseContact(false)
-                }}
-                title="Are you sure!"
-                content={
-                    <Box>
-                        {/* [
-                            { sx: { mb: 0 }, text: `To confirm remove Jennarong,` },
-                            { sx: { mt: 2 }, text: `Mr. Jennarong Saenpaeng (6955549339)` },
-                            { sx: { mb: 2 }, text: `Master student from SciKU Student of Dept. of Information technology` },
-                        ] */}
-                        {[
-                            { sx: { mb: 0 }, text: `To cancel booking number 170400061` },
-                            { sx: { mt: 2 }, text: `Booking number 170400061` },
-                            { sx: { mb: 0 }, text: `Coating Material (CM1)` },
-                            { sx: { mb: 0 }, text: `At 15 May 2022 09:00 - 09:59` },
-                            { sx: { my: 2 }, text: `Remark: after you cancelled booking, you can not recover this booking.` },
+            open={openPleaseContact}
+            textCancel="No, I’m not sure"
+            colorButton='inherit'
+            onClose={() => { setOpenPleaseContact(false) }}
+            title="Are you sure!"
+            content={
+                <Box>
+                    {[
+                        { sx: { mb: 0 }, text: `To cancel booking number ${get(detailUser,"no","")}` },
+                        { sx: { mt: 2 }, text: `Booking number ${get(detailUser,"no","")}` },
+                        { sx: { mb: 0 }, text: `Coating Material (${get(detailUser,"equipement","")})` },
+                        { sx: { mb: 0 }, text: `At ${get(detailUser,"bookingDate","")} ${get(detailUser,"time","")}` },
+                        { sx: { my: 2 }, text: `Remark: after you cancelled booking, you can not recover this booking.` },
 
-                        ].map((i, index) => (
-                            <Typography
-                                key={'contact' + index}
-                                variant="body1"
-                                sx={{
-                                    ...{
-                                        color: (theme) =>
-                                            palette(theme.palette.mode).text.secondary,
-                                    },
-                                    ...i.sx,
-                                }}
-                            >
-                                {i.text}
-                            </Typography>
-                        ))}
-                    </Box>
-                }
-                action={<></>}
-            />
+                    ].map((i, index) => (
+                        <Typography
+                            key={'contact' + index}
+                            variant="body1"
+                            sx={{
+                                ...{ color: (theme) => palette(theme.palette.mode).text.secondary },
+                                ...i.sx,
+                            }}
+                        >
+                            {i.text}
+                        </Typography>
+                    ))}
+                </Box>
+            }
+            action={<LoadingButton
+                fullWidth
+                color='error'
+                size="large"
+                type="button"
+                variant="contained"
+                onClick={() => { setOpenPleaseContact(false) }}
+            >
+                {"Yes, Cancel"}
+            </LoadingButton>}
+        />
         </>
     )
 }
