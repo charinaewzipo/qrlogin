@@ -101,7 +101,7 @@ export default function BookingToolsbar({
                 InputProps={{
                     startAdornment: (
                         <InputAdornment position="start">
-                            <Iconify icon="eva:search-fill" sx={{ color: 'text.disabled' }} />
+                            <Iconify icon="eva:book-fill" sx={{ color: 'text.disabled' }} />
                         </InputAdornment>
                     ),
                 }}

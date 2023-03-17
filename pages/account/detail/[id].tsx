@@ -84,7 +84,7 @@ export function AccountDetail() {
         booking:{
           value: 'Booking',
           label: 'Booking',
-          icon: <Iconify icon="ic:check-circle" />,
+          icon: <Iconify icon="fa-regular:calendar-check" />,
           component: <Booking />,
         },
         assessments:{

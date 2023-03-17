@@ -30,7 +30,7 @@ export default function BookingRow({ row, onViewRow, onRemove }: Props) {
     const listMenuPopover = {
         quotation:{
             action: ()=>{console.log("Download Quotation");},
-            label: <><Iconify icon="eva:checkmark-circle-2-fill" /> Download Quotation</>,
+            label: <><Iconify icon="ic:round-insert-drive-file" /> Download Quotation</>,
         },
         cancelBooking:{
             action: ()=>{console.log("Cancel Booking");onRemove()},
@@ -38,11 +38,11 @@ export default function BookingRow({ row, onViewRow, onRemove }: Props) {
         },
         invoice:{
             action: ()=>{console.log("Download Invoice");},
-            label: <><Iconify icon="eva:share-fill" /> Download Invoice</>,
+            label: <><Iconify icon="ic:baseline-verified" /> Download Invoice</>,
         },
         receipt:{
             action: ()=>{console.log("Download Receipt");},
-            label: <><Iconify icon="eva:edit-fill" />Download Receipt</>,
+            label: <><Iconify icon="material-symbols:receipt" />Download Receipt</>,
         },
     } 
 
