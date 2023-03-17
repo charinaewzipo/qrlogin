@@ -303,8 +303,11 @@ function RegisterForm(props: RegisterFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
-        if (getValues('typeOfPerson') === 'SciKU Student & Staff' && isPositionOther)
-            setValue('position', '')
+        if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
+            if (isPositionOther) setValue('position', '')
+            if (!department.map((d) => d.value).includes(getValues('department')))
+                setValue('department', '')
+        }
     }, [watchTypeOfPerson, watchPosition])
 
     useEffect(() => {
@@ -448,6 +451,7 @@ function RegisterForm(props: RegisterFormProps) {
                                         {...field}
                                         freeSolo
                                         fullWidth
+                                        clearOnBlur
                                         onChange={(event, newValue) =>
                                             field.onChange(get(newValue, 'value', newValue))
                                         }
