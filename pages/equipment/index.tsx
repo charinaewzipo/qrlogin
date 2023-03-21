@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 // next
 import Head from 'next/head'
 import NextLink from 'next/link'
@@ -45,18 +45,19 @@ import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
 import { Typography } from '@mui/material'
 import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
 import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
+import Image from '@sentry/components/image/Image'
 
 
 const mockDataTable: IEquipmentUser[] = [{
   id: "27658a79-ac6c-4003-b927-23b260840201",
-  name: "Eleanor PenaEleanor PenaEleanor Pena",
+  name: "Brycen Jimenez",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg',
   createdAt: new Date().toString(),
   lastestUpdate: new Date().toString(),
   status: "Available"
 },
 {
-  id: "27658a79-ac6c-4003-b927-23b260840201",
+  id: "27658a79-ac6c-4003-b927-23b260840202",
   name: "Coating Material (CM1)",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg',
   createdAt: new Date(1994, 12, 10).toString(),
@@ -64,8 +65,15 @@ const mockDataTable: IEquipmentUser[] = [{
   status: "Unavailable"
 },
 {
-  id: "27658a79-ac6c-4003-b927-23b260840201",
+  id: "27658a79-ac6c-4003-b927-23b260840203",
   name: "Material coating descriptions",
+  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
+  createdAt: new Date(1995, 12, 10).toString(),
+  lastestUpdate: new Date(1944, 12, 10).toString(),
+  status: "Temporary Unavailable"
+}, {
+  id: "27658a79-ac6c-4003-b927-23b260840204",
+  name: "Aaterial coating descriptions",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
   createdAt: new Date(1995, 12, 10).toString(),
   lastestUpdate: new Date(1944, 12, 10).toString(),
@@ -74,9 +82,9 @@ const mockDataTable: IEquipmentUser[] = [{
 ]
 
 const TABLE_HEAD = [
-  { id: 'equipment', label: 'Equipment', align: 'left', width: 350 },
+  { id: 'name', label: 'Equipment', align: 'left', width: 350 },
   { id: 'createdAt', label: 'Create at', align: 'left', width: 150 },
-  { id: 'latestUpdate', label: 'Latest update', align: 'left', width: 150 },
+  { id: 'lastestUpdate', label: 'Latest update', align: 'left', width: 150 },
   { id: 'status', label: 'Status', align: 'left', width: 150 },
 ];
 const ROLE_OPTIONS = [
@@ -86,10 +94,9 @@ const ROLE_OPTIONS = [
   'Temporary Unavailable',
 ];
 EquipmentList.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
-type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
+
 export default function EquipmentList() {
   const {
-    dense,
     page,
     order,
     orderBy,
@@ -102,7 +109,6 @@ export default function EquipmentList() {
     onSelectAllRows,
     //
     onSort,
-    onChangeDense,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable();
@@ -110,11 +116,13 @@ export default function EquipmentList() {
   const [tableData, setTableData] = useState<IEquipmentUser[]>([])
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-
+  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const theme = useTheme()
+  const { push } = useRouter()
   useEffect(() => {
     getEquipmentList()
   }, [])
+
 
   const getEquipmentList = async () => {
     // TODO: Add filter parameter
@@ -127,31 +135,37 @@ export default function EquipmentList() {
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
     setPage(0);
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        console.log("filterName")
+      }, 1000)
+    );
   };
-  const handleDeleteRow = (id: string) => {
-    const deleteRow = tableData.filter((row) => row.id !== id);
-    setSelected([]);
-    setTableData(deleteRow);
-  };
-  const handleDeleteRows = (selected: string[]) => {
-    const deleteRows = tableData.filter((row) => !selected.includes(row.id));
-    setSelected([]);
-    setTableData(deleteRows);
+  const handleExportRows = (id: string[]) => {
+    console.log("exportRows", id)
   };
   const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterRole(event.target.value);
+    setPage(0);
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        console.log("setFilterRole")
+      }, 1000)
+    );
   };
-  const handleEditRow = (id: string) => {
-    // navigate(PATH_DASHBOARD.eCommerce.edit(paramCase(id)));
+  const handleViewRow = (id: string) => {
+    push(MERGE_PATH(EQUIPMENT_PATH, 'detail', id))
   };
   function applySortFilter({
     tableData,
     comparator,
-    filterName,
+    // filterName,
   }: {
     tableData: IEquipmentUser[];
     comparator: (a: any, b: any) => number;
-    filterName: string;
+    // filterName: string;
   }) {
     const stabilizedThis = tableData.map((el, index) => [el, index] as const);
 
@@ -163,21 +177,21 @@ export default function EquipmentList() {
 
     tableData = stabilizedThis.map((el) => el[0]);
 
-    if (filterName) {
-      tableData = tableData.filter(
-        (item: Record<string, any>) =>
-          item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-      );
-    }
+    // if (filterName) {
+    //   tableData = tableData.filter(
+    //     (item: Record<string, any>) =>
+    //       item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+    //   );
+    // }
 
     return tableData;
   }
   const dataFiltered = applySortFilter({
     tableData,
-    comparator: getComparator(order, orderBy),
-    filterName,
+    comparator: getComparator(order, orderBy)
+    // filterName,
   });
-  const isNotFound = (!dataFiltered.length && !!filterName)
+  const isNotFound = (!tableData.length && !!filterName)
 
   return (
     <>
@@ -199,7 +213,7 @@ export default function EquipmentList() {
           ]}
           action={<>
 
-            <NextLink href={MERGE_PATH(EQUIPMENT_PATH, 'manage')} passHref>
+            <NextLink href={MERGE_PATH(EQUIPMENT_PATH, 'schedule')} passHref>
               <Button
                 variant="contained"
                 color='info'
@@ -231,20 +245,17 @@ export default function EquipmentList() {
             onFilterRole={handleFilterRole}
             optionsRole={ROLE_OPTIONS}
           />
-          <Tabs
-            sx={{
-              px: 2,
-              bgcolor: 'background.neutral',
-              display: 'flex',
-              alignItems: 'center'
-            }}
-          >
-            <Typography variant='subtitle2'>Equipment List</Typography>
-          </Tabs>
+          <Typography sx={{
+            px: 2,
+            py: 2,
+            bgcolor: 'background.neutral',
+            display: 'flex',
+            alignItems: 'center'
+          }} variant='subtitle2'>Equipment List</Typography>
           {/* <Divider /> */}
           <Scrollbar>
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-              {selected.length > 0 && (
+              {(selected.length > 0 && !isNotFound) && (
                 <TableSelectedAction
                   numSelected={selected.length}
                   rowCount={tableData.length}
@@ -255,9 +266,14 @@ export default function EquipmentList() {
                     )
                   }
                   action={
-                    <Tooltip title="Delete">
-                      <IconButton color="primary" onClick={() => handleDeleteRows(selected)}>
-                        <Iconify icon={'eva:trash-2-outline'} />
+                    <Tooltip title="Export selected to excel">
+                      <IconButton color="primary" onClick={() => handleExportRows(selected)}>
+                        <Image
+                          disabledEffect
+                          alt={'excel'}
+                          src={'assets/icons/files/ic_file_excel.svg'}
+                          sx={{ width: 24, height: 24 }}
+                        />
                       </IconButton>
                     </Tooltip>
                   }
@@ -290,8 +306,7 @@ export default function EquipmentList() {
                           row={row}
                           selected={selected.includes(row.id)}
                           onSelectRow={() => onSelectRow(row.id)}
-                          onDeleteRow={() => handleDeleteRow(row.id)}
-                          onEditRow={() => handleEditRow(row.name)}
+                          onViewRow={() => handleViewRow(row.id)}
                         />
                       ) : (
                         !isNotFound && <TableSkeleton key={index} />
@@ -299,7 +314,7 @@ export default function EquipmentList() {
                     )}
 
                   <TableEmptyRows
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
                   />
                   <TableNoData isNotFound={isNotFound} />
                 </TableBody>

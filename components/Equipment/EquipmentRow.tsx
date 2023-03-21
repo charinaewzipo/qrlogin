@@ -14,34 +14,33 @@ import { isEmpty } from 'lodash';
 type Props = {
   row: IEquipmentUser;
   selected: boolean;
-  onEditRow: VoidFunction;
   onSelectRow: VoidFunction;
-  onDeleteRow: VoidFunction;
+  onViewRow: VoidFunction;
 };
 
 export default function EquipmentRow({
   row,
   selected,
   onSelectRow,
-  onDeleteRow,
-  onEditRow,
+  onViewRow,
+
 }: Props) {
   const theme = useTheme();
 
-  const { name, cover, createdAt, lastestUpdate, status } = row;
+  const { name, cover, createdAt, lastestUpdate, status, id } = row;
 
-  const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
+  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
-  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setOpenMenuActions(event.currentTarget);
-  };
+  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+  //   setOpenMenuActions(event.currentTarget);
+  // };
 
-  const handleCloseMenu = () => {
-    setOpenMenuActions(null);
-  };
+  // const handleCloseMenu = () => {
+  //   setOpenMenuActions(null);
+  // };
 
   return (
-    <TableRow hover selected={selected}>
+    <TableRow hover selected={selected} key={id} >
       <TableCell padding="checkbox">
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
@@ -49,6 +48,7 @@ export default function EquipmentRow({
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Box
           sx={{ display: 'flex', justifyContent: 'center' }}
+          onClick={onViewRow}
         >
           <Image
             disabledEffect
@@ -56,8 +56,8 @@ export default function EquipmentRow({
             src={cover}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
-          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-            <Typography variant="subtitle2" noWrap>
+          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer' }} >
+            <Typography variant="subtitle2" noWrap >
               {name}
             </Typography>
             <Typography variant="body2" noWrap sx={{ color: "text.secondary" }}>
