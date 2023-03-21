@@ -2,11 +2,12 @@
 import { alpha, styled } from '@mui/material/styles';
 import { Card, Typography, CardProps } from '@mui/material';
 // utils
-import { fShortenNumber } from '../../../utils/formatNumber';
+import { fShortenNumber } from '@sentry/utils/formatNumber';
 // theme
-import { ColorSchema } from '../../../theme/palette';
+import { ColorSchema } from '@sentry/theme/palette';
 // components
 import Iconify from '@sentry/components/iconify'
+
 
 // ----------------------------------------------------------------------
 
@@ -46,18 +47,18 @@ export default function AnalyticsWidgetSummary({
         py: 5,
         boxShadow: 0,
         textAlign: 'center',
-        color:  color === 'grey' ? (theme) => theme.palette[color as keyof ColorSchema] : (theme ) => theme.palette[color].darker,
-        bgcolor:  color === 'grey' ? '#F4F6F8':(theme ) => theme.palette[color].lighter,
+        color:  color === 'grey' as ColorSchema ? (theme) => theme.palette[color as keyof ColorSchema] : (theme ) => theme.palette[color as keyof ColorSchema].darker,
+        bgcolor:  color === 'grey' as ColorSchema ? '#F4F6F8':(theme ) => theme.palette[color as keyof ColorSchema].lighter,
         ...sx,
       }}
       {...other}
     >
       <IconWrapperStyle
         sx={{
-          color: color === 'grey' ? (theme) => theme.palette[color as keyof ColorSchema ] :(theme ) => theme.palette[color ].dark,
-          backgroundImage: color === 'grey' ? 'linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%);' : (theme) =>
-            `linear-gradient(135deg, ${alpha(theme.palette[color].dark, 0)} 0%, ${alpha(
-              theme.palette[color].dark,
+          color: color === 'grey' as ColorSchema ? (theme) => theme.palette[color as keyof ColorSchema ] :(theme ) => theme.palette[color as keyof ColorSchema].dark,
+          backgroundImage: color === 'grey' as ColorSchema ? 'linear-gradient(135deg, rgba(226, 226, 226, 0) 0%, rgba(40, 40, 40, 0.24) 97.35%);' : (theme) =>
+            `linear-gradient(135deg, ${alpha(theme.palette[color as keyof ColorSchema].dark, 0)} 0%, ${alpha(
+              theme.palette[color as keyof ColorSchema].dark,
               0.24
             )} 100%)`,
         }}

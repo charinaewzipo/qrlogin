@@ -16,6 +16,7 @@ import {
     Autocomplete,
     Box,
     Paper,
+    Button,
 } from '@mui/material'
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
@@ -84,6 +85,11 @@ const constant = {
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
     supervisorCode: 'Supervisor code',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
+
+    updateAccount:'Update Account',
+    reset: 'Reset',
+    waitSupervisorApprove: 'Please wait for supervisor approve.',
+    approve: 'Approve',
 }
 const typeOfPerson = [
     { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
@@ -141,9 +147,13 @@ const privillege = [
     { value: 'Supervisor', label: 'Supervisor' },
     { value: 'User', label: 'User' },
 ]
+
+declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
     onSubmit: (data: IAccountFormValuesProps) => void
     onCancel: () => void
+    updateMode? : boolean
+    permission? : PERMISSION
     errorMsg: string
 }
 interface IIdImageUpload {
@@ -339,6 +349,9 @@ function AccountForm(props: AccountFormProps) {
     ])
     
     useEffect(() => {
+        if(props.permission && props.permission === 'User'){
+            fetchSupervisorData('123456')
+        }
         clearTimeout(supervisorTimeout);
         setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(
@@ -376,6 +389,7 @@ function AccountForm(props: AccountFormProps) {
     const isTitleOther = checkIsOther(watchTitle)
     const isUser = checkIsUser(watchPrivillege)
     const isFinance = checkIsFinance(watchPrivillege)
+    
 
     const fetchSupervisorData = async (code: string) => {
         setValue('supervisorStatus', null)
@@ -897,6 +911,52 @@ function AccountForm(props: AccountFormProps) {
                 ) : (
                     <></>
                 )}
+
+                {props.permission && props.permission === 'User' ? (
+                    <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
+                        <Stack spacing={2} textAlign={'left'}>
+                            <Typography variant="h4">{constant.supervisorDetail}</Typography>
+                            <Typography variant="body1" whiteSpace={'pre-line'}>
+                                {constant.waitSupervisorApprove}
+                            </Typography>
+                            {supervisor ? (
+                                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
+                                    <Image
+                                        alt="Logo"
+                                        src={supervisor.pic}
+                                        sx={{ height: 64, width: 64, borderRadius: 1 }}
+                                        disabledEffect
+                                    />
+                                     <Box sx={{ flexGrow: 1 }}>
+                                    <Stack>
+                                        <Typography variant="h6">
+                                            {`${supervisor.name} (${supervisor.code})`}
+                                        </Typography>
+                                        <Typography variant="body1" whiteSpace={'pre-line'}>
+                                            {supervisor.email}
+                                        </Typography>
+                                    </Stack>
+                                    </Box>
+                                   
+                                    <Box sx={{ flexShrink: 0}}>
+                                            <Button
+                                                variant="contained"
+                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>} 
+                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
+                                                disableElevation
+                                            >
+                                                {constant.approve}
+                                            </Button>     
+                                    </Box>
+                                </Stack>
+                            ) : (
+                                <></>
+                            )}
+                        </Stack>
+                    </Paper>
+                ) : (
+                    <></>
+                )}
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
                     <LoadingButton
                         type="button"
@@ -905,7 +965,7 @@ function AccountForm(props: AccountFormProps) {
                         onClick={props.onCancel}
                         color="inherit"
                     >
-                        {constant.cancel}
+                        {props.updateMode ? constant.reset : constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
@@ -913,7 +973,7 @@ function AccountForm(props: AccountFormProps) {
                         size="large"
                         // loading={authenticationStore.isFetching}
                     >
-                        {constant.createAccount}
+                        {props.updateMode ? constant.updateAccount : constant.createAccount}
                     </LoadingButton>
                 </Stack>
             </Stack>

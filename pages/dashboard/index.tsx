@@ -23,7 +23,7 @@ export function Index() {
         restDelta: 0.001,
     })
 
-    const permission: PERMISSION = 'Supervisor'
+    const permission: PERMISSION = 'Admin'
 
     const progress = (
         <m.div

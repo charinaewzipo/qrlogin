@@ -12,6 +12,7 @@ interface ConfirmDialogProps extends Omit<DialogProps, 'title'> {
     action: React.ReactNode
     open: boolean
     onClose: VoidFunction
+    colorButton?:'inherit' | 'primary' | 'secondary' | 'success' | 'error' | 'info' | 'warning'
 }
 
 export default function ConfirmDialog({
@@ -21,6 +22,7 @@ export default function ConfirmDialog({
     action,
     open,
     onClose,
+    colorButton='success',
     ...other
 }: ConfirmDialogProps) {
     return (
@@ -52,6 +54,7 @@ export default function ConfirmDialog({
 
                 <LoadingButton
                     fullWidth
+                    color={colorButton}
                     size="large"
                     type="button"
                     variant="contained"
