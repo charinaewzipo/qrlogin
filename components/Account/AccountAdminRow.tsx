@@ -14,7 +14,7 @@ type Props = {
 const styledTextOverFlow = {
     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
 }
-export default function InvoiceTableRow({ row, onViewRow }: Props) {
+export default function AccountAdminRow({ row, onViewRow }: Props) {
     const { name, email, permission, studentID, supervisorName, creditLimit, bookLimit, phone, expiredate, status } = row
     const theme = useTheme()
     return (
