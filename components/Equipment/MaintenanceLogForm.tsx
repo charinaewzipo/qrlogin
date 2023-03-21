@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback } from 'react'
+import { useCallback } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -10,8 +10,7 @@ import {
     Paper,
 } from '@mui/material'
 import FormProvider, { RHFTextField } from '@sentry/components/hook-form'
-import { CustomFile, Upload } from '@sentry/components/upload'
-import { fNumber } from '@sentry/utils/formatNumber'
+import { CustomFile, RejectionFiles, Upload } from '@sentry/components/upload'
 import { cloneDeep } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
@@ -110,7 +109,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
       setValue('maintenanceFiles', filteredItems);
     }
 
-	const { getRootProps, getInputProps } = useDropzone({
+	const { getRootProps, getInputProps, fileRejections } = useDropzone({
         onDrop: handleDrop,
         accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
         multiple: true,
@@ -159,12 +158,13 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                                 />
                             )}
                         />
-						<Stack spacing={0.5}>
+						<Stack spacing={1.5}>
 							<Controller
 								key={`maintenanceFiles`}
 								name={`maintenanceFiles`}
 								control={control}
 								render={({ field }) => (
+									<>
 									<Upload
 										accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
 										files={field.value}
@@ -177,14 +177,18 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 												display: 'none',
 											},
 											'& > div:nth-child(2)': {
-												marginY: 1,
+												marginTop: 1,
+												marginBottom: 0,
 												'& > div': {
-													borderRadius: 1
+													borderRadius: 1,
+													marginBottom: 0,
 												}
 											},
 										}}
 										maxSize={200000}
 									/>
+            						<RejectionFiles fileRejections={fileRejections} />
+									</>
 								)}
 							/>
 							<div {...getRootProps()} style={{ width: 'fit-content' }}>
