@@ -219,7 +219,8 @@ export default function EquipmentList() {
                 color='info'
                 startIcon={<Iconify icon="eva:clock-fill" />}
                 sx={{
-                  bgcolor: "#1890FF",
+                  // bgcolor: "#1890FF",
+                  bgcolor: 'info.main',
                   mr: 1
                 }}
               >
@@ -245,16 +246,12 @@ export default function EquipmentList() {
             onFilterRole={handleFilterRole}
             optionsRole={ROLE_OPTIONS}
           />
-          <Typography sx={{
-            px: 2,
-            py: 2,
-            bgcolor: 'background.neutral',
-            display: 'flex',
-            alignItems: 'center'
-          }} variant='subtitle2'>Equipment List</Typography>
+
           {/* <Divider /> */}
           <Scrollbar>
+
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+
               {(selected.length > 0 && !isNotFound) && (
                 <TableSelectedAction
                   numSelected={selected.length}
@@ -279,8 +276,16 @@ export default function EquipmentList() {
                   }
                 />
               )}
-
+              <Typography
+                sx={{
+                  px: 2,
+                  py: 2,
+                  bgcolor: 'background.neutral',
+                  display: 'flex',
+                  alignItems: 'center'
+                }} variant='subtitle2'>Equipment List</Typography>
               <Table>
+
                 <TableHeadCustom
                   sx={{ "& th": { backgroundColor: 'background.paper', color: theme.palette.text.primary } }}
                   order={order}
