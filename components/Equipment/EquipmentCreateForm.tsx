@@ -480,7 +480,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
-                        <RHFSelect
+                    {/* <Box sx={{width:'50%'}}> */}
+                    <Stack gap={3} flexDirection="row">
+                    <RHFSelect
                             name="privillege"
                             label={isRequire(constant.privillege)}
                             InputLabelProps={{ shrink: true }}
@@ -492,55 +494,27 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             ))}
                         </RHFSelect>
                         <RHFSelect
-                                name="accountStatus"
-                                label={isRequire(constant.accountStatus)}
-                                InputLabelProps={{ shrink: true }}
-                            >
-                                {accountStatus.map(({ value, label }) => (
-                                    <option value={value} key={`${value}-accountStatus-option`}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </RHFSelect>
+                            name="privillege"
+                            label={isRequire(constant.privillege)}
+                            InputLabelProps={{ shrink: true }}
+                        >
+                           
+                        </RHFSelect>
+                    </Stack>
+            
                      
                         <Stack gap={3} flexDirection="row">
-                            <RHFSelect
-                                name="accountStatus"
-                                label={isRequire(constant.accountStatus)}
-                                InputLabelProps={{ shrink: true }}
-                            >
-                                {accountStatus.map(({ value, label }) => (
-                                    <option value={value} key={`${value}-accountStatus-option`}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </RHFSelect>
-                            <Controller
-                                name="accountExpiryDate"
-                                control={control}
-                                defaultValue={''}
-                                render={({ field, fieldState: { error } }) => (
-                                    <DatePicker
-                                        inputFormat="dd MMM yyyy"
-                                        label={constant.accountExpiryDate}
-                                        value={field.value || null}
-                                        onChange={(newValue) => {
-                                            field.onChange(newValue)
-                                        }}
-                                        disableMaskedInput
-                                        disablePast
-                                        minDate={new Date().setDate(new Date().getDate() + 1)}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                error={!!error}
-                                                helperText={error?.message}
-                                                fullWidth
-                                            />
-                                        )}
-                                    />
-                                )}
-                            />
+                        <RHFTextField
+                                        name="department"
+                                        key={'department-textfield'}
+                                        label={isRequire(constant.department)}
+                                        inputProps={{ maxLength: 100 }}
+                                    /> <RHFTextField
+                                    name="department"
+                                    key={'department-textfield'}
+                                    label={isRequire(constant.department)}
+                                    inputProps={{ maxLength: 100 }}
+                                />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
@@ -554,35 +528,88 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                     </option>
                                 ))}
                             </RHFSelect>
-                            <Controller
-                                name="accountExpiryDate"
-                                control={control}
-                                defaultValue={''}
-                                render={({ field, fieldState: { error } }) => (
-                                    <DatePicker
-                                        inputFormat="dd MMM yyyy"
-                                        label={constant.accountExpiryDate}
-                                        value={field.value || null}
-                                        onChange={(newValue) => {
-                                            field.onChange(newValue)
-                                        }}
-                                        disableMaskedInput
-                                        disablePast
-                                        minDate={new Date().setDate(new Date().getDate() + 1)}
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                error={!!error}
-                                                helperText={error?.message}
-                                                fullWidth
-                                            />
-                                        )}
+                            <RHFTextField
+                                        name="department"
+                                        key={'department-textfield'}
+                                        label={isRequire(constant.department)}
+                                        inputProps={{ maxLength: 100 }}
                                     />
-                                )}
-                            />
                         </Stack>
-                        
+                        <RHFTextField
+                            name="address"
+                            multiline
+                            label={isRequire(constant.address)}
+                            inputProps={{ maxLength: 200 }}
+                            minRows={4}
+                        />
                     </Stack>
+
+                    <Typography  sx={{marginTop:3}}>Images</Typography>
+                    <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
+                        
+                            {[...Array(idImageLength).keys()].map((i) => (
+                                <Controller
+                                    key={`id-image-upload-${i}`}
+                                    name={`idImages.${i}`}
+                                    control={control}
+                                    render={({ field }) => (
+                                        <Upload
+                                            dropzoneHelper={
+                                                <Box sx={{ py: 3, px: 1 }}>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="h5"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        {isKu || watchTypeOfPerson === ''
+                                                            ? constant.studentIdImage
+                                                            : constant.citizenIdImage}
+                                                    </Typography>
+                                                    <Typography
+                                                        variant="body2"
+                                                        component="p"
+                                                        whiteSpace="pre-line"
+                                                        sx={{ ml: -2 }}
+                                                    >
+                                                        Drop files here or click
+                                                        <Typography
+                                                            variant="body2"
+                                                            component="span"
+                                                            sx={{
+                                                                mx: 0.5,
+                                                                color: 'primary.main',
+                                                                textDecoration: 'underline',
+                                                            }}
+                                                        >
+                                                            {`browse\n`}
+                                                        </Typography>
+                                                        {`thorough your machine.\n\n`}
+                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                                        {`Max size of 200KB`}
+                                                    </Typography>
+                                                </Box>
+                                            }
+                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
+                                            file={field.value}
+                                            onDrop={(files) =>
+                                                field.onChange(URL.createObjectURL(files[0]))
+                                            }
+                                            onDelete={() => field.onChange('')}
+                                            sx={{
+                                                width:
+                                                    get(field, 'value', '') === '' ? 264 : '100%',
+                                                flex: get(field, 'value', '') === '' ? '' : '50%',
+                                                '& > div > div': {
+                                                    flexDirection: 'column',
+                                                    textAlign: 'center',
+                                                },
+                                            }}
+                                            maxSize={200000}
+                                        />
+                                    )}
+                                />
+                            ))}
+                        </Stack>
                 </Paper>
                 <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3} justifyContent="center" textAlign={'center'}>
