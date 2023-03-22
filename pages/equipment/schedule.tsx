@@ -19,6 +19,7 @@ import {
   TablePagination,
   Box,
   useTheme,
+  Drawer,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -45,6 +46,11 @@ import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
 import Image from '@sentry/components/image/Image'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
+import { format } from 'date-fns'
+
+import { LoadingButton } from '@mui/lab';
+import ConfirmDialog from '@ku/components/ConfirmDialog'
+import { get } from 'lodash'
 
 
 const mockDataTable: IEquipmentSchedule[] = [{
@@ -109,21 +115,24 @@ export default function EquipmentSchedulePage() {
   } = useTable();
 
   const [tableData, setTableData] = useState<IEquipmentSchedule[]>([])
-  const [filterName, setFilterName] = useState('');
+  const [openConfirmModal, setOpenConfirmModal] = useState(false)
   const [filterStatus, setFilterStatus] = useState('upcoming')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
+  const [detailSchedule, setDetailSchedule] = useState<IEquipmentSchedule>(null)
   const theme = useTheme()
+  const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
+
   useEffect(() => {
     getEquipmentList()
   }, [])
+
   const getLengthByStatus = (status: string) =>
     tableData.filter((item) => item.status === status).length
-
   const TABS = [
-    // { value: 'all', label: 'All', color: 'default', count: tableData.length },
+
     { value: 'upcoming', label: 'Upcoming', color: 'warning', count: getLengthByStatus('Pending') },
     {
       value: 'Finish',
@@ -151,8 +160,12 @@ export default function EquipmentSchedulePage() {
     push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id))
   };
 
-  const isNotFound = (!tableData.length)
+  const handleOnCancel = (item: IEquipmentSchedule) => {
+    setDetailSchedule(item)
+    setOpenConfirmModal(true)
 
+  }
+  const isNotFound = (!tableData.length)
   return (
     <>
       <Head>
@@ -220,7 +233,7 @@ export default function EquipmentSchedulePage() {
             }}
           />
 
-          {/* <Divider /> */}
+
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <Scrollbar>
               <Table sx={{ minWidth: 800 }}>
@@ -238,6 +251,7 @@ export default function EquipmentSchedulePage() {
                           key={row.id}
                           row={row}
                           onViewRow={() => handleViewRow(row.id)}
+                          onRemove={() => handleOnCancel(row)}
                         />
                       )
                     })}
@@ -262,7 +276,48 @@ export default function EquipmentSchedulePage() {
           />
         </Card>
       </Container>
-
+      <ConfirmDialog
+        open={openConfirmModal}
+        textCancel="No, I’m not sure"
+        colorButton='inherit'
+        onClose={() => { setOpenConfirmModal(false) }}
+        title="Are you sure!"
+        content={
+          <Box>
+            {[
+              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} ${get(detailSchedule, 'time', 'Full day')} schedule` },
+              { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
+            ].map((i, index) => (
+              <Typography
+                key={'contact' + index}
+                variant="body1"
+                sx={{
+                  color: theme.palette.text.secondary,
+                  ...i.sx,
+                }}
+              >
+                {i.text}
+              </Typography>
+            ))}
+          </Box>
+        }
+        action={
+          <LoadingButton
+            fullWidth
+            color='error'
+            size="large"
+            type="button"
+            variant="contained"
+            onClick={() => {
+              setOpenConfirmModal(false)
+              get(detailSchedule, 'status', 'Pending') === 'Pending' ?
+                enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`)
+                : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`, { variant: 'error' })
+            }}
+          >
+            {"Yes, Cancel"}
+          </LoadingButton>}
+      />
     </>
   )
 }

@@ -1,22 +1,17 @@
-import { useState } from 'react';
-import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box, Button } from '@mui/material';
-import Image from '@sentry/components/image/Image';
+import { TableRow, TableCell, Typography, Button } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
 import { format } from 'date-fns'
 import { isEmpty, noop } from 'lodash';
 import Iconify from '@sentry/components/iconify/Iconify';
-
 // ----------------------------------------------------------------------
 
 type Props = {
   row: IEquipmentSchedule
   onViewRow: VoidFunction
   onRemove?: VoidFunction
-  // onCopyLink: VoidFunction
 }
 
 export default function EquipmentScheduleRow({
@@ -26,17 +21,6 @@ export default function EquipmentScheduleRow({
 }: Props) {
   const theme = useTheme();
   const { activeDate, time, createBy, createAt, status, id } = row;
-
-  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpenMenuActions(event.currentTarget);
-  // };
-
-  // const handleCloseMenu = () => {
-  //   setOpenMenuActions(null);
-  // };
-
   return (
     <>
       <TableRow
@@ -59,8 +43,7 @@ export default function EquipmentScheduleRow({
         </TableCell>
         <TableCell align="left">
 
-
-          <Button
+          {status === 'Pending' && <Button
             color="error"
             sx={{ flexShrink: 0 }}
             onClick={(e) => {
@@ -70,7 +53,8 @@ export default function EquipmentScheduleRow({
             startIcon={<Iconify icon="eva:trash-2-outline" />}
           >
             Cancel
-          </Button>
+          </Button>}
+
         </TableCell>
       </TableRow>
     </>
