@@ -54,7 +54,7 @@ export interface IAccountFormValuesProps {
     supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
 }
 const constant = {
-    createAccount: 'Create Account',
+    createEquipments: 'Create Equipments',
     cancel: 'Cancel',
     privillege: 'Privillege',
     accountStatus: 'Account Status',
@@ -86,7 +86,7 @@ const constant = {
     supervisorCode: 'Supervisor code',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 
-    updateAccount:'Update Account',
+    updateAccount: 'Update Account',
     reset: 'Reset',
     waitSupervisorApprove: 'Please wait for supervisor approve.',
     approve: 'Approve',
@@ -152,8 +152,8 @@ declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
     onSubmit: (data: IAccountFormValuesProps) => void
     onCancel: () => void
-    updateMode? : boolean
-    permission? : PERMISSION
+    updateMode?: boolean
+    permission?: PERMISSION
     errorMsg: string
 }
 interface IIdImageUpload {
@@ -161,7 +161,7 @@ interface IIdImageUpload {
 }
 function EquipmentCreateForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
-    const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
+    const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>()
 
     const checkIsKuPerson = (typeOfPerson: string) =>
         ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
@@ -283,7 +283,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                     name: 'supervisorCode',
                     message: '',
                     test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
-                })
+                }),
         }),
     })
 
@@ -327,7 +327,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         formState: { errors, isSubmitted },
         control,
         watch,
-        trigger
+        trigger,
     } = methods
 
     const [
@@ -337,7 +337,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         watchTitle,
         watchSupervisorCode,
         watchSupervisorStatus,
-        watchPrivillege
+        watchPrivillege,
     ] = watch([
         'idImages',
         'typeOfPerson',
@@ -347,12 +347,12 @@ function EquipmentCreateForm(props: AccountFormProps) {
         'supervisorStatus',
         'privillege',
     ])
-    
+
     useEffect(() => {
-        if(props.permission && props.permission === 'User'){
+        if (props.permission && props.permission === 'User') {
             fetchSupervisorData('123456')
         }
-        clearTimeout(supervisorTimeout);
+        clearTimeout(supervisorTimeout)
         setValue('supervisorStatus', 'waiting')
         setSupervisorTimeout(
             setTimeout(() => {
@@ -362,8 +362,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
     }, [watchSupervisorCode])
 
     useEffect(() => {
-        if (isSubmitted)
-            trigger()
+        if (isSubmitted) trigger()
         if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
             if (isPositionOther) setValue('position', '')
             if (!department.map((d) => d.value).includes(getValues('department')))
@@ -377,10 +376,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
 
     useEffect(() => {
-        if (props.errorMsg !== '')
-            window.scrollTo(0, 0)
+        if (props.errorMsg !== '') window.scrollTo(0, 0)
     }, [props.errorMsg])
-    
+
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
@@ -389,7 +387,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const isTitleOther = checkIsOther(watchTitle)
     const isUser = checkIsUser(watchPrivillege)
     const isFinance = checkIsFinance(watchPrivillege)
-    
 
     const fetchSupervisorData = async (code: string) => {
         setValue('supervisorStatus', null)
@@ -406,7 +403,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 setValue('supervisorStatus', 'notFound')
             }
         } catch (error) {
-            console.log(error);
+            console.log(error)
             setValue('supervisorStatus', null)
         }
         trigger('supervisorCode')
@@ -429,7 +426,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
         const oldValue = getValues(fieldName)
         let newValue = e.target.value
-        if (option === 'comma'){
+        if (option === 'comma') {
             //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
             for (let i = 0; i < oldValue.length; i++) {
                 if (
@@ -449,13 +446,13 @@ function EquipmentCreateForm(props: AccountFormProps) {
             if (isSubmitted) trigger()
             setTimeout(() => {
                 //set text cursor at same position after setValue
-                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
+                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd
                 e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
             }, 0)
         }
     }
 
-    const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
+    const idImageWithoutEmpty = watchIdImages.filter((idImage) => idImage)
     const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
     const isRequire = (label: string, isRequire: boolean = true) => {
@@ -480,41 +477,40 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
-                    {/* <Box sx={{width:'50%'}}> */}
-                    <Stack gap={3} flexDirection="row">
-                    <RHFSelect
-                            name="privillege"
-                            label={isRequire(constant.privillege)}
-                            InputLabelProps={{ shrink: true }}
-                        >
-                            {privillege.map(({ value, label }) => (
-                                <option value={value} key={`${value}-privillege-option`}>
-                                    {label}
-                                </option>
-                            ))}
-                        </RHFSelect>
-                        <RHFSelect
-                            name="privillege"
-                            label={isRequire(constant.privillege)}
-                            InputLabelProps={{ shrink: true }}
-                        >
-                           
-                        </RHFSelect>
-                    </Stack>
-            
-                     
+                        {/* <Box sx={{width:'50%'}}> */}
                         <Stack gap={3} flexDirection="row">
-                        <RHFTextField
-                                        name="department"
-                                        key={'department-textfield'}
-                                        label={isRequire(constant.department)}
-                                        inputProps={{ maxLength: 100 }}
-                                    /> <RHFTextField
-                                    name="department"
-                                    key={'department-textfield'}
-                                    label={isRequire(constant.department)}
-                                    inputProps={{ maxLength: 100 }}
-                                />
+                            <RHFSelect
+                                name="privillege"
+                                label={isRequire(constant.privillege)}
+                                InputLabelProps={{ shrink: true }}
+                            >
+                                {privillege.map(({ value, label }) => (
+                                    <option value={value} key={`${value}-privillege-option`}>
+                                        {label}
+                                    </option>
+                                ))}
+                            </RHFSelect>
+                            {/* <RHFSelect
+                                name="privillege"
+                                key={'department-textfield'}
+                                label={isRequire(constant.privillege)}
+                                InputLabelProps={{ shrink: true }}
+                            ></RHFSelect> */}
+                        </Stack>
+
+                        <Stack gap={3} flexDirection="row">
+                            <RHFTextField
+                                name="department"
+                                key={'department-textfield'}
+                                label={isRequire(constant.department)}
+                                inputProps={{ maxLength: 100 }}
+                            />{' '}
+                            <RHFTextField
+                                name="department"
+                                key={'department-textfield'}
+                                label={isRequire(constant.department)}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
@@ -529,11 +525,11 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                 ))}
                             </RHFSelect>
                             <RHFTextField
-                                        name="department"
-                                        key={'department-textfield'}
-                                        label={isRequire(constant.department)}
-                                        inputProps={{ maxLength: 100 }}
-                                    />
+                                name="department"
+                                key={'department-textfield'}
+                                label={isRequire(constant.department)}
+                                inputProps={{ maxLength: 100 }}
+                            />
                         </Stack>
                         <RHFTextField
                             name="address"
@@ -544,490 +540,154 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         />
                     </Stack>
 
-                    <Typography  sx={{marginTop:3}}>Images</Typography>
+                    <Typography sx={{ marginTop: 3 }}>Images</Typography>
                     <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                        
-                            {[...Array(idImageLength).keys()].map((i) => (
-                                <Controller
-                                    key={`id-image-upload-${i}`}
-                                    name={`idImages.${i}`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Upload
-                                            dropzoneHelper={
-                                                <Box sx={{ py: 3, px: 1 }}>
-                                                    <Typography
-                                                        gutterBottom
-                                                        variant="h5"
-                                                        sx={{ ml: -2 }}
-                                                    >
-                                                        {isKu || watchTypeOfPerson === ''
-                                                            ? constant.studentIdImage
-                                                            : constant.citizenIdImage}
-                                                    </Typography>
+                        {[...Array(idImageLength).keys()].map((i) => (
+                            <Controller
+                                key={`id-image-upload-${i}`}
+                                name={`idImages.${i}`}
+                                control={control}
+                                render={({ field }) => (
+                                    <Upload
+                                        dropzoneHelper={
+                                            <Box sx={{ py: 3, px: 1 }}>
+                                                <Typography
+                                                    gutterBottom
+                                                    variant="h5"
+                                                    sx={{ ml: -2 }}
+                                                >
+                                                    Select image files
+                                                </Typography>
+                                                <Typography
+                                                    variant="body2"
+                                                    component="p"
+                                                    whiteSpace="pre-line"
+                                                    sx={{ ml: -2 }}
+                                                >
+                                                    Drop files here or click
                                                     <Typography
                                                         variant="body2"
-                                                        component="p"
-                                                        whiteSpace="pre-line"
-                                                        sx={{ ml: -2 }}
+                                                        component="span"
+                                                        sx={{
+                                                            mx: 0.5,
+                                                            color: 'primary.main',
+                                                            textDecoration: 'underline',
+                                                        }}
                                                     >
-                                                        Drop files here or click
-                                                        <Typography
-                                                            variant="body2"
-                                                            component="span"
-                                                            sx={{
-                                                                mx: 0.5,
-                                                                color: 'primary.main',
-                                                                textDecoration: 'underline',
-                                                            }}
-                                                        >
-                                                            {`browse\n`}
-                                                        </Typography>
-                                                        {`thorough your machine.\n\n`}
-                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                                        {`Max size of 200KB`}
+                                                        {`browse\n`}
                                                     </Typography>
-                                                </Box>
-                                            }
-                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-                                            file={field.value}
-                                            onDrop={(files) =>
-                                                field.onChange(URL.createObjectURL(files[0]))
-                                            }
-                                            onDelete={() => field.onChange('')}
-                                            sx={{
-                                                width:
-                                                    get(field, 'value', '') === '' ? 264 : '100%',
-                                                flex: get(field, 'value', '') === '' ? '' : '50%',
-                                                '& > div > div': {
-                                                    flexDirection: 'column',
-                                                    textAlign: 'center',
-                                                },
-                                            }}
-                                            maxSize={200000}
-                                        />
-                                    )}
-                                />
-                            ))}
-                        </Stack>
-                </Paper>
-                <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
-                    <Stack spacing={3} justifyContent="center" textAlign={'center'}>
-                        <Controller
-                            name="avatar"
-                            control={control}
-                            render={({ field }) => (
-                                <Stack sx={{ mt: 1 }}>
-                                    <UploadAvatar
+                                                    {`thorough your machine.\n`}
+                                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                                    {`Max size of 1024KB`}
+                                                </Typography>
+                                            </Box>
+                                        }
                                         accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
                                         file={field.value}
                                         onDrop={(files) =>
                                             field.onChange(URL.createObjectURL(files[0]))
                                         }
+                                        onDelete={() => field.onChange('')}
+                                        sx={{
+                                            width: get(field, 'value', '') === '' ? '100%' : '100%',
+                                            flex: get(field, 'value', '') === '' ? '' : '50%',
+                                            '& > div > div': {},
+                                        }}
                                         maxSize={200000}
-                                        helperText={
-                                            <Typography
-                                                variant="caption"
-                                                sx={{ mt: 1, color: 'text.secondary' }}
-                                            >
-                                                Allowed *.jpeg, *.jpg, *.png, *.gif
-                                                <br /> max size of {fData(200000)}
-                                            </Typography>
-                                        }
                                     />
-                                    <FormHelperText error sx={{ mt: 2, textAlign: 'center' }}>
-                                        {errors.avatar?.message}
-                                    </FormHelperText>
-                                </Stack>
-                            )}
-                        />
-                        <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="typeOfPerson"
-                                label={isRequire(constant.typeOfPerson)}
-                            >
-                                <option
-                                    value={''}
-                                    key={`${''}-typeOfPerson-option`}
-                                    hidden
-                                ></option>
-                                {(!isFinance ? typeOfPerson : financeTypeOfPerson).map(
-                                    ({ value, label }) => (
-                                        <option value={value} key={`${value}-typeOfPerson-option`}>
-                                            {label}
-                                        </option>
-                                    )
                                 )}
-                            </RHFSelect>
-                            {{
-                                'Other University': (
-                                    <RHFTextField
-                                        name="universityName"
-                                        label={isRequire(constant.universityName)}
-                                        inputProps={{ maxLength: 100 }}
-                                    />
-                                ),
-                                'KU Student & Staff': (
-                                    <RHFTextField
-                                        name="department"
-                                        key={'department-textfield'}
-                                        label={isRequire(constant.department)}
-                                        inputProps={{ maxLength: 100 }}
-                                    />
-                                ),
-                                'SciKU Student & Staff': (
-                                    <Controller
-                                        name="department"
-                                        control={control}
-                                        render={({ field }) => (
-                                            <Autocomplete
-                                                {...field}
-                                                freeSolo
-                                                clearOnBlur
-                                                fullWidth
-                                                onChange={(event, newValue) =>{
-                                                    console.log(newValue)
-                                                    field.onChange(get(newValue, 'value', newValue))}
-                                                }
-                                                options={department}
-                                                key={'department-auto'}
-                                                renderInput={(param) => (
-                                                    <TextField
-                                                        {...param}
-                                                        error={!!errors?.department}
-                                                        helperText={get(
-                                                            errors?.department,
-                                                            'message',
-                                                            ''
-                                                        )}
-                                                        label={isRequire(constant.department)}
-                                                    />
-                                                )}
-                                            />
-                                        )}
-                                    />
-                                ),
-                                'Government office': (
-                                    <RHFTextField
-                                        name="governmentName"
-                                        key={'governmentName-textfield'}
-                                        label={isRequire(constant.governmentName)}
-                                        inputProps={{ maxLength: 100 }}
-                                    />
-                                ),
-                                'Private company': (
-                                    <RHFTextField
-                                        name="companyName"
-                                        key={'companyName-textfield'}
-                                        label={isRequire(constant.companyName)}
-                                        inputProps={{ maxLength: 100 }}
-                                    />
-                                ),
-                            }[watchTypeOfPerson] || (
-                                <RHFTextField
-                                    name="department"
-                                    key={'department-textfield'}
-                                    label={isRequire(constant.department)}
-                                    disabled
-                                />
-                            )}
+                            />
+                        ))}
+                    </Stack>
+                </Paper>
+                <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
+                    <Stack>
+                        <Stack flexDirection="row" justifyContent="space-between">
+                            <Typography>Available date of week</Typography>
+                            <Stack flexDirection="row" gap={2}>
+                                <LoadingButton type="submit" variant="contained" size="small">
+                                    Available
+                                </LoadingButton>
+                                <LoadingButton type="submit" size="small">
+                                    Unavailable
+                                </LoadingButton>
+                            </Stack>
                         </Stack>
-                        {!isFinance ? (
-                            <Stack flexDirection={'row'}>
-                                <RHFSelect
-                                    name="position"
-                                    label={isRequire(constant.position)}
-                                    sx={{ flex: '100%' }}
-                                >
-                                    <option
-                                        value={''}
-                                        key={`${''}-position-option`}
-                                        hidden
-                                    ></option>
-                                    {position.map(({ value, label }) => {
-                                        if (
-                                            watchTypeOfPerson === 'SciKU Student & Staff' &&
-                                            value === 'Other'
-                                        )
-                                            return
-                                        return (
-                                            <option value={value} key={`${value}-position-option`}>
-                                                {label}
-                                            </option>
-                                        )
-                                    })}
-                                </RHFSelect>
 
-                                <Stack
-                                    sx={collapseableInputStyle(
-                                        (isKu || isPositionOther) && watchPosition !== ''
-                                    )}
-                                >
-                                    {isKuStudent ? (
-                                        <RHFTextField
-                                            name="studentId"
-                                            label={isRequire(constant.studentId)}
-                                            inputProps={{ maxLength: 100 }}
-                                        />
-                                    ) : isKu && isStaff ? (
-                                        <RHFTextField
-                                            name="staffId"
-                                            label={constant.staffId}
-                                            inputProps={{ maxLength: 100 }}
-                                        />
-                                    ) : isPositionOther ? (
-                                        <RHFTextField
-                                            name="positionName"
-                                            label={isRequire(constant.positionName)}
-                                            inputProps={{ maxLength: 100 }}
-                                        />
-                                    ) : (
-                                        <RHFTextField
-                                            name="studentId"
-                                            label={isRequire(constant.studentId)}
-                                            inputProps={{ maxLength: 100 }}
-                                        />
-                                    )}
-                                </Stack>
-                            </Stack>
-                        ) : (
-                            <></>
-                        )}
-                        <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="title"
-                                label={isRequire(constant.title)}
-                            >
-                                <option value={''} key={`${''}-title-option`} hidden></option>
-                                {title.map(({ value, label }) => (
-                                    <option value={value} key={`${value}-title-option`}>
-                                        {label}
-                                    </option>
-                                ))}
-                            </RHFSelect>
-                            <RHFTextField
-                                name={isTitleOther ? 'otherTitle' : ''}
-                                label={isRequire(constant.otherTitle, isTitleOther)}
-                                disabled={!isTitleOther}
-                                inputProps={{ maxLength: 100 }}
-                            />
-                            <RHFTextField
-                                name="firstName"
-                                label={isRequire(constant.firstName)}
-                                inputProps={{ maxLength: 100 }}
-                            />
-                            <RHFTextField
-                                name="surName"
-                                label={isRequire(constant.surName)}
-                                inputProps={{ maxLength: 100 }}
-                            />
+                        <Stack
+                            flexDirection="row"
+                            justifyContent="space-between"
+                            gap={2}
+                            sx={{ mt: 2 }}
+                        >
+                            <LoadingButton type="submit"  size="large">
+                                Sunday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Monday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Tuesday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Wednesday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Thursday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Friday
+                            </LoadingButton>
+                            <LoadingButton type="submit"  size="large">
+                                Saturday
+                            </LoadingButton>
                         </Stack>
-                        <RHFTextField
-                            name="address"
-                            multiline
-                            label={isRequire(constant.address)}
-                            inputProps={{ maxLength: 200 }}
-                            minRows={4}
-                        />
-                        <RHFTextField
-                            name="phoneNumber"
-                            label={isRequire(constant.phoneNumber)}
-                            inputProps={{ maxLength: 10 }}
-                            onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
-                        />
-                        {!isFinance ? (
-                            <Stack flexDirection={'row'} gap={3}>
-                                <RHFTextField
-                                    name="creditLimit"
-                                    label={isRequire(constant.creditLimit)}
-                                    onChange={(e) => handleChangeNumber(e, 'creditLimit', 'comma')}
-                                    inputProps={{ maxLength: 20 }}
-                                />
-                                <RHFTextField
-                                    name="bookingLimit"
-                                    label={isRequire(constant.bookingLimit)}
-                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit', 'comma')}
-                                    inputProps={{ maxLength: 20 }}
-                                />
+                    </Stack>
+
+                    <Stack sx={{mt:3}}>
+                        <Stack flexDirection="row" justifyContent="space-between">
+                            <Typography>Available times</Typography>
+                            <Stack flexDirection="row" gap={2}>
+                                <LoadingButton type="submit" variant="contained" size="small">
+                                    Available
+                                </LoadingButton>
+                                <LoadingButton type="submit" size="small">
+                                    Unavailable
+                                </LoadingButton>
                             </Stack>
-                        ) : (
-                            <></>
-                        )}
-                        <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                            {[...Array(idImageLength).keys()].map((i) => (
-                                <Controller
-                                    key={`id-image-upload-${i}`}
-                                    name={`idImages.${i}`}
-                                    control={control}
-                                    render={({ field }) => (
-                                        <Upload
-                                            dropzoneHelper={
-                                                <Box sx={{ py: 3, px: 1 }}>
-                                                    <Typography
-                                                        gutterBottom
-                                                        variant="h5"
-                                                        sx={{ ml: -2 }}
-                                                    >
-                                                        {isKu || watchTypeOfPerson === ''
-                                                            ? constant.studentIdImage
-                                                            : constant.citizenIdImage}
-                                                    </Typography>
-                                                    <Typography
-                                                        variant="body2"
-                                                        component="p"
-                                                        whiteSpace="pre-line"
-                                                        sx={{ ml: -2 }}
-                                                    >
-                                                        Drop files here or click
-                                                        <Typography
-                                                            variant="body2"
-                                                            component="span"
-                                                            sx={{
-                                                                mx: 0.5,
-                                                                color: 'primary.main',
-                                                                textDecoration: 'underline',
-                                                            }}
-                                                        >
-                                                            {`browse\n`}
-                                                        </Typography>
-                                                        {`thorough your machine.\n\n`}
-                                                        {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                                        {`Max size of 200KB`}
-                                                    </Typography>
-                                                </Box>
-                                            }
-                                            accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-                                            file={field.value}
-                                            onDrop={(files) =>
-                                                field.onChange(URL.createObjectURL(files[0]))
-                                            }
-                                            onDelete={() => field.onChange('')}
-                                            sx={{
-                                                width:
-                                                    get(field, 'value', '') === '' ? 264 : '100%',
-                                                flex: get(field, 'value', '') === '' ? '' : '50%',
-                                                '& > div > div': {
-                                                    flexDirection: 'column',
-                                                    textAlign: 'center',
-                                                },
-                                            }}
-                                            maxSize={200000}
-                                        />
-                                    )}
-                                />
-                            ))}
+                        </Stack>
+
+                        <Stack
+                            flexDirection="row"
+                            justifyContent="space-between"
+                            gap={2}
+                            sx={{ mt: 2 }}
+                        >
+                            <LoadingButton type="submit"  size="large">
+                                Sunday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Monday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Tuesday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Wednesday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Thursday
+                            </LoadingButton>
+                            <LoadingButton type="submit" variant="contained" size="large">
+                                Friday
+                            </LoadingButton>
+                            <LoadingButton type="submit"  size="large">
+                                Saturday
+                            </LoadingButton>
                         </Stack>
                     </Stack>
                 </Paper>
-                {isKuStudent && isUser ? (
-                    <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
-                        <Stack spacing={2} textAlign={'left'}>
-                            <Typography variant="h4">{constant.supervisorDetail}</Typography>
-                            <Typography variant="body1" whiteSpace={'pre-line'}>
-                                {constant.enterSupervisorCode}
-                            </Typography>
-                            <RHFTextField
-                                name="supervisorCode"
-                                label={isRequire(constant.supervisorCode)}
-                                error={!!errors.supervisorCode}
-                                helperText={get(errors?.supervisorCode, 'message', '')}
-                                InputProps={{
-                                    endAdornment: (
-                                        <InputAdornment position="end">
-                                            {watchSupervisorStatus === 'fetching' ? (
-                                                <CircularProgress
-                                                    size={16}
-                                                    sx={{ color: 'text.primary' }}
-                                                />
-                                            ) : watchSupervisorStatus === 'notFound' ? (
-                                                <IconButton
-                                                    onClick={() =>
-                                                        fetchSupervisorData(
-                                                            getValues('supervisorCode')
-                                                        )
-                                                    }
-                                                    edge="end"
-                                                >
-                                                    <Iconify icon={'ic:round-refresh'} />
-                                                </IconButton>
-                                            ) : (
-                                                <></>
-                                            )}
-                                        </InputAdornment>
-                                    ),
-                                }}
-                            />
-                            {supervisor && watchSupervisorStatus === 'found' ? (
-                                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
-                                    <Image
-                                        alt="Logo"
-                                        src={supervisor.pic}
-                                        sx={{ height: 64, width: 64, borderRadius: 1 }}
-                                        disabledEffect
-                                    />
-                                    <Stack>
-                                        <Typography variant="h6">
-                                            {`${supervisor.name} (${supervisor.code})`}
-                                        </Typography>
-                                        <Typography variant="body1" whiteSpace={'pre-line'}>
-                                            {supervisor.email}
-                                        </Typography>
-                                    </Stack>
-                                </Stack>
-                            ) : (
-                                <></>
-                            )}
-                        </Stack>
-                    </Paper>
-                ) : (
-                    <></>
-                )}
 
-                {props.permission && props.permission === 'User' ? (
-                    <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
-                        <Stack spacing={2} textAlign={'left'}>
-                            <Typography variant="h4">{constant.supervisorDetail}</Typography>
-                            <Typography variant="body1" whiteSpace={'pre-line'}>
-                                {constant.waitSupervisorApprove}
-                            </Typography>
-                            {supervisor ? (
-                                <Stack flexDirection={'row'} gap={4} alignItems={'center'}>
-                                    <Image
-                                        alt="Logo"
-                                        src={supervisor.pic}
-                                        sx={{ height: 64, width: 64, borderRadius: 1 }}
-                                        disabledEffect
-                                    />
-                                     <Box sx={{ flexGrow: 1 }}>
-                                    <Stack>
-                                        <Typography variant="h6">
-                                            {`${supervisor.name} (${supervisor.code})`}
-                                        </Typography>
-                                        <Typography variant="body1" whiteSpace={'pre-line'}>
-                                            {supervisor.email}
-                                        </Typography>
-                                    </Stack>
-                                    </Box>
-                                   
-                                    <Box sx={{ flexShrink: 0}}>
-                                            <Button
-                                                variant="contained"
-                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>} 
-                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
-                                                disableElevation
-                                            >
-                                                {constant.approve}
-                                            </Button>     
-                                    </Box>
-                                </Stack>
-                            ) : (
-                                <></>
-                            )}
-                        </Stack>
-                    </Paper>
-                ) : (
-                    <></>
-                )}
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
                     <LoadingButton
                         type="button"
@@ -1036,7 +696,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         onClick={props.onCancel}
                         color="inherit"
                     >
-                        {props.updateMode ? constant.reset : constant.cancel}
+                        {constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
@@ -1044,7 +704,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         size="large"
                         // loading={authenticationStore.isFetching}
                     >
-                        {props.updateMode ? constant.updateAccount : constant.createAccount}
+                        {constant.createEquipments}
                     </LoadingButton>
                 </Stack>
             </Stack>
