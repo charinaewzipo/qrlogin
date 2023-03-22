@@ -129,7 +129,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         />
                         <RHFTextField
                             name="cost"
-                            label={isRequire(constant.cost)}
+                            label={constant.cost}
                             inputProps={{ maxLength: 100 }}
                         />
                         <Controller
