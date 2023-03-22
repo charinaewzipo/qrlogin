@@ -608,7 +608,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                 <LoadingButton type="submit" variant="contained" size="small">
                                     Available
                                 </LoadingButton>
-                                <LoadingButton type="submit" size="small">
+                                <LoadingButton type="submit" variant="outlined" size="small">
                                     Unavailable
                                 </LoadingButton>
                             </Stack>
@@ -620,7 +620,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             gap={2}
                             sx={{ mt: 2 }}
                         >
-                            <LoadingButton type="submit"  size="large">
+                            <LoadingButton type="submit" variant="outlined" size="large">
                                 Sunday
                             </LoadingButton>
                             <LoadingButton type="submit" variant="contained" size="large">
@@ -638,52 +638,78 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             <LoadingButton type="submit" variant="contained" size="large">
                                 Friday
                             </LoadingButton>
-                            <LoadingButton type="submit"  size="large">
+                            <LoadingButton type="submit" variant="outlined" size="large">
                                 Saturday
                             </LoadingButton>
                         </Stack>
                     </Stack>
 
-                    <Stack sx={{mt:3}}>
+                    <Stack sx={{ mt: 3 }}>
                         <Stack flexDirection="row" justifyContent="space-between">
                             <Typography>Available times</Typography>
                             <Stack flexDirection="row" gap={2}>
                                 <LoadingButton type="submit" variant="contained" size="small">
                                     Available
                                 </LoadingButton>
-                                <LoadingButton type="submit" size="small">
+                                <LoadingButton type="submit" variant="outlined" size="small">
                                     Unavailable
                                 </LoadingButton>
                             </Stack>
                         </Stack>
 
                         <Stack
-                            flexDirection="row"
+                           
                             justifyContent="space-between"
                             gap={2}
                             sx={{ mt: 2 }}
                         >
-                            <LoadingButton type="submit"  size="large">
-                                Sunday
-                            </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large">
-                                Monday
-                            </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large">
-                                Tuesday
-                            </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large">
-                                Wednesday
-                            </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large">
-                                Thursday
-                            </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large">
-                                Friday
-                            </LoadingButton>
-                            <LoadingButton type="submit"  size="large">
-                                Saturday
-                            </LoadingButton>
+                            <Stack  flexDirection="row"justifyContent={'space-between'}>
+                                {' '}
+                                <LoadingButton type="submit" variant="outlined" size="large">
+                                    07:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    08:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    09:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    10:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    11:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    12:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    13:00
+                                </LoadingButton>
+                            </Stack>
+                            <Stack flexDirection="row" justifyContent={'space-between'} gap={2}>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    14:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    15:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    16:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    17:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    18:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="contained" size="large">
+                                    19:00
+                                </LoadingButton>
+                                <LoadingButton type="submit" variant="outlined" size="large">
+                                    20:00
+                                </LoadingButton>
+                            </Stack>
                         </Stack>
                     </Stack>
                 </Paper>
