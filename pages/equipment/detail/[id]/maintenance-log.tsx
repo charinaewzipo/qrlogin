@@ -6,7 +6,7 @@ import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { EQUIPMENT_PATH } from '@ku/constants/routes'
+import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
 
@@ -18,16 +18,18 @@ export function MaintenanceLog() {
     const { enqueueSnackbar } = useSnackbar()
     const router = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
+    const pathData = router.query
 
     const onFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
         //TODO: api submit
         enqueueSnackbar('Added maintenance log.')
         setErrorMsg('error msg')
         console.log('submit', data)
+        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
     }
 
     const onFormCancel = () => {
-        router.push(EQUIPMENT_PATH)
+        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
     }
 
     return (
