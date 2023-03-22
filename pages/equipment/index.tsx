@@ -97,6 +97,7 @@ EquipmentList.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}
 
 export default function EquipmentList() {
   const {
+    dense,
     page,
     order,
     orderBy,
@@ -250,10 +251,14 @@ export default function EquipmentList() {
           {/* <Divider /> */}
           <Scrollbar>
 
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-
-              {(selected.length > 0 && !isNotFound) && (
+            <TableContainer sx={{ minWidth: 960, position: 'relative', overflow: 'unset' }}>
+                <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+                    <TableHeadCustom
+                    sx={{ "& th": { color: theme.palette.text.primary } }}
+                    headLabel={[{ id: 'equipmentList', label: 'Equipment List', align: 'left' }]} />
+                </Table>
                 <TableSelectedAction
+                  dense={dense}
                   numSelected={selected.length}
                   rowCount={tableData.length}
                   onSelectAllRows={(checked) =>
@@ -275,17 +280,10 @@ export default function EquipmentList() {
                     </Tooltip>
                   }
                 />
-              )}
-              <Typography
-                sx={{
-                  px: 2,
-                  py: 2,
-                  bgcolor: 'background.neutral',
-                  display: 'flex',
-                  alignItems: 'center'
-                }} variant='subtitle2'>Equipment List</Typography>
-              <Table>
+            </TableContainer>
 
+            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+              <Table>
                 <TableHeadCustom
                   sx={{ "& th": { backgroundColor: 'background.paper', color: theme.palette.text.primary } }}
                   order={order}

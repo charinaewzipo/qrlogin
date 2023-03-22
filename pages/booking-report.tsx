@@ -1,19 +1,19 @@
 // next
 import Head from 'next/head'
 import AuthorizedLayout from '@ku/layouts/authorized'
-import { Box, Card, Container, Divider, IconButton, Stack, Tab, Table, TableBody, TableContainer, Tabs, Tooltip, Typography } from '@mui/material'
+import { Box, Card, Container, Divider, IconButton, Stack, Tab, Table, TableBody, TableContainer, Tabs, Tooltip, Typography, useTheme } from '@mui/material'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useEffect, useState } from 'react'
 import { emptyRows, TableEmptyRows, TableHeadCustom, TableNoData, TablePaginationCustom, TableSelectedAction, useTable } from '@sentry/components/table'
 import Label from '@sentry/components/label'
 import BookingToolsbar from '@ku/components/Account/TableAccountDetail/BookingToolsbar'
-import Iconify from '@sentry/components/iconify'
 import Scrollbar from '@sentry/components/scrollbar'
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty } from 'lodash'
 import palette from '@sentry/theme/palette'
 import { LoadingButton } from '@mui/lab'
 import BookingReportRow from '@ku/components/BookingReport/BookingReportRow'
+import Image from '@sentry/components/image/Image'
 
 const TABLE_HEAD = [
     { id: 'no', label: 'No', align: 'left' },
@@ -87,6 +87,7 @@ const MockData:IBooking[] = [{
 BookingReportPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
 export default function BookingReportPage() {
+    const theme = useTheme()
     const [filterStatus, setFilterStatus] = useState('all')
     const [tableData, setTableData] = useState<IBooking[]>([])
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
@@ -94,7 +95,11 @@ export default function BookingReportPage() {
     const [filterName, setFilterName] = useState('')
     const [detailUser, setDetailUser] = useState(null)
 
+    const permissionMe : PERMISSION = 'Finance'
+
     const {
+        order,
+        orderBy,
         dense,
         page,
         rowsPerPage,
@@ -106,7 +111,7 @@ export default function BookingReportPage() {
         onChangePage,
         onChangeRowsPerPage
     } = useTable({
-        defaultOrderBy: 'createDate',
+        defaultOrderBy: 'no',
     }) // TODO: please change createDate
 
     const denseHeight = dense ? 56 : 76
@@ -139,7 +144,7 @@ export default function BookingReportPage() {
         setOpenPleaseContact(true)
     }
 
-    const TABS = [
+    const TabsAdmin = [
         { value: 'all', label: 'All', color: 'default', count: tableData.length },
         { value: 'pending', label: 'Pending', color: 'warning', count: getLengthByStatus('paid') },
         { value: 'confirm', label: 'Confirm', color: 'success', count: getLengthByStatus('unpaid')},
@@ -147,6 +152,14 @@ export default function BookingReportPage() {
         { value: 'cancelled', label: 'Cancelled', color: 'default', count: getLengthByStatus('unpaid')},
         { value: 'finish', label: 'Finish', color: 'default', count: getLengthByStatus('unpaid')},
     ] as const
+
+    const TabsFinance = [
+        { value: 'all', label: 'All', color: 'default', count: tableData.length },
+        { value: 'waiting', label: 'Waiting for Payment', color: 'secondary', count: getLengthByStatus('unpaid')},
+        { value: 'finish', label: 'Finish', color: 'default', count: getLengthByStatus('unpaid')},
+    ] as const
+
+    const TABS = permissionMe==='Finance'?TabsFinance:TabsAdmin
     
     return (
         <>
@@ -192,28 +205,44 @@ export default function BookingReportPage() {
                             onResetFilter={handleResetFilter}
                         />
 
-                        <TableSelectedAction
-                            dense={dense}
-                            numSelected={selected.length}
-                            rowCount={tableData.length}
-                            sx={{position: 'initial'}}
-                            onSelectAllRows={(checked) => onSelectAllRows( checked, tableData.map((row) => row.id) ) }
-                            action={
-                                <Stack direction="row">
-                                    <Tooltip title="Sent">
-                                        <IconButton color="primary" onClick={ ()=>{ console.log("123132") } }>
-                                        <Iconify icon="ic:round-send" />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Stack>
-                            }
-                        />
+                        <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+                            <TableSelectedAction
+                                dense={dense}
+                                numSelected={selected.length}
+                                rowCount={tableData.length}
+                                onSelectAllRows={(checked) => onSelectAllRows( checked, tableData.map((row) => row.id) ) }
+                                action={
+                                    <Stack direction="row">
+                                        <Tooltip title="Export selected to excel">
+                                            <IconButton color="primary" onClick={ ()=>{ console.log("123132") } }>
+                                            {/* <Iconify icon="ic:round-send" /> */}
+                                            <Image
+                                                disabledEffect
+                                                alt={'excel'}
+                                                src={'assets/icons/files/ic_file_excel.svg'}
+                                                sx={{ width: 24, height: 24 }}
+                                            />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </Stack>
+                                }
+                            />
+                            <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+                                <TableHeadCustom
+                                sx={{ "& th": { color: theme.palette.text.primary } }}
+                                headLabel={[{ id: 'bookingList', label: 'Booking List', align: 'left' }]} />
+                            </Table>
+                        </TableContainer>
+
                         <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
                             <Scrollbar>
                                 <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                                     <TableHeadCustom
+                                        sx={{ "& th": { backgroundColor: 'background.paper', color: theme.palette.text.primary } }}
                                         headLabel={TABLE_HEAD}
                                         rowCount={tableData.length}
+                                        order={order}
+                                        orderBy={orderBy}
                                         numSelected={selected.length}
                                         onSort={onSort}
                                         onSelectAllRows={(checked) =>
