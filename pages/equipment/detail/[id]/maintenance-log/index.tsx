@@ -1,4 +1,4 @@
-import styles from '../../../../styles/index.module.scss'
+import styles from '../../../../../styles/index.module.scss'
 import Head from 'next/head'
 import { Box, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -20,7 +20,7 @@ export function MaintenanceLog() {
     const [errorMsg, setErrorMsg] = useState('')
     const pathData = router.query
 
-    const onFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
+    const handleFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
         //TODO: api submit
         enqueueSnackbar('Added maintenance log.')
         setErrorMsg('error msg')
@@ -28,7 +28,7 @@ export function MaintenanceLog() {
         router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
     }
 
-    const onFormCancel = () => {
+    const handleFormCancel = () => {
         router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
     }
 
@@ -52,12 +52,21 @@ export function MaintenanceLog() {
                                 links={[
                                     { name: 'Equipments', href: '/equipment' },
                                     { name: 'List', href: '/equipment' },
-                                    { name: 'Coating Material (CM1)', href: '/equipment' },
+                                    {
+                                        name: 'Coating Material (CM1)',
+                                        href: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]/${
+                                            pathData.id
+                                        }`,
+                                    },
                                     { name: 'Create Maintenance Log' },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-                            <MaintenanceLogForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} />
+                            <MaintenanceLogForm
+                                onSubmit={handleFormSubmit}
+                                onCancel={handleFormCancel}
+                                errorMsg={errorMsg}
+                            />
                         </div>
                     </div>
                 </Box>

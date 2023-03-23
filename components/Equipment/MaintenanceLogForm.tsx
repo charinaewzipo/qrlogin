@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -8,10 +8,11 @@ import {
     Stack,
     TextField,
     Paper,
+    alpha,
 } from '@mui/material'
 import FormProvider, { RHFTextField } from '@sentry/components/hook-form'
-import { CustomFile, RejectionFiles, Upload } from '@sentry/components/upload'
-import { cloneDeep } from 'lodash'
+import { CustomFile, MultiFilePreview, RejectionFiles } from '@sentry/components/upload'
+import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
 
@@ -28,37 +29,34 @@ const constant = {
   attachMaintenanceFile: 'Attach maintenance file',
   createMaintenanceLog: 'Create Maintenance Log',
   cancel: 'Cancel',
+  updateMaintenanceLog: 'Update Maintenance Log',
+  reset: 'Reset',
 }
 interface MaintenanceLogFormProps {
     onSubmit: (data: IMaintenanceLogFormValuesProps) => void
     onCancel: () => void
     errorMsg: string
+    defaultValue?: IMaintenanceLogFormValuesProps
+    isEditing?: boolean
 }
 function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const MaintenanceLogSchema = Yup.object().shape({
-        descriptions: Yup.string().required('Descriptions is require'),
+        descriptions: Yup.string()
+            .required('Descriptions is require')
+            .min(6, 'Descriptions must be more than 6 characters')
+            .max(100, 'Descriptions must not be more than 100 characters'),
         cost: Yup.string(),
         date: Yup.date()
-            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
-            .nullable()
-            .test({
-                name: 'Date',
-                message: "Date must be greater than today's date",
-                test: (date) => {
-                    const datePlusOne = new Date()
-                    datePlusOne.setDate(datePlusOne.getDate() + 1)
-                    datePlusOne.setHours(0, 0, 0, 0)
-                    return date === null || date.getTime() >= datePlusOne.getTime()
-                },
-            }),
+            .typeError('Expected date format is dd mmm yyyy. Example: "1 jan 1970".')
+            .nullable(),
         maintenanceFiles: Yup.array(Yup.string()),
     })
 
-    const defaultValues = {
-      descriptions: '',
-      cost: '',
-      date: '',
-      maintenanceFiles: [],
+    const defaultValues = props.defaultValue || {
+        descriptions: '',
+        cost: '',
+        date: '',
+        maintenanceFiles: [],
     }
 
     const methods = useForm<IMaintenanceLogFormValuesProps>({
@@ -66,12 +64,15 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         defaultValues,
     })
 
-    const {
-        handleSubmit,
-        setValue,
-        control,
-        watch,
-    } = methods
+    const { handleSubmit, setValue, control, watch, reset } = methods
+
+    useEffect(() => {
+        reset(props.defaultValue)
+    }, [props.defaultValue])
+
+    useEffect(() => {
+        if (props.errorMsg !== '') window.scrollTo(0, 0)
+    }, [props.errorMsg])
 
     const watchMaintenanceFiles = watch('maintenanceFiles')
 
@@ -83,39 +84,49 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const isRequire = (label: string, isRequire: boolean = true) => {
         return `${label} ${isRequire ? '*' : ''}`
     }
+
     const handleDrop = useCallback(
-      (acceptedFiles: File[]) => {
-        const images = watchMaintenanceFiles || [];
-  
-        setValue('maintenanceFiles', [
-          ...images,
-          ...acceptedFiles.map((file) =>
-            Object.assign(file, {
-              preview: URL.createObjectURL(file),
-            })
-          ),
-        ]);
-      },
-      [setValue, watchMaintenanceFiles]
+        (acceptedFiles: File[]) => {
+            const images = watchMaintenanceFiles || []
+
+            setValue('maintenanceFiles', [
+                ...images,
+                ...acceptedFiles.map((file) =>
+                    Object.assign(file, {
+                        preview: URL.createObjectURL(file),
+                    })
+                ),
+            ])
+        },
+        [setValue, watchMaintenanceFiles]
     )
 
-    const handleRemoveAll = () => {
-      setValue('maintenanceFiles', []);
-    }
-  
     const handleRemove = (file: File | string) => {
-      const filteredItems = watchMaintenanceFiles && watchMaintenanceFiles?.filter((_file) => _file !== file);
-  
-      setValue('maintenanceFiles', filteredItems);
+        const filteredItems =
+            watchMaintenanceFiles && watchMaintenanceFiles?.filter((_file) => _file !== file)
+
+        setValue('maintenanceFiles', filteredItems)
     }
 
-	const { getRootProps, getInputProps, fileRejections } = useDropzone({
+    const handleDownload = (
+        e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+        img: CustomFile | string
+    ) => {
+        const eventTargetTag = String(get(e.target, 'tagName', ''))
+        if (eventTargetTag === 'BUTTON' || eventTargetTag === 'svg') return
+
+        const link = document.createElement('a')
+        link.download = get(img, 'name', '')
+        link.href = get(img, 'preview', '')
+        link.click()
+        console.log('download', img)
+    }
+
+    const { getRootProps, getInputProps, fileRejections } = useDropzone({
         onDrop: handleDrop,
-        accept: { 'image/*': ['.jpeg', '.jpg', '.png'] },
         multiple: true,
-        maxSize: 200000,
     })
-  
+
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
@@ -139,14 +150,12 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                             render={({ field, fieldState: { error } }) => (
                                 <DatePicker
                                     inputFormat="dd MMM yyyy"
-                                    label={isRequire(constant.date)}
+                                    label={constant.date}
                                     value={field.value || null}
                                     onChange={(newValue) => {
                                         field.onChange(newValue)
                                     }}
                                     disableMaskedInput
-                                    disablePast
-                                    minDate={new Date().setDate(new Date().getDate() + 1)}
                                     renderInput={(params) => (
                                         <TextField
                                             {...params}
@@ -158,50 +167,57 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                                 />
                             )}
                         />
-						<Stack spacing={1.5}>
-							<Controller
-								key={`maintenanceFiles`}
-								name={`maintenanceFiles`}
-								control={control}
-								render={({ field }) => (
-									<>
-									<Upload
-										accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-										files={field.value}
-										multiple
-										onDrop={handleDrop}
-										onRemove={handleRemove}
-										// onRemoveAll={handleRemoveAll}
-										sx={{
-											'& > div:first-child': {
-												display: 'none',
-											},
-											'& > div:nth-child(2)': {
-												marginTop: 1,
-												marginBottom: 0,
-												'& > div': {
-													borderRadius: 1,
-													marginBottom: 0,
-												}
-											},
-										}}
-										maxSize={200000}
-									/>
-            						<RejectionFiles fileRejections={fileRejections} />
-									</>
-								)}
-							/>
-							<div {...getRootProps()} style={{ width: 'fit-content' }}>
-								<input {...getInputProps()} />
-								<LoadingButton
-									type="button"
-									variant="contained"
-									color="inherit"
-								>
-									{constant.attachMaintenanceFile}
-								</LoadingButton>
-							</div>
-						</Stack>
+                        <Stack spacing={1.5}>
+                            <Controller
+                                key={`maintenanceFiles`}
+                                name={`maintenanceFiles`}
+                                control={control}
+                                render={({ field }) => (
+                                    <>
+                                        {field.value.map((img) => {
+                                            return (
+                                                <div
+                                                    key={`file-${get(img, 'name', img)}`}
+                                                    onClick={(e) =>
+                                                        props.isEditing && handleDownload(e, img)
+                                                    }
+                                                >
+                                                    <MultiFilePreview
+                                                        files={[img]}
+                                                        onRemove={handleRemove}
+                                                        sx={{
+                                                            marginY: 0,
+                                                            borderRadius: 1,
+                                                            ...(props.isEditing
+                                                                ? {
+                                                                    color: (theme) =>
+                                                                        theme.palette.info.main,
+                                                                    borderColor: (theme) =>
+                                                                        alpha(
+                                                                            theme.palette.info.main,
+                                                                            0.32
+                                                                        ),
+                                                                    span: {
+                                                                        color: (theme) =>
+                                                                            theme.palette.info.main,
+                                                                      },
+                                                                } : {}),
+                                                        }}
+                                                    />
+                                                </div>
+                                            )
+                                        })}
+                                        <RejectionFiles fileRejections={fileRejections} />
+                                    </>
+                                )}
+                            />
+                            <div {...getRootProps()} style={{ width: 'fit-content' }}>
+                                <input {...getInputProps()} />
+                                <LoadingButton type="button" variant="contained" color="inherit">
+                                    {constant.attachMaintenanceFile}
+                                </LoadingButton>
+                            </div>
+                        </Stack>
                     </Stack>
                 </Paper>
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
@@ -212,7 +228,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         onClick={props.onCancel}
                         color="inherit"
                     >
-                        {constant.cancel}
+                        {props.isEditing ? constant.reset : constant.cancel}
                     </LoadingButton>
                     <LoadingButton
                         type="submit"
@@ -220,7 +236,9 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         size="large"
                         // loading={authenticationStore.isFetching}
                     >
-                        {constant.createMaintenanceLog}
+                        {props.isEditing
+                            ? constant.updateMaintenanceLog
+                            : constant.createMaintenanceLog}
                     </LoadingButton>
                 </Stack>
             </Stack>
