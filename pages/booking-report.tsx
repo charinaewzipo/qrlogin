@@ -210,6 +210,7 @@ export default function BookingReportPage() {
                                 dense={dense}
                                 numSelected={selected.length}
                                 rowCount={tableData.length}
+                                sx={{ "& .MuiCheckbox-root": { display:'none' } }}
                                 onSelectAllRows={(checked) => onSelectAllRows( checked, tableData.map((row) => row.id) ) }
                                 action={
                                     <Stack direction="row">
