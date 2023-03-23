@@ -258,6 +258,7 @@ export default function EquipmentList() {
                     headLabel={[{ id: 'equipmentList', label: 'Equipment List', align: 'left' }]} />
                 </Table>
                 <TableSelectedAction
+                  sx={{ "& .MuiCheckbox-root": { display:'none' } }}
                   dense={dense}
                   numSelected={selected.length}
                   rowCount={tableData.length}
