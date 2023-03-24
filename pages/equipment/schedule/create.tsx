@@ -352,9 +352,7 @@ export default function EquipmentSchedulePage() {
                     )
                   )}
 
-                <TableEmptyRows
-                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                />
+
                 <TableNoData isNotFound={isNotFound} />
               </TableBody>
             </Table>

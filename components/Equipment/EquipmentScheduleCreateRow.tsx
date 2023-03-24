@@ -40,15 +40,14 @@ export default function EquipmentScheduleCreateRow({
   // };
 
   return (
-    <TableRow hover selected={selected} key={id} >
-      <TableCell padding="checkbox">
+    <TableRow hover selected={selected} key={id} onClick={onViewRow} sx={{ cursor: 'pointer' }}>
+      <TableCell padding="checkbox" onClick={e => e.stopPropagation()}>
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Box
           sx={{ display: 'flex', justifyContent: 'center' }}
-          onClick={onViewRow}
         >
           <Image
             disabledEffect
