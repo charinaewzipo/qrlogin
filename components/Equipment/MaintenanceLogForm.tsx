@@ -125,9 +125,10 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 
         const link = document.createElement('a')
         link.href = get(file, 'preview', '')
-        link.setAttribute('download', get(file, 'name', ''))
+        link.download = get(file, 'name', '')
         link.target = "_blank"
         link.click()
+        link.remove()
         console.log('download', file)
     }
 

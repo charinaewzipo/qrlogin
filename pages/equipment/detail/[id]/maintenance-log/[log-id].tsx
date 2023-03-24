@@ -37,12 +37,18 @@ export function MaintenanceLogEdit() {
     const [errorMsg, setErrorMsg] = useState('')
 	const [maintenanceApiData, setMaintenanceApiData] = useState<IEquipmentMaintenance>()
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
+    const [allBlob, setAllBlob] = useState<string[]>()
     const pathData = router.query
 
 	useEffect(() => {
 	  fetchMaintenanceData('234')
+
+      return () => {
+        if (allBlob)
+            allBlob.map(blob => URL.revokeObjectURL(blob))
+      }
 	}, [])
-	
+    
     async function getFileFromUrl(url: string){
         const response = await axios({
             method: 'get',
@@ -52,7 +58,10 @@ export function MaintenanceLogEdit() {
         const blob = new Blob([response.data], { type: response.headers['content-type'] })
         const filename = `${new URL(url).pathname.split('/').pop()}`
         const file: CustomFile = new File([blob], get(blob, 'name', filename), { type: blob.type })
-        file.preview = url
+        console.log(blob)
+        file.path = filename
+        file.preview = URL.createObjectURL(blob)
+        setAllBlob(prev => prev ? [...allBlob, file.preview] : [file.preview])
         return file
     }      
 
@@ -115,9 +124,7 @@ export function MaintenanceLogEdit() {
                                     { name: 'List', href: '/equipment' },
                                     {
                                         name: 'Coating Material (CM1)',
-                                        href: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]/${
-                                            pathData.id
-                                        }`,
+                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail${pathData.id}`)}`,
                                     },
                                     { name: 'Maintenance Detail' },
                                 ]}

@@ -54,9 +54,7 @@ export function MaintenanceLog() {
                                     { name: 'List', href: '/equipment' },
                                     {
                                         name: 'Coating Material (CM1)',
-                                        href: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]/${
-                                            pathData.id
-                                        }`,
+                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail${pathData.id}`)}`,
                                     },
                                     { name: 'Create Maintenance Log' },
                                 ]}
