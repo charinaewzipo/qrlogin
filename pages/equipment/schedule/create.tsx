@@ -205,7 +205,7 @@ export default function EquipmentSchedulePage() {
 
   const RenderChips = (): JSX.Element => {
     return (
-      <Box sx={{ mx: 3 }}>
+      <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
         {selected.map((id) => {
           const findData = tableData.find(i => i.id === id)
