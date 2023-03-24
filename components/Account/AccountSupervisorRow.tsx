@@ -18,7 +18,7 @@ type Props = {
 const styledTextOverFlow = {
     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
 }
-export default function InvoiceTableRow({ row, onViewRow, onRemove }: Props) {
+export default function AccountSupervisorRow({ row, onViewRow, onRemove }: Props) {
     const { name, email, department, major, studentID, supervisorName, creditLimit, bookLimit, phone, expiredate, status } = row
     const theme = useTheme()
     return (
@@ -79,7 +79,7 @@ export default function InvoiceTableRow({ row, onViewRow, onRemove }: Props) {
                         sx={{ flexShrink: 0 }}
                         onClick={(e) => {
                             e.stopPropagation()
-                            onRemove?onRemove():noop
+                            onRemove ? onRemove() : noop
                         }}
                         startIcon={<Iconify icon="eva:trash-2-outline" />}
                     >
