@@ -4,7 +4,6 @@ import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
-    Alert,
     Stack,
     TextField,
     Paper,
@@ -15,6 +14,7 @@ import { CustomFile, MultiFilePreview, RejectionFiles } from '@sentry/components
 import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
+import { fNumber } from '@sentry/utils/formatNumber'
 
 export interface IMaintenanceLogFormValuesProps {
   descriptions: string
@@ -35,7 +35,6 @@ const constant = {
 interface MaintenanceLogFormProps {
     onSubmit: (data: IMaintenanceLogFormValuesProps) => void
     onCancel: () => void
-    errorMsg: string
     defaultValue?: IMaintenanceLogFormValuesProps
     isEditing?: boolean
 }
@@ -64,20 +63,27 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         defaultValues,
     })
 
-    const { handleSubmit, setValue, control, watch, reset } = methods
+    const {
+        handleSubmit,
+        setValue,
+        control,
+        watch,
+        reset,
+        getValues,
+        formState: { isSubmitted },
+        trigger,
+    } = methods
 
     useEffect(() => {
         reset(props.defaultValue)
     }, [props.defaultValue])
 
-    useEffect(() => {
-        if (props.errorMsg !== '') window.scrollTo(0, 0)
-    }, [props.errorMsg])
-
     const watchMaintenanceFiles = watch('maintenanceFiles')
 
     const onSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const submitData = cloneDeep(data)
+        //TODO: แปลง submitdata.date เป็น timestamp
+        //TODO: ต่อ api อัพไฟล์
         props.onSubmit(submitData)
     }
 
@@ -110,27 +116,65 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 
     const handleDownload = (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
-        img: CustomFile | string
+        file: CustomFile | string
     ) => {
         const eventTargetTag = String(get(e.target, 'tagName', ''))
-        if (eventTargetTag === 'BUTTON' || eventTargetTag === 'svg') return
+        console.log(e);
+        
+        if (eventTargetTag === 'BUTTON' || eventTargetTag === 'svg' || eventTargetTag === 'path') return
 
         const link = document.createElement('a')
-        link.download = get(img, 'name', '')
-        link.href = get(img, 'preview', '')
+        link.href = get(file, 'preview', '')
+        link.setAttribute('download', get(file, 'name', ''))
+        link.target = "_blank"
         link.click()
-        console.log('download', img)
+        console.log('download', file)
     }
 
     const { getRootProps, getInputProps, fileRejections } = useDropzone({
         onDrop: handleDrop,
         multiple: true,
     })
+    
+    const handleChangeNumber = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+        fieldName: keyof IMaintenanceLogFormValuesProps,
+        option?: 'comma'
+    ) => {
+        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
+        const oldValue = getValues(fieldName)
+        let newValue = e.target.value
+        if (option === 'comma'){
+            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
+            for (let i = 0; i < oldValue.length; i++) {
+                if (
+                    oldValue[i] === ',' &&
+                    oldValue[i] !== newValue[i] &&
+                    oldValue.length - 1 === newValue.length
+                ) {
+                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
+                    break
+                }
+            }
+        }
+        
+        const numberOnlyRegex = /^[0-9\b]+$/
+        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
+        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
+            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
+            setValue(fieldName, formattedValue)
+            if (isSubmitted) trigger()
+            setTimeout(() => {
+                //set text cursor at same position after setValue
+                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
+                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
+            }, 0)
+        }
+    }
 
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={5}>
-                {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         <RHFTextField
@@ -141,6 +185,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         <RHFTextField
                             name="cost"
                             label={constant.cost}
+                            onChange={(e) => handleChangeNumber(e, 'cost', 'comma')}
                             inputProps={{ maxLength: 100 }}
                         />
                         <Controller
@@ -174,22 +219,25 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                                 control={control}
                                 render={({ field }) => (
                                     <>
-                                        {field.value.map((img) => {
+                                        {field.value.map((file, i) => {
+                                            const fileName = get(file, 'name', file)
                                             return (
                                                 <div
-                                                    key={`file-${get(img, 'name', img)}`}
+                                                    key={`file-${fileName}`}
                                                     onClick={(e) =>
-                                                        props.isEditing && handleDownload(e, img)
+                                                        props.isEditing && handleDownload(e, file)
                                                     }
                                                 >
                                                     <MultiFilePreview
-                                                        files={[img]}
+                                                        files={[file]}
                                                         onRemove={handleRemove}
+                                                        key={`file-prev-${fileName}`}
                                                         sx={{
                                                             marginY: 0,
                                                             borderRadius: 1,
                                                             ...(props.isEditing
                                                                 ? {
+                                                                    cursor: 'pointer',
                                                                     color: (theme) =>
                                                                         theme.palette.info.main,
                                                                     borderColor: (theme) =>

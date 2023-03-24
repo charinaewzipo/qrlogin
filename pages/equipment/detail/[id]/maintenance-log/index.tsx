@@ -1,6 +1,6 @@
 import styles from '../../../../../styles/index.module.scss'
 import Head from 'next/head'
-import { Box, Container } from '@mui/material'
+import { Alert, Box, Container, Stack } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
@@ -25,11 +25,11 @@ export function MaintenanceLog() {
         enqueueSnackbar('Added maintenance log.')
         setErrorMsg('error msg')
         console.log('submit', data)
-        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
+        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: pathData.id }})
     }
 
     const handleFormCancel = () => {
-        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail')}/[id]`, query: { id: pathData.id }})
+        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: pathData.id }})
     }
 
     return (
@@ -62,11 +62,13 @@ export function MaintenanceLog() {
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-                            <MaintenanceLogForm
-                                onSubmit={handleFormSubmit}
-                                onCancel={handleFormCancel}
-                                errorMsg={errorMsg}
-                            />
+                            <Stack spacing={5}>
+                                {!!errorMsg && <Alert severity="error">{errorMsg}</Alert>}
+                                <MaintenanceLogForm
+                                    onSubmit={handleFormSubmit}
+                                    onCancel={handleFormCancel}
+                                />
+                            </Stack>
                         </div>
                     </div>
                 </Box>
