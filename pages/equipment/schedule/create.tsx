@@ -43,7 +43,7 @@ import FormProvider from '@sentry/components/hook-form/FormProvider'
 import { Controller, useForm, ErrorOption } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
-import { RHFAutocomplete, RHFTextField } from '@sentry/components/hook-form'
+import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 
 
 const mockDataTable: IEquipmentUser[] = [{
@@ -250,144 +250,148 @@ export default function EquipmentSchedulePage() {
             },
           ]}
         />
-        <Card>
-          <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
-            {!!errors.afterSubmit && (
-              <Alert severity="error" sx={{ mb: 3 }}>
-                {errors.afterSubmit.message}
-              </Alert>
-            )}
-            <Stack spacing={2} direction={{ xs: 'column', md: 'column' }} sx={{ py: 2.5, px: 3 }}>
-              <Controller
-                name="date"
-                control={control}
-                render={({ field, fieldState: { error } }) => (
-                  <DatePicker
-                    {...field}
-                    label="Date *"
-                    inputFormat="dd MMM yyyy"
-                    minDate={addDays(new Date(), 1)}
-                    renderInput={(params) => (
-                      <TextField
-                        sx={{ width: "50%" }}
-                        {...params}
-                        error={!!error}
-                        helperText={error?.message}
-                      />
-                    )}
-                  />
-                )}
-              />
-              <RHFAutocomplete
-                name="time"
-                fullWidth
-                disablePortal
-                disableClearable
-                options={TIME_OPTIONS.map((option) => option)}
-                onChange={(event, newValue) =>
-                  setValue('time', `${newValue}`)
-                }
-                renderInput={(params) => (
-                  <TextField {...params}
-                    label="Time"
-                    error={!!errors.time}
-                    helperText={
-                      !!errors.time && errors.time.message
-                    } />
-                )}
-              />
-            </Stack>
-            <RenderChips />
-            <Box sx={{ px: 4, py: 2 }}>
-              <TextField
-                fullWidth
-                name='Search equipement'
-                value={filterSearchEquipment}
-                onChange={handleFilterSearchEquipment}
-                placeholder="Search equipement"
-                InputProps={{
-                  startAdornment: (
-                    <InputAdornment position="start">
-                      <Iconify icon="eva:search-fill" width={20} sx={{ color: 'text.disabled' }} />
-                    </InputAdornment>
-                  ),
-                }}
-              />
-            </Box>
-            <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
-              <Table>
-                <TableHeadCustom
-                  sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
-                  headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
-                  numSelected={selected.length}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
+        <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
+          {!!errors.afterSubmit && (
+            <Alert severity="error" sx={{ mb: 3 }}>
+              {errors.afterSubmit.message}
+            </Alert>
+          )}
+          <Stack spacing={2} direction={{ xs: 'column', md: 'column' }} sx={{ py: 2.5, px: 3 }}>
+            <Controller
+              name="date"
+              control={control}
+              render={({ field, fieldState: { error } }) => (
+                <DatePicker
+                  {...field}
+                  label="Date *"
+                  inputFormat="dd MMM yyyy"
+                  minDate={addDays(new Date(), 1)}
+                  renderInput={(params) => (
+                    <TextField
+                      sx={{ width: "50%" }}
+                      {...params}
+                      error={!!error}
+                      helperText={error?.message}
+                    />
+                  )}
                 />
-
-                <TableBody>
-                  {tableData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <EquipmentScheduleCreateRow
-                          key={row.id}
-                          row={row}
-                          selected={selected.includes(row.id)}
-                          onSelectRow={() => onSelectRow(row.id)}
-                          onViewRow={() => handleViewRow(row.id)}
-                        />
-                      ) : (
-                        !isNotFound && <TableSkeleton key={index} />
-                      )
-                    )}
-
-                  <TableEmptyRows
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
-                  <TableNoData isNotFound={isNotFound} />
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[5, 10, 25]}
-              component="div"
-              count={tableData.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={onChangePage}
-              onRowsPerPageChange={onChangeRowsPerPage}
+              )}
             />
-
-            <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
-              <LoadingButton
-                size="large"
-                variant="contained"
-                color='inherit'
-                onClick={handleOnclickCancel}
-              >
-                Cancel
-              </LoadingButton>
-              <LoadingButton
-                size="large"
-                type="submit"
-                variant="contained"
-                onClick={() => {
-                  if (selected.length === 0) {
-                    setIsErrorSelectEquipment(true)
+            <Controller
+              control={control}
+              name="time"
+              render={({ field: { onChange, value }, fieldState: { error } }) => (
+                <RHFAutocomplete
+                  name="time"
+                  fullWidth
+                  value={value}
+                  disablePortal
+                  disableClearable
+                  options={TIME_OPTIONS.map((option) => option)}
+                  onChange={(event, newValue) => {
+                    onChange(() => setValue('time', `${newValue}`))
                   }
-                }}
-              >
-                Create Schedules
-              </LoadingButton>
-            </Stack>
-          </FormProvider>
-        </Card>
+                  }
+                  renderInput={(params) => (
+                    <TextField {...params}
+                      label="Time"
+                      error={!!error}
+                      helperText={error ? error.message : null} />
+                  )}
+                />
+              )}
 
+            />
+          </Stack>
+          <RenderChips />
+          <Box sx={{ px: 4, py: 2 }}>
+            <TextField
+              fullWidth
+              name='Search equipement'
+              value={filterSearchEquipment}
+              onChange={handleFilterSearchEquipment}
+              placeholder="Search equipement"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Iconify icon="eva:search-fill" width={20} sx={{ color: 'text.disabled' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+          </Box>
+          <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
+            <Table>
+              <TableHeadCustom
+                sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
+                headLabel={TABLE_HEAD}
+                rowCount={tableData.length}
+                numSelected={selected.length}
+                onSelectAllRows={(checked) =>
+                  onSelectAllRows(
+                    checked,
+                    tableData.map((row) => row.id)
+                  )
+                }
+              />
+
+              <TableBody>
+                {tableData
+                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                  .map((row, index) =>
+                    row ? (
+                      <EquipmentScheduleCreateRow
+                        key={row.id}
+                        row={row}
+                        selected={selected.includes(row.id)}
+                        onSelectRow={() => onSelectRow(row.id)}
+                        onViewRow={() => handleViewRow(row.id)}
+                      />
+                    ) : (
+                      !isNotFound && <TableSkeleton key={index} />
+                    )
+                  )}
+
+                <TableEmptyRows
+                  emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                />
+                <TableNoData isNotFound={isNotFound} />
+              </TableBody>
+            </Table>
+          </TableContainer>
+          <TablePagination
+            rowsPerPageOptions={[5, 10, 25]}
+            component="div"
+            count={tableData.length}
+            rowsPerPage={rowsPerPage}
+            page={page}
+            onPageChange={onChangePage}
+            onRowsPerPageChange={onChangeRowsPerPage}
+          />
+
+          <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
+            <LoadingButton
+              size="large"
+              variant="contained"
+              color='inherit'
+              onClick={handleOnclickCancel}
+            >
+              Cancel
+            </LoadingButton>
+            <LoadingButton
+              size="large"
+              type="submit"
+              variant="contained"
+              onClick={() => {
+                if (selected.length === 0) {
+                  setIsErrorSelectEquipment(true)
+                }
+              }}
+            >
+              Create Schedules
+            </LoadingButton>
+          </Stack>
+        </FormProvider>
       </Container>
 
     </>
