@@ -181,7 +181,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
-    const [currentTab, setCurrentTab] = useState('Account-detail');
+    const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff');
 
 
     const RegisterSchema = Yup.object().shape({
@@ -336,26 +336,31 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const permissionMe : PERMISSION = 'Admin'
 
     const listAllTab = {
-        account:{
-          value: 'Account-detail',
-          label: 'Account detail',
+        SciKUStudentAndStaff:{
+          value: 'SciKUStudentAndStaff',
+          label: 'SciKU Student & Staff',
           component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
         },
-        user:{
-          value: 'User-Supervise',
-          label: 'User (Supervise)',
+        KUStudentAndStaff:{
+          value: 'KUStudentAndStaff',
+          label: 'KUStudent & Staff',
           component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
         },
-        booking:{
-          value: 'Booking',
-          label: 'Booking',
+        OtherUniversity:{
+          value: 'Other University',
+          label: 'Other University',
           component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
         },
-        assessments:{
-          value: 'Assessments',
-          label: 'Assessments',
+        GovernmentOffice:{
+          value: 'Government Office',
+          label: 'Government Office',
           component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
         },
+        privateCompany:{
+            value: 'Private-Company',
+            label: 'Private Company',
+            component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          },
     }
     const permissionTab = ():PERMISSION => {
         if ( (permissionMe as PERMISSION) === 'Supervisor' ) {
@@ -365,10 +370,10 @@ function EquipmentCreateForm(props: AccountFormProps) {
         }
     }
     const listPermissionTab: { [key in PERMISSION] } = {
-        Supervisor : [listAllTab.account, listAllTab.user, listAllTab.booking, listAllTab.assessments],
-        User : [listAllTab.account, listAllTab.booking, listAllTab.assessments],
-        Finance : [listAllTab.account],
-        Admin : [listAllTab.account, listAllTab.booking]
+        Supervisor : [listAllTab.SciKUStudentAndStaff, listAllTab.KUStudentAndStaff, listAllTab.OtherUniversity, listAllTab.GovernmentOffice , listAllTab.privateCompany],
+        User : [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity, listAllTab.GovernmentOffice],
+        Finance : [listAllTab.SciKUStudentAndStaff],
+        Admin : [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity]
     }
     const methods = useForm<IAccountFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
