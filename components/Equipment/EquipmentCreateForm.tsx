@@ -27,8 +27,7 @@ import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 import AccountForm from '@ku/components/Account/AccountForm'
-// import useTabs from '@sentry/hooks/useTabs';
-
+import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IAccountFormValuesProps {
     privillege: string
     email: string
@@ -339,27 +338,27 @@ function EquipmentCreateForm(props: AccountFormProps) {
         SciKUStudentAndStaff:{
           value: 'SciKUStudentAndStaff',
           label: 'SciKU Student & Staff',
-          component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          component: <PriceListNewEditDetails/>,
         },
         KUStudentAndStaff:{
           value: 'KUStudentAndStaff',
           label: 'KUStudent & Staff',
-          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          component:  <PriceListNewEditDetails/>,
         },
         OtherUniversity:{
           value: 'Other University',
           label: 'Other University',
-          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          component:  <PriceListNewEditDetails/>,
         },
         GovernmentOffice:{
           value: 'Government Office',
           label: 'Government Office',
-          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          component:  <PriceListNewEditDetails/>,
         },
         privateCompany:{
             value: 'Private-Company',
             label: 'Private Company',
-            component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+            component:  <PriceListNewEditDetails/>,
           },
     }
     const permissionTab = ():PERMISSION => {
