@@ -17,6 +17,7 @@ import {
     Box,
     Paper,
     Button,
+    Tabs,Tab
 } from '@mui/material'
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
@@ -25,6 +26,8 @@ import { fData, fNumber } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
+import AccountForm from '@ku/components/Account/AccountForm'
+// import useTabs from '@sentry/hooks/useTabs';
 
 export interface IAccountFormValuesProps {
     privillege: string
@@ -160,6 +163,7 @@ interface IIdImageUpload {
     index: number
 }
 function EquipmentCreateForm(props: AccountFormProps) {
+    // const { currentTab, setCurrentTab } = useState('general');
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>()
 
@@ -176,6 +180,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const checkIsSupervisor = (privillege: string) => privillege === 'Supervisor'
     const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
+    const permissionUser = 'Supervisor'
+    const [currentTab, setCurrentTab] = useState('Account-detail');
+
 
     const RegisterSchema = Yup.object().shape({
         privillege: Yup.string().required('Privillege is require'),
@@ -315,6 +322,54 @@ function EquipmentCreateForm(props: AccountFormProps) {
         supervisorStatus: null,
     }
 
+    const onFormSubmit = () => {
+        //TODO: api submit
+        // enqueueSnackbar('Account saved.');
+        console.log('submit')
+    }
+
+    const onFormCancel = () => {
+        //TODO: cancel form
+        console.log('canncel')
+    }
+    
+    const permissionMe : PERMISSION = 'Admin'
+
+    const listAllTab = {
+        account:{
+          value: 'Account-detail',
+          label: 'Account detail',
+          component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+        },
+        user:{
+          value: 'User-Supervise',
+          label: 'User (Supervise)',
+          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+        },
+        booking:{
+          value: 'Booking',
+          label: 'Booking',
+          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+        },
+        assessments:{
+          value: 'Assessments',
+          label: 'Assessments',
+          component:  <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+        },
+    }
+    const permissionTab = ():PERMISSION => {
+        if ( (permissionMe as PERMISSION) === 'Supervisor' ) {
+            return 'Admin'
+        } else {
+            return permissionUser
+        }
+    }
+    const listPermissionTab: { [key in PERMISSION] } = {
+        Supervisor : [listAllTab.account, listAllTab.user, listAllTab.booking, listAllTab.assessments],
+        User : [listAllTab.account, listAllTab.booking, listAllTab.assessments],
+        Finance : [listAllTab.account],
+        Admin : [listAllTab.account, listAllTab.booking]
+    }
     const methods = useForm<IAccountFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
         defaultValues,
@@ -657,13 +712,8 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             </Stack>
                         </Stack>
 
-                        <Stack
-                           
-                            justifyContent="space-between"
-                            gap={2}
-                            sx={{ mt: 2 }}
-                        >
-                            <Stack  flexDirection="row"justifyContent={'space-between'}>
+                        <Stack justifyContent="space-between" gap={2} sx={{ mt: 2 }}>
+                            <Stack flexDirection="row" justifyContent={'space-between'}>
                                 {' '}
                                 <LoadingButton type="submit" variant="outlined" size="large">
                                     07:00
@@ -712,6 +762,24 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             </Stack>
                         </Stack>
                     </Stack>
+                </Paper>
+
+                <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
+                    Price list
+                    <Tabs sx={{padding:'12px'}} value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
+                                {get(listPermissionTab,permissionTab(),[]).map((tab) => (
+                                    <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
+                                ))}
+                            </Tabs>
+
+                            {get(listPermissionTab,permissionTab(),[]).map(
+                                (tab) =>
+                                    tab.value === currentTab && (
+                                    <Box key={tab.value} sx={{ mt: 5 }}>
+                                        {tab.component}
+                                    </Box>
+                                    )
+                            )}
                 </Paper>
 
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
