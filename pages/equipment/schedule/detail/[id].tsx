@@ -207,7 +207,7 @@ export default function EquipmentScheduleDetailPage() {
         reset()
         setSelected([])
         push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
-        enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${get(data, 'time', 'Afternoon (13:00 - 22:00)')}).`)
+        enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
       } catch (error) {
         // console.error(error)
         const errorOptions: ErrorOption = {
