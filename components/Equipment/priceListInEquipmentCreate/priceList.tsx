@@ -70,6 +70,10 @@ export default function PriceListNewEditDetails() {
         setValue('totalPrice', totalPrice)
     }, [setValue, totalPrice])
 
+    useEffect(()=>{
+      handleAdd()
+    },[])
+
     const handleAdd = () => {
         append({
             title: '',
@@ -150,7 +154,7 @@ export default function PriceListNewEditDetails() {
                                 label="Checked *"
                                 InputLabelProps={{ shrink: true }}
                                 SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
-                                sx={{ maxWidth: { md: 160 } }}
+                                sx={{ maxWidth: { md: 160 },width:'100%' }}
                             >
                                 <MenuItem
                                     value="Fixed"
@@ -249,7 +253,8 @@ export default function PriceListNewEditDetails() {
                                 size="small"
                                 color="error"
                                 startIcon={<Iconify icon="eva:trash-2-outline" />}
-                                onClick={() => handleRemove(index)}
+                                onClick={ () => handleRemove(index)}
+                                disabled={index===0 ? true : false}
                             >
                                 Remove
                             </Button>
