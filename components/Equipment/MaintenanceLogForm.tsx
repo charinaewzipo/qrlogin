@@ -156,12 +156,12 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const handleChangeNumber = (
         e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         fieldName: keyof IMaintenanceLogFormValuesProps,
-        option?: 'comma'
+        option?: 'comma' | 'commaNotRequired'
     ) => {
         const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
         const oldValue = getValues(fieldName)
         let newValue = e.target.value
-        if (option === 'comma'){
+        if (option.includes('comma')){
             //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
             for (let i = 0; i < oldValue.length; i++) {
                 if (
@@ -178,7 +178,11 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         const numberOnlyRegex = /^[0-9\b]+$/
         const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
         if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
-            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
+            if (newValue === '' && option === 'commaNotRequired') {
+                setValue(fieldName, newValue)
+                return
+            }
+            const formattedValue = option.includes('comma') ? fNumber(newValueNoComma) : newValueNoComma
             setValue(fieldName, formattedValue)
             if (isSubmitted) trigger()
             setTimeout(() => {
@@ -202,8 +206,8 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         <RHFTextField
                             name="cost"
                             label={constant.cost}
-                            onChange={(e) => handleChangeNumber(e, 'cost', 'comma')}
-                            inputProps={{ maxLength: 100 }}
+                            onChange={(e) => handleChangeNumber(e, 'cost', 'commaNotRequired')}
+                            inputProps={{ maxLength: 20 }}
                         />
                         <Controller
                             name="date"
