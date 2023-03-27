@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -15,6 +15,7 @@ import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
 import { fNumber } from '@sentry/utils/formatNumber'
+import axios from '@ku/services/axios'
 
 export interface IMaintenanceLogFormValuesProps {
   descriptions: string
@@ -39,6 +40,7 @@ interface MaintenanceLogFormProps {
     isEditing?: boolean
 }
 function MaintenanceLogForm(props: MaintenanceLogFormProps) {
+    const [allObjectUrl, setAllObjectUrl] = useState<string[]>()
     const maxFileLength = 1
     const MaintenanceLogSchema = Yup.object().shape({
         descriptions: Yup.string()
@@ -79,6 +81,12 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         reset(props.defaultValue)
     }, [props.defaultValue])
 
+    useEffect(() => {
+        return () => {
+            if (allObjectUrl) allObjectUrl.map((blob) => URL.revokeObjectURL(blob))
+        }
+    }, [])  
+
     const watchMaintenanceFiles = watch('maintenanceFiles')
 
     const onSubmit = async (data: IMaintenanceLogFormValuesProps) => {
@@ -115,17 +123,27 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         setValue('maintenanceFiles', filteredItems)
     }
 
-    const handleDownload = (
+    const handleDownload = async (
         e: React.MouseEvent<HTMLDivElement, MouseEvent>,
         file: CustomFile | string
     ) => {
         const eventTargetTag = String(get(e.target, 'tagName', ''))
         if (eventTargetTag === 'BUTTON' || eventTargetTag === 'svg' || eventTargetTag === 'path') return
 
+        const response = await axios({
+            method: 'get',
+            url: get(file, 'preview', ''),
+            responseType: 'blob',
+        })
+        const blob = new Blob([response.data], { type: response.headers['content-type'] })
+        const fileURL = window.URL.createObjectURL(blob)
+        setAllObjectUrl(prev => prev ? [...prev, fileURL] : [fileURL])
+
         const link = document.createElement('a')
-        link.href = get(file, 'preview', '')
+        link.href = fileURL
         link.download = get(file, 'name', '')
         link.target = "_blank"
+        
         link.click()
         link.remove()
     }

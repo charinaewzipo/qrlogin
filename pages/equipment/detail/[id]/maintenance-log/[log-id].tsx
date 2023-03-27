@@ -14,6 +14,7 @@ import { fNumber } from '@sentry/utils/formatNumber'
 import { format } from 'date-fns'
 import axios from '@ku/services/axios'
 import { get } from 'lodash'
+import { fileNameByUrl } from '@sentry/components/file-thumbnail'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -37,32 +38,27 @@ export function MaintenanceLogEdit() {
     const [errorMsg, setErrorMsg] = useState('')
 	const [maintenanceApiData, setMaintenanceApiData] = useState<IEquipmentMaintenance>()
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
-    const [allBlob, setAllBlob] = useState<string[]>()
     const pathData = router.query
 
 	useEffect(() => {
 	  fetchMaintenanceData('234')
+	}, [])  
 
-      return () => {
-        if (allBlob)
-            allBlob.map(blob => URL.revokeObjectURL(blob))
-      }
-	}, [])
-    
     async function getFileFromUrl(url: string){
+        // สร้างไฟล์เปล่าตาม size ของไฟล์ที่ได้จาก header เพื่อเอาไปโชว์ก่อน
+        // เพื่อไม่ให้โหลด default นาน แล้วค่อยไปโหลดไฟล์เต็มตอนคลิกโหลด
         const response = await axios({
-            method: 'get',
+            method: 'head',
             url: url,
-            responseType: 'blob',
         })
-        //ต้องโหลดข้อมูลมาแปลงเป็น blob ก่อนเพื่อเอาข้อมูล size มาใช้
+        const fileSize = Number(get(response.headers, 'content-length', 0))
         const blob = new Blob([response.data], { type: response.headers['content-type'] })
-        const filename = `${new URL(url).pathname.split('/').pop()}`
-        const file: CustomFile = new File([blob], get(blob, 'name', filename), { type: blob.type })
-        
+        const arrayBuffer = new ArrayBuffer(fileSize)
+        const filename = fileNameByUrl(new URL(url).pathname)
+        const file: CustomFile = new File([arrayBuffer], get(blob, 'name', filename), { type: blob.type })
+
         file.path = filename
-        file.preview = URL.createObjectURL(blob)
-        setAllBlob(prev => prev ? [...allBlob, file.preview] : [file.preview])
+        file.preview = url
         return file
     }      
 
