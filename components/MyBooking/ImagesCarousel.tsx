@@ -24,9 +24,11 @@ const RootStyle = styled('div')(({ theme }) => ({
 
 type Props = {
   images: string[];
+  width?: number;
+  height?: number;
 };
 
-export default function ImagesCarousel({ images }: Props) {
+export default function ImagesCarousel({ images, width, height }: Props) {
   const [openLightbox, setOpenLightbox] = useState(false);
 
   const [selectedImage, setSelectedImage] = useState<number>(0);
@@ -90,81 +92,90 @@ export default function ImagesCarousel({ images }: Props) {
   };
 
   return (
-    <RootStyle>
-      <Box sx={{ p: 1 }}>
-        <Box sx={{ zIndex: 0, borderRadius: 2, overflow: 'hidden', position: 'relative' }}>
-          <Slider {...settings1} asNavFor={nav2} ref={slider1}>
-            {images.map((img) => (
-              <Image
-                key={img}
-                alt="large image"
-                src={img}
-                ratio="1/1"
-                onClick={() => handleOpenLightbox(img)}
-                sx={{ cursor: 'zoom-in' }}
-              />
-            ))}
-          </Slider>
-          <CarouselArrowIndex
-            index={currentIndex}
-            total={images.length}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        </Box>
-      </Box>
-
-      <Box
-        sx={{
-          my: 3,
-          mx: 'auto',
-          '& .slick-current .isActive': { opacity: 1 },
-          ...(images.length === 1 && { maxWidth: THUMB_SIZE * 1 + 16 }),
-          ...(images.length === 2 && { maxWidth: THUMB_SIZE * 2 + 32 }),
-          ...(images.length === 3 && { maxWidth: THUMB_SIZE * 3 + 48 }),
-          ...(images.length === 4 && { maxWidth: THUMB_SIZE * 3 + 48 }),
-          ...(images.length >= 5 && { maxWidth: THUMB_SIZE * 6 }),
-          ...(images.length > 2 && {
-            position: 'relative',
-            '&:before, &:after': {
-              top: 0,
-              zIndex: 9,
-              content: "''",
-              height: '100%',
-              position: 'absolute',
-              width: (THUMB_SIZE * 2) / 3,
-              backgroundImage: (theme) =>
-                `linear-gradient(to left, ${alpha(theme.palette.background.paper, 0)} 0%, ${
-                  theme.palette.background.paper
-                } 100%)`,
-            },
-            '&:after': { right: 0, transform: 'scaleX(-1)' },
-          }),
-        }}
+      <RootStyle
+          sx={{
+              width,
+          }}
       >
-        <Slider {...settings2} asNavFor={nav1} ref={slider2}>
-          {images.map((img, index) => (
-            <Box key={img} sx={{ px: 0.75 }}>
-              <Image
-                disabledEffect
-                alt="thumb image"
-                src={img}
-                sx={{
-                  width: THUMB_SIZE,
-                  height: THUMB_SIZE,
-                  borderRadius: 1.5,
-                  cursor: 'pointer',
-                  ...(currentIndex === index && {
-                    border: (theme) => `solid 3px ${theme.palette.primary.main}`,
-                  }),
-                }}
+          <Box
+              sx={{
+                  zIndex: 0,
+                  borderRadius: 2,
+                  overflow: 'hidden',
+                  position: 'relative',
+              }}
+          >
+              <Slider {...settings1} asNavFor={nav2} ref={slider1}>
+                  {images.map((img) => (
+                      <Image
+                          key={img}
+                          alt="large image"
+                          src={img}
+                          onClick={() => handleOpenLightbox(img)}
+                          sx={{ cursor: 'zoom-in', height: height, width: width }}
+                      />
+                  ))}
+              </Slider>
+              <CarouselArrowIndex
+                  index={currentIndex}
+                  total={images.length}
+                  onNext={handleNext}
+                  onPrevious={handlePrevious}
               />
-            </Box>
-          ))}
-        </Slider>
-      </Box>
+          </Box>
 
-      {/* <LightboxModal
+          <Box
+              sx={{
+                  my: 3,
+                  mx: 'auto',
+                  '& .slick-current .isActive': { opacity: 1 },
+                  ...(images.length === 1 && { maxWidth: THUMB_SIZE * 1 + 16 }),
+                  ...(images.length === 2 && { maxWidth: THUMB_SIZE * 2 + 32 }),
+                  ...(images.length === 3 && { maxWidth: THUMB_SIZE * 3 + 48 }),
+                  ...(images.length === 4 && { maxWidth: THUMB_SIZE * 3 + 48 }),
+                  ...(images.length >= 5 && { maxWidth: THUMB_SIZE * 6 }),
+                  ...(images.length > 2 && {
+                      position: 'relative',
+                      '&:before, &:after': {
+                          top: 0,
+                          zIndex: 9,
+                          content: "''",
+                          height: '100%',
+                          position: 'absolute',
+                          width: (THUMB_SIZE * 2) / 3,
+                          backgroundImage: (theme) =>
+                              `linear-gradient(to left, ${alpha(
+                                  theme.palette.background.paper,
+                                  0
+                              )} 0%, ${theme.palette.background.paper} 100%)`,
+                      },
+                      '&:after': { right: 0, transform: 'scaleX(-1)' },
+                  }),
+              }}
+          >
+              <Slider {...settings2} asNavFor={nav1} ref={slider2}>
+                  {images.map((img, index) => (
+                      <Box key={img} sx={{ px: 0.75 }}>
+                          <Image
+                              disabledEffect
+                              alt="thumb image"
+                              src={img}
+                              sx={{
+                                  width: THUMB_SIZE,
+                                  height: THUMB_SIZE,
+                                  borderRadius: 1.5,
+                                  cursor: 'pointer',
+                                  ...(currentIndex === index && {
+                                      border: (theme) => `solid 3px ${theme.palette.primary.main}`,
+                                  }),
+                              }}
+                          />
+                      </Box>
+                  ))}
+              </Slider>
+          </Box>
+
+          {/* <LightboxModal
         animationDuration={320}
         images={imagesLightbox}
         mainSrc={imagesLightbox[selectedImage]}
@@ -181,6 +192,6 @@ export default function ImagesCarousel({ images }: Props) {
           setSelectedImage((selectedImage + 1) % imagesLightbox.length);
         }}
       /> */}
-    </RootStyle>
-  );
+      </RootStyle>
+  )
 }
