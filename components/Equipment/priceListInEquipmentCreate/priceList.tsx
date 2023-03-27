@@ -45,9 +45,8 @@ const UNIT_OPTIONS = [
 ]
 
 const SUB_DETAIL_OPTIONS = [
-  { id: 1, name: 'Only one', price: 90.99 },
-  { id: 2, name: 'At least one', price: 80.99 },
-
+    { id: 1, name: 'Only one', price: 90.99 },
+    { id: 2, name: 'At least one', price: 80.99 },
 ]
 
 // ----------------------------------------------------------------------
@@ -60,6 +59,12 @@ export default function PriceListNewEditDetails() {
         name: 'items',
     })
 
+    const {
+        fields: FieldsSub,
+        append: AppendSub,
+        remove: RemoveSub,
+    } = useFieldArray({ control, name: 'itemsSub' })
+
     const values = watch()
 
     const totalOnRow = values.items?.map((item: InvoiceItem) => item.quantity * item.price)
@@ -70,12 +75,23 @@ export default function PriceListNewEditDetails() {
         setValue('totalPrice', totalPrice)
     }, [setValue, totalPrice])
 
-    useEffect(()=>{
-      handleAdd()
-    },[])
+    useEffect(() => {
+        handleAdd()
+    }, [])
 
     const handleAdd = () => {
         append({
+            title: '',
+            description: '',
+            service: '',
+            quantity: 1,
+            price: 0,
+            total: 0,
+        })
+    }
+
+    const handleAddSubDetail = () => {
+        AppendSub({
             title: '',
             description: '',
             service: '',
@@ -154,7 +170,7 @@ export default function PriceListNewEditDetails() {
                                 label="Checked *"
                                 InputLabelProps={{ shrink: true }}
                                 SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
-                                sx={{ maxWidth: { md: 160 },width:'100%' }}
+                                sx={{ maxWidth: { md: 160 }, width: '100%' }}
                             >
                                 <MenuItem
                                     value="Fixed"
@@ -253,15 +269,54 @@ export default function PriceListNewEditDetails() {
                                 size="small"
                                 color="error"
                                 startIcon={<Iconify icon="eva:trash-2-outline" />}
-                                onClick={ () => handleRemove(index)}
-                                disabled={index===0 ? true : false}
+                                onClick={() => handleRemove(index)}
+                                disabled={index === 0 ? true : false}
                             >
                                 Remove
                             </Button>
                         </Stack>
 
+                        {FieldsSub.map(() => (
+                            <Stack sx={{mt:2}} direction={'row'} spacing={1}>
+                                <Button
+                                    size="small"
+                                    color="error"
+                                    startIcon={<Iconify icon="eva:trash-2-outline" />}
+                                    onClick={() => handleRemove(index)}
+                                    disabled={index === 0 ? true : false}
+                                >
+                                    Remove
+                                </Button>
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+                            </Stack>
+                        ))}
+
                         <Stack direction={'row'} spacing={1}>
-                        <RHFSelect
+                            <RHFSelect
                                 name={`items[${index}].subDetail`}
                                 size="small"
                                 label="Sub option type"
@@ -278,9 +333,7 @@ export default function PriceListNewEditDetails() {
                                         fontStyle: 'italic',
                                         color: 'text.secondary',
                                     }}
-                                >
-                                    
-                                </MenuItem>
+                                ></MenuItem>
 
                                 <Divider />
 
@@ -305,10 +358,10 @@ export default function PriceListNewEditDetails() {
                             <Button
                                 size="medium"
                                 startIcon={<Iconify icon="eva:plus-fill" />}
-                                // onClick={handleAdd}
+                                onClick={handleAddSubDetail}
                                 sx={{ flexShrink: 0 }}
                                 variant="contained"
-                                disabled
+                                // disabled
                             >
                                 Add Sub detail
                             </Button>
