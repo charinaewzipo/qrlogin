@@ -11,10 +11,13 @@ import {
     TableRow,
     TableBody,
     Grid,
+	Box,
+	styled,
 } from '@mui/material'
 import Logo from '../Logo'
 import Iconify from '@sentry/components/iconify'
 import Label from '@sentry/components/label'
+import { fCurrency, fCurrencyBaht, fNumber } from '@ku/utils/formatNumber'
 
 const constant = {
     description: 'Description',
@@ -26,7 +29,8 @@ const constant = {
     downloadAsPDF: 'Download as PDF',
     remark: 'Remark\nThis is a user remark. If not have an remark hide this section',
     notes: 'NOTES\nThis price is estimated price not actual price.',
-    paymentMethod: 'Payment method\nCash / Bank transfer / QR code',
+    paymentMethod: 'Payment method',
+	paymentList: 'Cash / Bank transfer / QR code',
     cost: 'Cost',
     date: 'Date',
     subTotal: 'Sub Total',
@@ -35,21 +39,36 @@ const constant = {
     fees: 'Fees',
     cancel: 'Cancel',
 }
+
+const RowDetailStyle = styled(TableRow)(({ theme }) => ({
+	boxShadow: `0px 1px 0px 0px ${theme.palette.divider}`
+}));
+const RowResultStyle = styled(TableRow)(({ theme }) => ({
+	boxShadow: '0px 0px transparent',
+	'& td': {
+	  	paddingTop: theme.spacing(1),
+	  	paddingBottom: theme.spacing(1),
+		'&:last-child': {
+			paddingRight: 0
+		}
+	},
+}));
 interface ITableViewProps {
+	bookingData: IV1RespGetBookingMeRead
     onDownloadAsPdf: () => void
 }
 
-function TableView(props: ITableViewProps) {
+function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
     return (
-        <Stack spacing={5}>
-            <Paper elevation={3} sx={{ borderRadius: 2, p: 5 }}>
+        <Stack>
+            <Paper elevation={3} sx={{ borderRadius: 2, p: 5, pb: 0 }}>
                 <Stack flexDirection="row" justifyContent="space-between">
                     <Logo logoType="full" />
                     <Stack alignItems="end" spacing={1}>
                         <LoadingButton
                             type="button"
                             variant="text"
-                            onClick={props.onDownloadAsPdf}
+                            onClick={onDownloadAsPdf}
                             color="info"
                         >
                             <Iconify icon="ant-design:file-pdf-filled" mr={1} width={18} />
@@ -63,129 +82,165 @@ function TableView(props: ITableViewProps) {
                         <Table
                             sx={{
                                 minWidth: 650,
-                                tr: {
-                                    boxShadow: (theme) =>
-                                        `0px 1px 0px 0px ${theme.palette.divider}`,
-                                },
                                 th: {
                                     backgroundColor: 'transparent',
-                                },
-                                'th, td': {
-                                    padding: 3,
                                 },
                             }}
                             aria-label="PaymentTableView"
                         >
                             <TableHead>
-                                <TableRow>
+                                <RowDetailStyle>
                                     <TableCell>{constant.description}</TableCell>
                                     <TableCell align="right">{constant.Qty}</TableCell>
                                     <TableCell align="right">{constant.unitPrice}</TableCell>
                                     <TableCell align="right">{constant.total}</TableCell>
-                                </TableRow>
+                                </RowDetailStyle>
                             </TableHead>
                             <TableBody>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography
-                                            gutterBottom
-                                            variant="subtitle2"
-                                            color="text.secondary"
+                                {bookingData.eqPrices.map((price) => (
+                                    <>
+                                        <RowDetailStyle
+                                            key={`booking-price-eqpEqId-${price.eqpEqId}`}
                                         >
-                                            Coating Material
-                                        </Typography>
-                                        <Typography gutterBottom variant="subtitle1" mb={0}>
-                                            Starndard options
+                                            <TableCell>
+                                                <Typography
+                                                    gutterBottom
+                                                    variant="subtitle2"
+                                                    color="text.secondary"
+                                                >
+                                                    {price.eqpName}
+                                                </Typography>
+                                                <Typography gutterBottom variant="subtitle1" mb={0}>
+                                                    {price.eqpDescription}
+                                                </Typography>
+                                            </TableCell>
+                                            {price.eqSubPrice.length === 0 ? (
+                                                <>
+                                                    <TableCell align="right">
+                                                        {fNumber(price.eqpQuantity)}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        {`${fCurrencyBaht(price.eqpUnitPrice)}/${
+                                                            price.eqpUnitPer
+                                                        }`}
+                                                    </TableCell>
+                                                    <TableCell align="right">
+                                                        {fCurrencyBaht(price.eqpTotal)}
+                                                    </TableCell>
+                                                </>
+                                            ) : (
+                                                <></>
+                                            )}
+                                        </RowDetailStyle>
+                                        {price.eqSubPrice.map((subPrice) => (
+                                            <RowDetailStyle
+                                                key={`booking-sub-price-eqpEqId-${subPrice.eqsubpId}`}
+                                            >
+                                                <TableCell>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="subtitle2"
+                                                        color="text.secondary"
+                                                        ml={6}
+                                                    >
+                                                        {subPrice.eqsubpName}
+                                                    </Typography>
+                                                    <Typography
+                                                        gutterBottom
+                                                        variant="subtitle1"
+                                                        mb={0}
+                                                        ml={6}
+                                                    >
+                                                        {subPrice.eqsubpDescription}
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {fNumber(subPrice.eqsubpQuantity)}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {`${fCurrencyBaht(price.eqpUnitPrice)}/${
+                                                        price.eqpUnitPer
+                                                    }`}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {fCurrencyBaht(price.eqpTotal)}
+                                                </TableCell>
+                                            </RowDetailStyle>
+                                        ))}
+                                    </>
+                                ))}
+
+                                <RowResultStyle>
+                                    <TableCell colSpan={2} />
+                                    <TableCell align="right">
+                                        <Box sx={{ mt: 2 }} />
+                                        <Typography>{constant.subTotal}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Box sx={{ mt: 2 }} />
+                                        <Typography>
+                                            {fCurrencyBaht(bookingData.eqPriceSubTotal)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right">2</TableCell>
-                                    <TableCell align="right">2,500 B/hr.</TableCell>
-                                    <TableCell align="right">5,000 B</TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography
-                                            gutterBottom
-                                            variant="subtitle2"
-                                            color="text.secondary"
-                                        >
-                                            Coating Material
-                                        </Typography>
-                                        <Typography gutterBottom variant="subtitle1" mb={0}>
-                                            Starndard options
+                                </RowResultStyle>
+                                <RowResultStyle>
+                                    <TableCell colSpan={2} />
+                                    <TableCell align="right">
+                                        <Typography>{constant.oTCharge}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Typography sx={{ color: 'error.main' }}>
+                                            {fCurrencyBaht(bookingData.payOt)}
                                         </Typography>
                                     </TableCell>
-                                    <TableCell align="right">2</TableCell>
-                                    <TableCell align="right">2,500 B/hr.</TableCell>
-                                    <TableCell align="right">5,000 B</TableCell>
-                                </TableRow>
+                                </RowResultStyle>
+                                <RowResultStyle>
+                                    <TableCell colSpan={2} />
+                                    <TableCell align="right">
+                                        <Typography>{constant.discount}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Typography>
+                                            {fCurrencyBaht(bookingData.payDiscount)}
+                                        </Typography>
+                                    </TableCell>
+                                </RowResultStyle>
+                                <RowResultStyle>
+                                    <TableCell colSpan={2} />
+                                    <TableCell align="right">
+                                        <Typography>{constant.fees}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right">
+                                        <Typography>
+                                            {fCurrencyBaht(bookingData.payFees)}
+                                        </Typography>
+                                    </TableCell>
+                                </RowResultStyle>
+                                <RowResultStyle>
+                                    <TableCell colSpan={2} />
+                                    <TableCell align="right">
+                                        <Typography variant="h6">{constant.total}</Typography>
+                                    </TableCell>
+                                    <TableCell align="right" width={140}>
+                                        <Typography variant="h6">
+                                            {fCurrencyBaht(bookingData.payTotal)}
+                                        </Typography>
+                                    </TableCell>
+                                </RowResultStyle>
                             </TableBody>
                         </Table>
                     </TableContainer>
                 </Stack>
-                <Divider sx={{ mb: 3 }} />
-                <Grid container rowGap={2} justifyContent="flex-end" textAlign="right">
-                    <Grid item xs={2}>
-                        <Typography gutterBottom variant="body1" color="text.secondary">
-                            {constant.subTotal}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2.8}>
-                        <Typography gutterBottom variant="body1">
-                            9,000 B
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Grid container rowGap={2} justifyContent="flex-end" textAlign="right">
-                    <Grid item xs={2}>
-                        <Typography gutterBottom variant="body1" color="text.secondary">
-                            {constant.oTCharge}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2.8}>
-                        <Typography gutterBottom variant="body1">
-                            9,000 B
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Grid container rowGap={2} justifyContent="flex-end" textAlign="right">
-                    <Grid item xs={2}>
-                        <Typography gutterBottom variant="body1" color="text.secondary">
-                            {constant.discount}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2.8}>
-                        <Typography gutterBottom variant="body1">
-                            9,000 B
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Grid container rowGap={2} justifyContent="flex-end" textAlign="right">
-                    <Grid item xs={2}>
-                        <Typography gutterBottom variant="body1" color="text.secondary">
-                            {constant.fees}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2.8}>
-                        <Typography gutterBottom variant="body1">
-                            9,000 B
-                        </Typography>
-                    </Grid>
-                </Grid>
-                <Grid container rowGap={2} justifyContent="flex-end" textAlign="right">
-                    <Grid item xs={2}>
-                        <Typography gutterBottom variant="h6" color="text.secondary">
-                            {constant.total}
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={2.8}>
-                        <Typography gutterBottom variant="h6">
-                            9,000 B
-                        </Typography>
-                    </Grid>
-                </Grid>
                 <Divider sx={{ mt: 3 }} />
-                <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}></Stack>
+                <Grid container>
+                    <Grid item xs={12} md={9} sx={{ py: 3 }}>
+                        <Typography variant="body2" whiteSpace='pre'>{constant.remark}</Typography>
+                    </Grid>
+                    <Grid item xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
+                        <Typography variant="subtitle2">{constant.paymentMethod}</Typography>
+                        <Typography variant="body2">{constant.paymentList}</Typography>
+                    </Grid>
+                </Grid>
             </Paper>
         </Stack>
     )

@@ -93,6 +93,23 @@ const mockData: IV1RespGetBookingMeRead = {
           },
         ],
       },
+      {
+        eqpId: 2,
+        eqpEqId: 2,
+        eqpTypePerson: "member",
+        eqpSubOption: "basic",
+        eqpChecked: "yes",
+        eqpIsChecked: true,
+        eqpName: "Basic membership",
+        eqpDescription: "Access to basic features",
+        eqpQuantity: 1,
+        eqpTotal: 100,
+        eqpUnitPrice: 100,
+        eqpUnitPer: "month",
+        eqpCreatedAt: '2023-03-13T16:21:30.894Z',
+        eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
+        eqSubPrice: [],
+      },
     ],
     eqPriceSubTotal: 100,
     bookId: 123,
@@ -194,9 +211,9 @@ export function MyBookingDetail() {
                                     onDownloadReceipt={handleDownloadReceipt}
                                 />
                                 <EquipmentDetail
-                                    eqData={mockData}
+                                    bookingData={mockData}
                                 />
-                                <TableView onDownloadAsPdf={handleOnDownloadAsPdf} />
+                                <TableView onDownloadAsPdf={handleOnDownloadAsPdf} bookingData={mockData} />
                                 {/* <UserPaymentNotice /> */}
                             </Stack>
                         </div>

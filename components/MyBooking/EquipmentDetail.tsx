@@ -4,10 +4,10 @@ import ImagesCarousel from './ImagesCarousel'
 import Label from '@sentry/components/label'
 
 interface IEquipmentDetailProps {
-    eqData: IV1RespGetBookingMeRead
+    bookingData: IV1RespGetBookingMeRead
 }
-function EquipmentDetail({ eqData }: IEquipmentDetailProps) {
-    const imgSet = orderBy(eqData.eqPictures, 'eqpicSort').map((img) => img.eqpicLink)
+function EquipmentDetail({ bookingData }: IEquipmentDetailProps) {
+    const imgSet = orderBy(bookingData.eqPictures, 'eqpicSort').map((img) => img.eqpicLink)
     return (
         <Stack spacing={5}>
             <Paper elevation={3} sx={{ borderRadius: 2, p: 1 }}>
@@ -16,9 +16,9 @@ function EquipmentDetail({ eqData }: IEquipmentDetailProps) {
                     <Stack pt={5} pr={8.5}>
                         <Label
                             mr="auto"
-                            color={eqData.eqStatus === 'Available' ? 'success' : 'error'}
+                            color={bookingData.eqStatus === 'Available' ? 'success' : 'error'}
                         >
-                            {eqData.eqStatus}
+                            {bookingData.eqStatus}
                         </Label>
                         <Typography
                             variant="overline"
@@ -29,22 +29,22 @@ function EquipmentDetail({ eqData }: IEquipmentDetailProps) {
                                 color: (theme) => theme.palette.info.main,
                             }}
                         >
-                            {eqData.eqCode}
+                            {bookingData.eqCode}
                         </Typography>
                         <Typography variant="h5" paragraph>
-                            {eqData.eqName}
+                            {bookingData.eqName}
                         </Typography>
 
                         <Divider sx={{ mt: 1, mb: 3 }} />
 
                         <Typography variant="subtitle1" paragraph mb={1} color="text.secondary">
-                            {eqData.eqBrand}
+                            {bookingData.eqBrand}
                         </Typography>
                         <Typography variant="body2" paragraph mb={1} color="text.secondary">
-                            {eqData.eqModel}
+                            {bookingData.eqModel}
                         </Typography>
                         <Typography variant="caption" paragraph mb={1} color="text.disabled">
-                            {eqData.eqDescription}
+                            {bookingData.eqDescription}
                         </Typography>
                     </Stack>
                 </Stack>
