@@ -1,70 +1,54 @@
-import { useCallback } from 'react'
-import * as Yup from 'yup'
-import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
-import { yupResolver } from '@hookform/resolvers/yup'
-import {
-    Alert,
-    Stack,
-    TextField,
-    Paper,
-} from '@mui/material'
-import FormProvider, { RHFTextField } from '@sentry/components/hook-form'
-import { CustomFile, RejectionFiles, Upload } from '@sentry/components/upload'
-import { cloneDeep } from 'lodash'
-import { DatePicker } from '@mui/x-date-pickers'
-import { useDropzone } from 'react-dropzone'
+import { Stack, Paper, Typography, Divider } from '@mui/material'
+import { orderBy } from 'lodash'
 import ImagesCarousel from './ImagesCarousel'
+import Label from '@sentry/components/label'
 
-const constant = {
-  descriptions: 'Descriptions',
-  cost: 'Cost',
-  date: 'Date',
-  attachMaintenanceFile: 'Attach maintenance file',
-  createMaintenanceLog: 'Create Maintenance Log',
-  cancel: 'Cancel',
-}
 interface IEquipmentDetailProps {
-    onCancel: () => void
-    errorMsg: string
+    eqData: IV1RespGetBookingMeRead
 }
-function EquipmentDetail(props: IEquipmentDetailProps) {
+function EquipmentDetail({ eqData }: IEquipmentDetailProps) {
+    const imgSet = orderBy(eqData.eqPictures, 'eqpicSort').map((img) => img.eqpicLink)
     return (
         <Stack spacing={5}>
-            {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
-            <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
-                <ImagesCarousel
-                    images={[
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                        'http://placekitten.com/200/300',
-                    ]}
-                />
+            <Paper elevation={3} sx={{ borderRadius: 2, p: 1 }}>
+                <Stack spacing={8} direction="row">
+                    <ImagesCarousel width={420} height={500} images={imgSet} />
+                    <Stack pt={5} pr={8.5}>
+                        <Label
+                            mr="auto"
+                            color={eqData.eqStatus === 'Available' ? 'success' : 'error'}
+                        >
+                            {eqData.eqStatus}
+                        </Label>
+                        <Typography
+                            variant="overline"
+                            sx={{
+                                mt: 2,
+                                mb: 1,
+                                display: 'block',
+                                color: (theme) => theme.palette.info.main,
+                            }}
+                        >
+                            {eqData.eqCode}
+                        </Typography>
+                        <Typography variant="h5" paragraph>
+                            {eqData.eqName}
+                        </Typography>
+
+                        <Divider sx={{ mt: 1, mb: 3 }} />
+
+                        <Typography variant="subtitle1" paragraph mb={1} color="text.secondary">
+                            {eqData.eqBrand}
+                        </Typography>
+                        <Typography variant="body2" paragraph mb={1} color="text.secondary">
+                            {eqData.eqModel}
+                        </Typography>
+                        <Typography variant="caption" paragraph mb={1} color="text.disabled">
+                            {eqData.eqDescription}
+                        </Typography>
+                    </Stack>
+                </Stack>
             </Paper>
-            <Stack flexDirection="row" justifyContent="right" gap={2}>
-                <LoadingButton
-                    type="button"
-                    variant="contained"
-                    size="large"
-                    onClick={props.onCancel}
-                    color="inherit"
-                >
-                    {constant.cancel}
-                </LoadingButton>
-                <LoadingButton
-                    type="submit"
-                    variant="contained"
-                    size="large"
-                    // loading={authenticationStore.isFetching}
-                >
-                    {constant.createMaintenanceLog}
-                </LoadingButton>
-            </Stack>
         </Stack>
     )
 }
