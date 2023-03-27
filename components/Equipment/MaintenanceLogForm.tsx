@@ -39,6 +39,7 @@ interface MaintenanceLogFormProps {
     isEditing?: boolean
 }
 function MaintenanceLogForm(props: MaintenanceLogFormProps) {
+    const maxFileLength = 1
     const MaintenanceLogSchema = Yup.object().shape({
         descriptions: Yup.string()
             .required('Descriptions is require')
@@ -93,7 +94,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
-            const images = watchMaintenanceFiles || []
+            const images = getValues('maintenanceFiles') || []
 
             setValue('maintenanceFiles', [
                 ...images,
@@ -104,12 +105,12 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                 ),
             ])
         },
-        [setValue, watchMaintenanceFiles]
+        [setValue, getValues('maintenanceFiles')]
     )
 
     const handleRemove = (file: File | string) => {
         const filteredItems =
-            watchMaintenanceFiles && watchMaintenanceFiles?.filter((_file) => _file !== file)
+            getValues('maintenanceFiles') && getValues('maintenanceFiles')?.filter((_file) => _file !== file)
 
         setValue('maintenanceFiles', filteredItems)
     }
@@ -119,8 +120,6 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         file: CustomFile | string
     ) => {
         const eventTargetTag = String(get(e.target, 'tagName', ''))
-        console.log(e);
-        
         if (eventTargetTag === 'BUTTON' || eventTargetTag === 'svg' || eventTargetTag === 'path') return
 
         const link = document.createElement('a')
@@ -129,12 +128,11 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         link.target = "_blank"
         link.click()
         link.remove()
-        console.log('download', file)
     }
 
     const { getRootProps, getInputProps, fileRejections } = useDropzone({
         onDrop: handleDrop,
-        multiple: true,
+        multiple: false,
     })
     
     const handleChangeNumber = (
@@ -260,12 +258,20 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                                     </>
                                 )}
                             />
-                            <div {...getRootProps()} style={{ width: 'fit-content' }}>
-                                <input {...getInputProps()} />
-                                <LoadingButton type="button" variant="contained" color="inherit">
-                                    {constant.attachMaintenanceFile}
-                                </LoadingButton>
-                            </div>
+                            {watchMaintenanceFiles.length < maxFileLength ? (
+                                <div {...getRootProps()} style={{ width: 'fit-content' }}>
+                                    <input {...getInputProps()} />
+                                    <LoadingButton
+                                        type="button"
+                                        variant="contained"
+                                        color="inherit"
+                                    >
+                                        {constant.attachMaintenanceFile}
+                                    </LoadingButton>
+                                </div>
+                            ) : (
+                                <></>
+                            )}
                         </Stack>
                     </Stack>
                 </Paper>

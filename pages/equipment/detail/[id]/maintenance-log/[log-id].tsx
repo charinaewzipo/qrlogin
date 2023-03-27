@@ -55,10 +55,11 @@ export function MaintenanceLogEdit() {
             url: url,
             responseType: 'blob',
         })
+        //ต้องโหลดข้อมูลมาแปลงเป็น blob ก่อนเพื่อเอาข้อมูล size มาใช้
         const blob = new Blob([response.data], { type: response.headers['content-type'] })
         const filename = `${new URL(url).pathname.split('/').pop()}`
         const file: CustomFile = new File([blob], get(blob, 'name', filename), { type: blob.type })
-        console.log(blob)
+        
         file.path = filename
         file.preview = URL.createObjectURL(blob)
         setAllBlob(prev => prev ? [...allBlob, file.preview] : [file.preview])
@@ -79,13 +80,14 @@ export function MaintenanceLogEdit() {
             eqmtnpic_updated_at: new Date(),
         }
         setMaintenanceApiData(apiData)
-        const maintenanceFiles = await getFileFromUrl(apiData.eqmtnpic_link)
 		setMaintenanceData({
             descriptions: apiData.eqmtn_description,
             cost: fNumber(apiData.eqmtn_cost),
             date: format(apiData.eqmtn_date, 'dd MMM yyyy'),
-            maintenanceFiles: [maintenanceFiles],
+            maintenanceFiles: [],
 		})
+        const maintenanceFiles = await getFileFromUrl(apiData.eqmtnpic_link)
+        setMaintenanceData(prev => ({...prev, maintenanceFiles: [maintenanceFiles]}))
 	}
 
 	const handleFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
