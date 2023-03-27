@@ -32,16 +32,22 @@ const SERVICE_OPTIONS = [
 ]
 
 const CHECKED_OPTIONS = [
-  { id: 1, name: 'Fixed', price: 90.99 },
-  { id: 2, name: 'Default', price: 80.99 },
-  { id: 3, name: 'Optional', price: 70.99 },
+    { id: 1, name: 'Fixed', price: 90.99 },
+    { id: 2, name: 'Default', price: 80.99 },
+    { id: 3, name: 'Optional', price: 70.99 },
 ]
 
 const UNIT_OPTIONS = [
-  { id: 1, name: 'Baht/Hour', price: 90.99 },
-  { id: 2, name: 'Baht/Sample', price: 80.99 },
-  { id: 3, name: 'Baht/Booking', price: 70.99 },
-  { id: 4, name: 'Baht/Times', price: 70.99 },
+    { id: 1, name: 'Baht/Hour', price: 90.99 },
+    { id: 2, name: 'Baht/Sample', price: 80.99 },
+    { id: 3, name: 'Baht/Booking', price: 70.99 },
+    { id: 4, name: 'Baht/Times', price: 70.99 },
+]
+
+const SUB_DETAIL_OPTIONS = [
+  { id: 1, name: 'Only one', price: 90.99 },
+  { id: 2, name: 'At least one', price: 80.99 },
+
 ]
 
 // ----------------------------------------------------------------------
@@ -248,6 +254,60 @@ export default function PriceListNewEditDetails() {
                                 Remove
                             </Button>
                         </Stack>
+
+                        <Stack direction={'row'} spacing={1}>
+                        <RHFSelect
+                                name={`items[${index}].subDetail`}
+                                size="small"
+                                label="Sub option type"
+                                SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
+                                sx={{ maxWidth: { md: 160 } }}
+                            >
+                                <MenuItem
+                                    value="Fixed"
+                                    onClick={() => handleClearService(index)}
+                                    sx={{
+                                        mx: 1,
+                                        borderRadius: 0.75,
+                                        typography: 'body2',
+                                        fontStyle: 'italic',
+                                        color: 'text.secondary',
+                                    }}
+                                >
+                                    
+                                </MenuItem>
+
+                                <Divider />
+
+                                {SUB_DETAIL_OPTIONS.map((option) => (
+                                    <MenuItem
+                                        key={option.id}
+                                        value={option.name}
+                                        onClick={() => handleSelectService(index, option.name)}
+                                        sx={{
+                                            mx: 1,
+                                            my: 0.5,
+                                            borderRadius: 0.75,
+                                            typography: 'body2',
+                                            textTransform: 'capitalize',
+                                        }}
+                                    >
+                                        {option.name}
+                                    </MenuItem>
+                                ))}
+                            </RHFSelect>
+
+                            <Button
+                                size="medium"
+                                startIcon={<Iconify icon="eva:plus-fill" />}
+                                // onClick={handleAdd}
+                                sx={{ flexShrink: 0 }}
+                                variant="contained"
+                                disabled
+                            >
+                                Add Sub detail
+                            </Button>
+                        </Stack>
                     </Stack>
                 ))}
             </Stack>
@@ -267,11 +327,7 @@ export default function PriceListNewEditDetails() {
                 >
                     Add new detail
                 </Button>
-
-              
             </Stack>
-
-            
         </Box>
     )
 }
