@@ -11,6 +11,8 @@ interface IEquipmentUser {
 
 interface IEquipmentSchedule{
     id: string
+    name?:string
+    cover?:string
     activeDate:string
     time:string
     createBy:string

@@ -12,7 +12,7 @@ import { isEmpty } from 'lodash';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IEquipmentUser;
+  row: IEquipmentSchedule;
   selected: boolean;
   onSelectRow: VoidFunction;
   onViewRow: VoidFunction;

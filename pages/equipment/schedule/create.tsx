@@ -46,37 +46,45 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 
 
-const mockDataTable: IEquipmentUser[] = [{
+const mockDataTable: IEquipmentSchedule[] = [{
   id: "27658a79-ac6c-4003-b927-23b260840201",
   name: "Brycen Jimenez",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg',
-  createdAt: new Date().toString(),
-  lastestUpdate: new Date().toString(),
-  status: "Available"
+  createBy: 'Simsimi ok',
+  activeDate: new Date().toString(),
+  time: 'Full Day',
+  createAt: new Date().toString(),
+  status: "Finish"
 },
 {
   id: "27658a79-ac6c-4003-b927-23b260840202",
   name: "Coating Material (CM1)",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg',
-  createdAt: new Date(1994, 12, 10).toString(),
-  lastestUpdate: new Date(1924, 12, 10).toString(),
-  status: "Unavailable"
+  createBy: 'Simsimi ok',
+  activeDate: new Date().toString(),
+  time: 'Full Day',
+  createAt: new Date().toString(),
+  status: "Finish"
 },
 
 {
   id: "27658a79-ac6c-4003-b927-23b260840203",
   name: "Material coating descriptions",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createdAt: new Date(1995, 12, 10).toString(),
-  lastestUpdate: new Date(1944, 12, 10).toString(),
-  status: "Temporary Unavailable"
+  createBy: 'Simsimi ok',
+  activeDate: new Date().toString(),
+  time: 'Full Day',
+  createAt: new Date().toString(),
+  status: "Finish"
 }, {
   id: "27658a79-ac6c-4003-b927-23b260840204",
   name: "Aaterial coating descriptions",
   cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createdAt: new Date(1995, 12, 10).toString(),
-  lastestUpdate: new Date(1944, 12, 10).toString(),
-  status: "Temporary Unavailable"
+  createBy: 'Simsimi ok',
+  activeDate: new Date().toString(),
+  time: 'Full Day',
+  createAt: new Date().toString(),
+  status: "Finish"
 }
 ]
 
@@ -89,9 +97,9 @@ type FormValuesProps = {
   afterSubmit?: string
 }
 
-EquipmentSchedulePage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
+EquipmentScheduleCreatePage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 
-export default function EquipmentSchedulePage() {
+export default function EquipmentScheduleCreatePage() {
   const {
     page,
     order,
@@ -109,7 +117,7 @@ export default function EquipmentSchedulePage() {
     onChangeRowsPerPage,
   } = useTable();
 
-  const [tableData, setTableData] = useState<IEquipmentUser[]>([])
+  const [tableData, setTableData] = useState<IEquipmentSchedule[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
@@ -167,7 +175,7 @@ export default function EquipmentSchedulePage() {
     }
   }
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id))
+    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
@@ -183,13 +191,13 @@ export default function EquipmentSchedulePage() {
     setSelected([])
   }
   const onSubmit = async (data: FormValuesProps) => {
-    console.log("onSubmit")
     if (!isErrorSelectEquipment) {
+      console.log("onSubmit", data)
       try {
         await new Promise((resolve) => setTimeout(resolve, 500))
         reset()
         setSelected([])
-        push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
+        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
         enqueueSnackbar('Create schedule success.')
       } catch (error) {
         // console.error(error)
@@ -243,7 +251,7 @@ export default function EquipmentSchedulePage() {
             },
             {
               name: 'Manage Available Schedules',
-              href: MERGE_PATH(EQUIPMENT_PATH, '/schedule'),
+              href: MERGE_PATH(EQUIPMENT_PATH, 'schedule'),
             },
             {
               name: 'Create',
@@ -300,7 +308,6 @@ export default function EquipmentSchedulePage() {
                   )}
                 />
               )}
-
             />
           </Stack>
           <RenderChips />
