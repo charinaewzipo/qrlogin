@@ -31,6 +31,19 @@ const SERVICE_OPTIONS = [
     { id: 5, name: 'front end development', price: 40.99 },
 ]
 
+const CHECKED_OPTIONS = [
+  { id: 1, name: 'Fixed', price: 90.99 },
+  { id: 2, name: 'Default', price: 80.99 },
+  { id: 3, name: 'Optional', price: 70.99 },
+]
+
+const UNIT_OPTIONS = [
+  { id: 1, name: 'Baht/Hour', price: 90.99 },
+  { id: 2, name: 'Baht/Sample', price: 80.99 },
+  { id: 3, name: 'Baht/Booking', price: 70.99 },
+  { id: 4, name: 'Baht/Times', price: 70.99 },
+]
+
 // ----------------------------------------------------------------------
 
 export default function PriceListNewEditDetails() {
@@ -126,7 +139,7 @@ export default function PriceListNewEditDetails() {
                             sx={{ width: 1 }}
                         >
                             <RHFSelect
-                                name={`items[${index}].service`}
+                                name={`items[${index}].checked`}
                                 size="small"
                                 label="Checked *"
                                 InputLabelProps={{ shrink: true }}
@@ -149,7 +162,7 @@ export default function PriceListNewEditDetails() {
 
                                 <Divider />
 
-                                {SERVICE_OPTIONS.map((option) => (
+                                {CHECKED_OPTIONS.map((option) => (
                                     <MenuItem
                                         key={option.id}
                                         value={option.name}
@@ -169,7 +182,7 @@ export default function PriceListNewEditDetails() {
 
                             <RHFTextField
                                 size="small"
-                                name={`items[${index}].description`}
+                                name={`items[${index}].name`}
                                 label="Name *"
                             />
 
@@ -181,12 +194,12 @@ export default function PriceListNewEditDetails() {
 
                             <RHFTextField
                                 size="small"
-                                name={`items[${index}].description`}
+                                name={`items[${index}].unitPrice`}
                                 label="Unit price *"
                             />
 
-<RHFSelect
-                                name={`items[${index}].service`}
+                            <RHFSelect
+                                name={`items[${index}].unit`}
                                 size="small"
                                 label="Unit *"
                                 InputLabelProps={{ shrink: true }}
@@ -209,7 +222,7 @@ export default function PriceListNewEditDetails() {
 
                                 <Divider />
 
-                                {SERVICE_OPTIONS.map((option) => (
+                                {UNIT_OPTIONS.map((option) => (
                                     <MenuItem
                                         key={option.id}
                                         value={option.name}
@@ -227,16 +240,14 @@ export default function PriceListNewEditDetails() {
                                 ))}
                             </RHFSelect>
                             <Button
-                            size="small"
-                            color="error"
-                            startIcon={<Iconify icon="eva:trash-2-outline" />}
-                            onClick={() => handleRemove(index)}
-                        >
-                            Remove
-                        </Button>
+                                size="small"
+                                color="error"
+                                startIcon={<Iconify icon="eva:trash-2-outline" />}
+                                onClick={() => handleRemove(index)}
+                            >
+                                Remove
+                            </Button>
                         </Stack>
-
-                       
                     </Stack>
                 ))}
             </Stack>
@@ -257,65 +268,10 @@ export default function PriceListNewEditDetails() {
                     Add new detail
                 </Button>
 
-                <Stack
-                    spacing={2}
-                    justifyContent="flex-end"
-                    direction={{ xs: 'column', md: 'row' }}
-                    sx={{ width: 1 }}
-                >
-                    <RHFTextField
-                        size="small"
-                        label="Discount"
-                        name="discount"
-                        onChange={(event) => setValue('discount', Number(event.target.value))}
-                        sx={{ maxWidth: { md: 200 } }}
-                    />
-
-                    <RHFTextField
-                        size="small"
-                        label="Taxes"
-                        name="taxes"
-                        onChange={(event) => setValue('taxes', Number(event.target.value))}
-                        sx={{ maxWidth: { md: 200 } }}
-                    />
-                </Stack>
+              
             </Stack>
 
-            <Stack spacing={2} sx={{ mt: 3 }}>
-                <Stack direction="row" justifyContent="flex-end">
-                    <Typography>Subtotal :</Typography>
-                    <Typography sx={{ textAlign: 'right', width: 120 }}>
-                        {fCurrency(sum(totalOnRow))}
-                    </Typography>
-                </Stack>
-
-                <Stack direction="row" justifyContent="flex-end">
-                    <Typography>Discount :</Typography>
-                    <Typography
-                        sx={{
-                            textAlign: 'right',
-                            width: 120,
-                            ...(values.discount && { color: 'error.main' }),
-                        }}
-                    >
-                        {values.discount ? `- ${fCurrency(values.discount)}` : '-'}
-                    </Typography>
-                </Stack>
-
-                <Stack direction="row" justifyContent="flex-end">
-                    <Typography>Taxes :</Typography>
-                    <Typography sx={{ textAlign: 'right', width: 120 }}>
-                        {values.taxes ? fCurrency(values.taxes) : '-'}
-                    </Typography>
-                </Stack>
-
-                <Stack direction="row" justifyContent="flex-end">
-                    <Typography variant="h6">Total price :</Typography>
-                    <Typography variant="h6" sx={{ textAlign: 'right', width: 120 }}>
-                        {fCurrency(totalPrice)}
-                    </Typography>
-                </Stack>
-            </Stack>
+            
         </Box>
     )
 }
