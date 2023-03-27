@@ -195,8 +195,8 @@ export default function EquipmentScheduleDetailPage() {
       }, 1000)
     );
   }
-  const handleOnclickCancel = () => {
-    reset()
+  const handleOnclickRemove = () => {
+    // reset()
     setSelected([])
   }
   const onSubmit = async (data: FormValuesProps) => {
@@ -387,7 +387,7 @@ export default function EquipmentScheduleDetailPage() {
             <LoadingButton
               size="large"
               color='error'
-            // onClick={handleOnclickCancel}
+              onClick={handleOnclickRemove}
             >
               Remove
             </LoadingButton>
