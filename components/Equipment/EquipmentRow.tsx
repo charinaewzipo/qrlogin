@@ -40,15 +40,15 @@ export default function EquipmentRow({
   // };
 
   return (
-    <TableRow hover selected={selected} key={id} >
-      <TableCell padding="checkbox">
+    <TableRow hover selected={selected} key={id} onClick={onViewRow} sx={{ cursor: 'pointer' }} >
+      <TableCell padding="checkbox" onClick={e => e.stopPropagation()}>
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
 
       <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
         <Box
           sx={{ display: 'flex', justifyContent: 'center' }}
-          onClick={onViewRow}
+
         >
           <Image
             disabledEffect
@@ -56,7 +56,7 @@ export default function EquipmentRow({
             src={cover}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
-          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer' }} >
+          <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} >
             <Typography variant="subtitle2" noWrap >
               {name}
             </Typography>
