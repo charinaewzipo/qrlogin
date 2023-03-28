@@ -11,32 +11,20 @@ import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
-import { format } from 'date-fns'
+import { format, parseISO } from 'date-fns'
 import axios from '@ku/services/axios'
 import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
-interface IEquipmentMaintenance {
-    eq_id: number
-    eqmtn_id: number
-    eqmtn_description: string
-    eqmtn_cost: number
-    eqmtn_date: Date
-    eqmtn_created_at: Date
-    eqmtn_updated_at: Date
-    eqmtnpic_link: string
-    eqmtnpic_created_at: Date
-    eqmtnpic_updated_at: Date
-}
-    
+
 export function MaintenanceLogEdit() {
     // const { t } = useTranslation()
     const { enqueueSnackbar } = useSnackbar()
     const router = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
-	const [maintenanceApiData, setMaintenanceApiData] = useState<IEquipmentMaintenance>()
+	const [maintenanceApiData, setMaintenanceApiData] = useState<IV1GetEquipmentMaintenanceRead>()
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
     const pathData = router.query
 
@@ -64,25 +52,25 @@ export function MaintenanceLogEdit() {
 
 	const fetchMaintenanceData = async (id: string) => {
         const apiData = {
-            eq_id: 1,
-            eqmtn_id: 1,
-            eqmtn_description: 'Engineer จาก crest แก้ไขปัญหาภาพ noise จากการเสียหายของอุปกรณ์',
-            eqmtn_cost: 3500,
-            eqmtn_date: new Date(),
-            eqmtnpic_link: 'https://handballthailand.com/filesAttach/1670591100.pdf',
-            eqmtn_created_at: new Date(),
-            eqmtn_updated_at: new Date(),
-            eqmtnpic_created_at: new Date(),
-            eqmtnpic_updated_at: new Date(),
+            eqId: 1,
+            eqmtnId: 1,
+            eqmtnDescription: 'Engineer จาก crest แก้ไขปัญหาภาพ noise จากการเสียหายของอุปกรณ์',
+            eqmtnCost: 3500,
+            eqmtnDate: '2022-02-28T10:30:00.000Z',
+            eqmtnCreatedAt: '2022-02-28T11:00:00.000Z',
+            eqmtnUpdatedAt: '2022-02-28T11:15:00.000Z',
+            eqmtnPicLink: 'https://handballthailand.com/filesAttach/1670591100.pdf',
+            eqmtnPicCreatedAt: '2022-02-28T11:05:00.000Z',
+            eqmtnPicUpdatedAt: '2022-02-28T11:05:00.000Z'
         }
         setMaintenanceApiData(apiData)
 		setMaintenanceData({
-            descriptions: apiData.eqmtn_description,
-            cost: fNumber(apiData.eqmtn_cost),
-            date: format(apiData.eqmtn_date, 'dd MMM yyyy'),
+            descriptions: apiData.eqmtnDescription,
+            cost: fNumber(apiData.eqmtnCost),
+            date: format(parseISO(apiData.eqmtnDate.replace('Z', '')), 'dd MMM yyyy'),
             maintenanceFiles: [],
 		})
-        const maintenanceFiles = await getFileFromUrl(apiData.eqmtnpic_link)
+        const maintenanceFiles = await getFileFromUrl(apiData.eqmtnPicLink)
         setMaintenanceData(prev => ({...prev, maintenanceFiles: [maintenanceFiles]}))
 	}
 
