@@ -59,7 +59,7 @@ export function MaintenanceLogEdit() {
             eqmtnDate: '2022-02-28T10:30:00.000Z',
             eqmtnCreatedAt: '2022-02-28T11:00:00.000Z',
             eqmtnUpdatedAt: '2022-02-28T11:15:00.000Z',
-            eqmtnPicLink: 'https://handballthailand.com/filesAttach/1670591100.pdf',
+            eqmtnPicLink: 'https://cdn.thewirecutter.com/wp-content/media/2022/08/macbook-2048px-9765.jpg',
             eqmtnPicCreatedAt: '2022-02-28T11:05:00.000Z',
             eqmtnPicUpdatedAt: '2022-02-28T11:05:00.000Z'
         }
