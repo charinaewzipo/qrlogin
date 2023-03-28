@@ -91,7 +91,7 @@ export function MaintenanceLogEdit() {
     return (
         <>
             <Head>
-                <title>Account Create | KU</title>
+                <title>Update Maintenance Log | KU</title>
             </Head>
             <Container>
                 <Box
