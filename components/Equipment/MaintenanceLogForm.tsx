@@ -49,7 +49,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
             .max(100, 'Descriptions must not be more than 100 characters'),
         cost: Yup.string(),
         date: Yup.date()
-            .typeError('Expected date format is dd mmm yyyy. Example: "1 jan 1970".')
+            .typeError('Expected date format is dd mmm yyyy. Example: "01 jan 1970".')
             .nullable(),
         maintenanceFiles: Yup.array(Yup.string()),
     })
