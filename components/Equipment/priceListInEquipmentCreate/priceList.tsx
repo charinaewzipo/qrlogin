@@ -98,11 +98,6 @@ export default function PriceListNewEditDetails() {
         })
     }
 
-    const handleAddSubDetail = (id) => {
-        // fields.subs.push({idsub:'1',desc:'as'})
-        console.log('addSub')
-    }
-
     const handleRemove = (index: number) => {
         remove(index)
     }
