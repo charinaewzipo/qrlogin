@@ -100,7 +100,7 @@ export default function PriceListNewEditDetails() {
 
     const handleAddSubDetail = (id) => {
         // fields.subs.push({idsub:'1',desc:'as'})
-        append({})
+        console.log('addSub')
     }
 
     const handleRemove = (index: number) => {
@@ -289,62 +289,10 @@ export default function PriceListNewEditDetails() {
                             <NestedArray
                                 nestIndex={index}
                                 {...{ control}}
+                                // handdleAddSub = {}
                             />
 
-                            <Stack direction={'row'} spacing={1}>
-                                <RHFSelect
-                                    name={`items[${index}].subDetail`}
-                                    size="small"
-                                    label="Sub option type"
-                                    SelectProps={{
-                                        native: false,
-                                        sx: { textTransform: 'capitalize' },
-                                    }}
-                                    sx={{ maxWidth: { md: 160 } }}
-                                >
-                                    <MenuItem
-                                        value="Fixed"
-                                        onClick={() => handleClearService(index)}
-                                        sx={{
-                                            mx: 1,
-                                            borderRadius: 0.75,
-                                            typography: 'body2',
-                                            fontStyle: 'italic',
-                                            color: 'text.secondary',
-                                        }}
-                                    ></MenuItem>
-
-                                    <Divider />
-
-                                    {SUB_DETAIL_OPTIONS.map((option) => (
-                                        <MenuItem
-                                            key={option.id}
-                                            value={option.name}
-                                            onClick={() => handleSelectService(index, option.name)}
-                                            sx={{
-                                                mx: 1,
-                                                my: 0.5,
-                                                borderRadius: 0.75,
-                                                typography: 'body2',
-                                                textTransform: 'capitalize',
-                                            }}
-                                        >
-                                            {option.name}
-                                        </MenuItem>
-                                    ))}
-                                </RHFSelect>
-
-                                <Button
-                                    size="medium"
-                                    startIcon={<Iconify icon="eva:plus-fill" />}
-                                    // onClick={handleAddSubDetail(index)}
-                                    sx={{ flexShrink: 0 }}
-                                    variant="contained"
-                                    // disabled
-                                >
-                                    Add Sub detail
-                                </Button>
-                            </Stack>
+                          
                         </Stack>
                     )
                 })}
