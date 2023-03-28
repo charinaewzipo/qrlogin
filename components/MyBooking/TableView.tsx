@@ -18,6 +18,7 @@ import Logo from '../Logo'
 import Iconify from '@sentry/components/iconify'
 import Label from '@sentry/components/label'
 import { fCurrency, fCurrencyBaht, fNumber } from '@ku/utils/formatNumber'
+import React from 'react'
 
 const constant = {
     description: 'Description',
@@ -98,10 +99,8 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                             </TableHead>
                             <TableBody>
                                 {bookingData.eqPrices.map((price) => (
-                                    <>
-                                        <RowDetailStyle
-                                            key={`booking-price-eqpEqId-${price.eqpEqId}`}
-                                        >
+                                    <React.Fragment key={`booking-price-eqpEqId-${price.eqpEqId}`}>
+                                        <RowDetailStyle>
                                             <TableCell>
                                                 <Typography
                                                     gutterBottom
@@ -167,7 +166,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                                 </TableCell>
                                             </RowDetailStyle>
                                         ))}
-                                    </>
+                                    </React.Fragment>
                                 ))}
 
                                 <RowResultStyle>

@@ -10,7 +10,7 @@ import { useRouter } from 'next/router'
 import { ACCOUNT_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
 import BookDetail from '@ku/components/MyBooking/BookDetail'
-import UserPaymentNotice from '@ku/components/MyBooking/UserPaymentNotice'
+import UserPaymentNotice, { PaymentNoticeFormValuesProps } from '@ku/components/MyBooking/UserPaymentNotice'
 import PaymentSummary from '@ku/components/MyBooking/PaymentSummary'
 import EquipmentDetail from '@ku/components/MyBooking/EquipmentDetail'
 import TableView from '@ku/components/MyBooking/TableView'
@@ -155,14 +155,14 @@ export function MyBookingDetail() {
 		//TODO: qr link
 	}
     const handleCancelBooking = () => {
-		//TODO: qr link
-	}
-    const handlePaymentNotice = () => {
-		//TODO: qr link
-	}
+        //TODO: qr link
+    }
+    const handlePaymentNotice = (data: PaymentNoticeFormValuesProps) => {
+        console.log(data)
+    }
     const handleRecheck = () => {
-		//TODO: qr link
-	}
+        //TODO: qr link
+    }
     const handleOnDownloadAsPdf = () => {
 
     }
@@ -210,11 +210,20 @@ export function MyBookingDetail() {
                                     onDownloadPayslip={handleDownloadPayslip}
                                     onDownloadReceipt={handleDownloadReceipt}
                                 />
-                                <EquipmentDetail
+                                <EquipmentDetail 
                                     bookingData={mockData}
                                 />
-                                <TableView onDownloadAsPdf={handleOnDownloadAsPdf} bookingData={mockData} />
-                                {/* <UserPaymentNotice /> */}
+                                <TableView
+                                    onDownloadAsPdf={handleOnDownloadAsPdf}
+                                    bookingData={mockData}
+                                />
+                                <UserPaymentNotice
+                                    onSubmit={handlePaymentNotice}
+                                    errorMsg={''}
+                                    totalAmount={paymentData.payTotal}
+                                    eqName={mockData.eqName}
+                                    bookId={mockData.bookId}
+                                />
                             </Stack>
                         </div>
                     </div>
