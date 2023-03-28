@@ -6,6 +6,9 @@ import { useFormContext, useFieldArray } from 'react-hook-form'
 import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material'
 // utils
 import { fNumber, fCurrency } from '@sentry/utils/formatNumber'
+
+import NestedArray from "./priceListDetail";
+
 // @types
 // import { InvoiceItem } from '@sentry/@types/invoice';
 // components
@@ -59,11 +62,11 @@ export default function PriceListNewEditDetails() {
         name: 'items',
     })
 
-    const {
-        fields: FieldsSub,
-        append: AppendSub,
-        remove: RemoveSub,
-    } = useFieldArray({ control, name: 'itemsSub' })
+    // const {
+    //     fields: FieldsSub,
+    //     append: AppendSub,
+    //     remove: RemoveSub,
+    // } = useFieldArray({ control, name: 'itemsSub' })
 
     const values = watch()
 
@@ -79,26 +82,25 @@ export default function PriceListNewEditDetails() {
         handleAdd()
     }, [])
 
+    useEffect(() => {
+        console.log('fields', fields)
+        // console.log('FieldsSub',FieldsSub)
+    }, [fields])
     const handleAdd = () => {
         append({
             title: '',
             description: '',
             service: '',
-            quantity: 1,
-            price: 0,
-            total: 0,
+            // quantity: 1,
+            // price: 0,
+            // total: 0,
+            subs: [],
         })
     }
 
-    const handleAddSubDetail = () => {
-        AppendSub({
-            title: '',
-            description: '',
-            service: '',
-            quantity: 1,
-            price: 0,
-            total: 0,
-        })
+    const handleAddSubDetail = (id) => {
+        // fields.subs.push({idsub:'1',desc:'as'})
+        append({})
     }
 
     const handleRemove = (index: number) => {
@@ -157,127 +159,122 @@ export default function PriceListNewEditDetails() {
             </Typography>
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
-                {fields.map((item, index) => (
-                    <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
-                        <Stack
-                            direction={{ xs: 'column', md: 'row' }}
-                            spacing={2}
-                            sx={{ width: 1 }}
-                        >
-                            <RHFSelect
-                                name={`items[${index}].checked`}
-                                size="small"
-                                label="Checked *"
-                                InputLabelProps={{ shrink: true }}
-                                SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
-                                sx={{ maxWidth: { md: 160 }, width: '100%' }}
+                {fields.map((item, index) => {
+                    console.log('item', item)
+                    return (
+                        <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
+                            <Stack
+                                direction={{ xs: 'column', md: 'row' }}
+                                spacing={2}
+                                sx={{ width: 1 }}
                             >
-                                <MenuItem
-                                    value="Fixed"
-                                    onClick={() => handleClearService(index)}
-                                    sx={{
-                                        mx: 1,
-                                        borderRadius: 0.75,
-                                        typography: 'body2',
-                                        fontStyle: 'italic',
-                                        color: 'text.secondary',
+                                <RHFSelect
+                                    name={`items[${index}].checked`}
+                                    size="small"
+                                    label="Checked *"
+                                    InputLabelProps={{ shrink: true }}
+                                    SelectProps={{
+                                        native: false,
+                                        sx: { textTransform: 'capitalize' },
                                     }}
+                                    sx={{ maxWidth: { md: 160 }, width: '100%' }}
                                 >
-                                    Fixed
-                                </MenuItem>
-
-                                <Divider />
-
-                                {CHECKED_OPTIONS.map((option) => (
                                     <MenuItem
-                                        key={option.id}
-                                        value={option.name}
-                                        onClick={() => handleSelectService(index, option.name)}
+                                        value="Fixed"
+                                        onClick={() => handleClearService(index)}
                                         sx={{
                                             mx: 1,
-                                            my: 0.5,
                                             borderRadius: 0.75,
                                             typography: 'body2',
-                                            textTransform: 'capitalize',
+                                            fontStyle: 'italic',
+                                            color: 'text.secondary',
                                         }}
                                     >
-                                        {option.name}
+                                        Fixed
                                     </MenuItem>
-                                ))}
-                            </RHFSelect>
 
-                            <RHFTextField
-                                size="small"
-                                name={`items[${index}].name`}
-                                label="Name *"
-                            />
+                                    <Divider />
 
-                            <RHFTextField
-                                size="small"
-                                name={`items[${index}].description`}
-                                label="Description"
-                            />
+                                    {CHECKED_OPTIONS.map((option) => (
+                                        <MenuItem
+                                            key={option.id}
+                                            value={option.name}
+                                            onClick={() => handleSelectService(index, option.name)}
+                                            sx={{
+                                                mx: 1,
+                                                my: 0.5,
+                                                borderRadius: 0.75,
+                                                typography: 'body2',
+                                                textTransform: 'capitalize',
+                                            }}
+                                        >
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </RHFSelect>
 
-                            <RHFTextField
-                                size="small"
-                                name={`items[${index}].unitPrice`}
-                                label="Unit price *"
-                            />
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].name`}
+                                    label="Name *"
+                                />
 
-                            <RHFSelect
-                                name={`items[${index}].unit`}
-                                size="small"
-                                label="Unit *"
-                                InputLabelProps={{ shrink: true }}
-                                SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
-                                sx={{ maxWidth: { md: 160 } }}
-                            >
-                                <MenuItem
-                                    value="Fixed"
-                                    onClick={() => handleClearService(index)}
-                                    sx={{
-                                        mx: 1,
-                                        borderRadius: 0.75,
-                                        typography: 'body2',
-                                        fontStyle: 'italic',
-                                        color: 'text.secondary',
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].description`}
+                                    label="Description"
+                                />
+
+                                <RHFTextField
+                                    size="small"
+                                    name={`items[${index}].unitPrice`}
+                                    label="Unit price *"
+                                />
+
+                                <RHFSelect
+                                    name={`items[${index}].unit`}
+                                    size="small"
+                                    label="Unit *"
+                                    InputLabelProps={{ shrink: true }}
+                                    SelectProps={{
+                                        native: false,
+                                        sx: { textTransform: 'capitalize' },
                                     }}
+                                    sx={{ maxWidth: { md: 160 } }}
                                 >
-                                    Fixed
-                                </MenuItem>
-
-                                <Divider />
-
-                                {UNIT_OPTIONS.map((option) => (
                                     <MenuItem
-                                        key={option.id}
-                                        value={option.name}
-                                        onClick={() => handleSelectService(index, option.name)}
+                                        value="Fixed"
+                                        onClick={() => handleClearService(index)}
                                         sx={{
                                             mx: 1,
-                                            my: 0.5,
                                             borderRadius: 0.75,
                                             typography: 'body2',
-                                            textTransform: 'capitalize',
+                                            fontStyle: 'italic',
+                                            color: 'text.secondary',
                                         }}
                                     >
-                                        {option.name}
+                                        Fixed
                                     </MenuItem>
-                                ))}
-                            </RHFSelect>
-                            <Button
-                                size="small"
-                                color="error"
-                                startIcon={<Iconify icon="eva:trash-2-outline" />}
-                                onClick={() => handleRemove(index)}
-                                disabled={index === 0 ? true : false}
-                            >
-                                Remove
-                            </Button>
-                        </Stack>
 
-                        {FieldsSub.map(() => (
-                            <Stack sx={{mt:2}} direction={'row'} spacing={1}>
+                                    <Divider />
+
+                                    {UNIT_OPTIONS.map((option) => (
+                                        <MenuItem
+                                            key={option.id}
+                                            value={option.name}
+                                            onClick={() => handleSelectService(index, option.name)}
+                                            sx={{
+                                                mx: 1,
+                                                my: 0.5,
+                                                borderRadius: 0.75,
+                                                typography: 'body2',
+                                                textTransform: 'capitalize',
+                                            }}
+                                        >
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </RHFSelect>
                                 <Button
                                     size="small"
                                     color="error"
@@ -287,87 +284,70 @@ export default function PriceListNewEditDetails() {
                                 >
                                     Remove
                                 </Button>
-                                <RHFTextField
-                                    size="small"
-                                    name={`items[${index}].description`}
-                                    label="Description"
-                                />
-                                <RHFTextField
-                                    size="small"
-                                    name={`items[${index}].description`}
-                                    label="Description"
-                                />
-                                <RHFTextField
-                                    size="small"
-                                    name={`items[${index}].description`}
-                                    label="Description"
-                                />
-                                <RHFTextField
-                                    size="small"
-                                    name={`items[${index}].description`}
-                                    label="Description"
-                                />
-                                <RHFTextField
-                                    size="small"
-                                    name={`items[${index}].description`}
-                                    label="Description"
-                                />
                             </Stack>
-                        ))}
 
-                        <Stack direction={'row'} spacing={1}>
-                            <RHFSelect
-                                name={`items[${index}].subDetail`}
-                                size="small"
-                                label="Sub option type"
-                                SelectProps={{ native: false, sx: { textTransform: 'capitalize' } }}
-                                sx={{ maxWidth: { md: 160 } }}
-                            >
-                                <MenuItem
-                                    value="Fixed"
-                                    onClick={() => handleClearService(index)}
-                                    sx={{
-                                        mx: 1,
-                                        borderRadius: 0.75,
-                                        typography: 'body2',
-                                        fontStyle: 'italic',
-                                        color: 'text.secondary',
+                            <NestedArray
+                                nestIndex={index}
+                                {...{ control}}
+                            />
+
+                            <Stack direction={'row'} spacing={1}>
+                                <RHFSelect
+                                    name={`items[${index}].subDetail`}
+                                    size="small"
+                                    label="Sub option type"
+                                    SelectProps={{
+                                        native: false,
+                                        sx: { textTransform: 'capitalize' },
                                     }}
-                                ></MenuItem>
-
-                                <Divider />
-
-                                {SUB_DETAIL_OPTIONS.map((option) => (
+                                    sx={{ maxWidth: { md: 160 } }}
+                                >
                                     <MenuItem
-                                        key={option.id}
-                                        value={option.name}
-                                        onClick={() => handleSelectService(index, option.name)}
+                                        value="Fixed"
+                                        onClick={() => handleClearService(index)}
                                         sx={{
                                             mx: 1,
-                                            my: 0.5,
                                             borderRadius: 0.75,
                                             typography: 'body2',
-                                            textTransform: 'capitalize',
+                                            fontStyle: 'italic',
+                                            color: 'text.secondary',
                                         }}
-                                    >
-                                        {option.name}
-                                    </MenuItem>
-                                ))}
-                            </RHFSelect>
+                                    ></MenuItem>
 
-                            <Button
-                                size="medium"
-                                startIcon={<Iconify icon="eva:plus-fill" />}
-                                onClick={handleAddSubDetail}
-                                sx={{ flexShrink: 0 }}
-                                variant="contained"
-                                // disabled
-                            >
-                                Add Sub detail
-                            </Button>
+                                    <Divider />
+
+                                    {SUB_DETAIL_OPTIONS.map((option) => (
+                                        <MenuItem
+                                            key={option.id}
+                                            value={option.name}
+                                            onClick={() => handleSelectService(index, option.name)}
+                                            sx={{
+                                                mx: 1,
+                                                my: 0.5,
+                                                borderRadius: 0.75,
+                                                typography: 'body2',
+                                                textTransform: 'capitalize',
+                                            }}
+                                        >
+                                            {option.name}
+                                        </MenuItem>
+                                    ))}
+                                </RHFSelect>
+
+                                <Button
+                                    size="medium"
+                                    startIcon={<Iconify icon="eva:plus-fill" />}
+                                    // onClick={handleAddSubDetail(index)}
+                                    sx={{ flexShrink: 0 }}
+                                    variant="contained"
+                                    // disabled
+                                >
+                                    Add Sub detail
+                                </Button>
+                            </Stack>
                         </Stack>
-                    </Stack>
-                ))}
+                    )
+                })}
             </Stack>
 
             <Divider sx={{ my: 3, borderStyle: 'dashed' }} />
