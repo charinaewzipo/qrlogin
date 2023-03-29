@@ -43,9 +43,10 @@ function EquipmentDetail({ bookingData }: IEquipmentDetailProps) {
                         <Typography variant="body2" paragraph mb={1} color="text.secondary">
                             {bookingData.eqModel}
                         </Typography>
-                        <Typography variant="caption" paragraph mb={1} color="text.disabled">
+                        <Typography variant="caption" paragraph mb={3} color="text.disabled">
                             {bookingData.eqDescription}
                         </Typography>
+                        <Divider />
                     </Stack>
                 </Stack>
             </Paper>

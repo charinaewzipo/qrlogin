@@ -54,12 +54,12 @@ const mockData: IV1RespGetBookingMeRead = {
     eqDescription: "Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals",
     eqPictures: [
       {
-        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
-        eqpicSort: 1,
-      },
-      {
         eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
         eqpicSort: 2,
+      },
+      {
+        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+        eqpicSort: 1,
       },
       {
         eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
@@ -133,12 +133,12 @@ const mockData: IV1RespGetBookingMeRead = {
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
-    bookStatus: "PENDING",
+    bookStatus: "CONFIRM",
     payOt: 0,
-    payDiscount: 0,
+    payDiscount: 10,
     payFees: 0,
     payTotal: 100,
-  };
+};
   
   
 export function MyBookingDetail() {
@@ -222,25 +222,33 @@ export function MyBookingDetail() {
                                     onDownloadInvoice={handleDownloadInvoice}
                                     onPaymentQRCode={handleQrCode}
                                 />
-                                <PaymentSummary
-                                    payData={paymentData}
-                                    onDownloadPayslip={handleDownloadPayslip}
-                                    onDownloadReceipt={handleDownloadReceipt}
-                                />
-                                <EquipmentDetail 
-                                    bookingData={mockData}
-                                />
+                                {['WAITING_FOR_PAYMENT_CONFIRM', 'FINISH'].includes(
+                                    mockData.bookStatus
+                                ) ? (
+                                    <PaymentSummary
+                                        payData={paymentData}
+                                        onDownloadPayslip={handleDownloadPayslip}
+                                        onDownloadReceipt={handleDownloadReceipt}
+                                    />
+                                ) : (
+                                    <></>
+                                )}
+                                <EquipmentDetail bookingData={mockData} />
                                 <TableView
                                     onDownloadAsPdf={handleOnDownloadAsPdf}
                                     bookingData={mockData}
                                 />
-                                <UserPaymentNotice
-                                    onSubmit={handlePaymentNotice}
-                                    errorMsg={paymentErrorMsg}
-                                    totalAmount={paymentData.payTotal}
-                                    eqName={mockData.eqName}
-                                    bookId={mockData.bookId}
-                                />
+                                {mockData.bookStatus === 'WATTING_FOR_PAYMENT' ? (
+                                    <UserPaymentNotice
+                                        onSubmit={handlePaymentNotice}
+                                        errorMsg={paymentErrorMsg}
+                                        totalAmount={paymentData.payTotal}
+                                        eqName={mockData.eqName}
+                                        bookId={mockData.bookId}
+                                    />
+                                ) : (
+                                    <></>
+                                )}
                             </Stack>
                         </div>
                     </div>

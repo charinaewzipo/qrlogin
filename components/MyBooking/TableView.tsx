@@ -75,7 +75,13 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                             <Iconify icon="ant-design:file-pdf-filled" mr={1} width={18} />
                             {constant.downloadAsPDF}
                         </LoadingButton>
-                        <Label color="info">INVOICE</Label>
+                        {bookingData.bookStatus === 'CONFIRM'}
+
+                        {['PENDING', 'CONFIRM'].includes(bookingData.bookStatus) ? (
+                            <Label color="warning">QUOTATION</Label>
+                        ) : (
+                            <Label color="info">INVOICE</Label>
+                        )}
                     </Stack>
                 </Stack>
                 <Stack mt={5}>
@@ -188,7 +194,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                         <Typography>{constant.oTCharge}</Typography>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <Typography sx={{ color: 'error.main' }}>
+                                        <Typography>
                                             {fCurrencyBaht(bookingData.payOt)}
                                         </Typography>
                                     </TableCell>
@@ -199,7 +205,8 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                         <Typography>{constant.discount}</Typography>
                                     </TableCell>
                                     <TableCell align="right">
-                                        <Typography>
+                                        <Typography sx={{ color: 'error.main' }}>
+                                            {bookingData.payDiscount > 0 ? '-' : ''}
                                             {fCurrencyBaht(bookingData.payDiscount)}
                                         </Typography>
                                     </TableCell>
@@ -233,7 +240,9 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                 <Divider sx={{ mt: 3 }} />
                 <Grid container>
                     <Grid item xs={12} md={9} sx={{ py: 3 }}>
-                        <Typography variant="body2" whiteSpace='pre'>{constant.remark}</Typography>
+                        <Typography variant="body2" whiteSpace="pre">
+                            {constant.remark}
+                        </Typography>
                     </Grid>
                     <Grid item xs={12} md={3} sx={{ py: 3, textAlign: 'right' }}>
                         <Typography variant="subtitle2">{constant.paymentMethod}</Typography>

@@ -76,10 +76,9 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                 <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
                     <LoadingButton
                         type="button"
-                        variant="text"
+                        variant="contained"
                         size="large"
                         onClick={onDownloadPayslip}
-                        color="error"
                     >
                         {constant.downloadPayslip}
                     </LoadingButton>
@@ -87,6 +86,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                         type="button"
                         variant="contained"
                         size="large"
+                        color='info'
                         onClick={onDownloadReceipt}
                     >
                         {constant.downloadReceipt}

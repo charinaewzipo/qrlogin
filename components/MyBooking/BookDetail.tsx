@@ -28,10 +28,15 @@ interface IBookDetailProps {
     onPaymentQRCode: () => void
     onCancelBooking: () => void
 }
-function BookDetail(props: IBookDetailProps) {
-
+function BookDetail({
+    bookingData,
+    onDownloadQuotation,
+    onDownloadInvoice,
+    onPaymentQRCode,
+    onCancelBooking,
+}: IBookDetailProps) {
     const getBookingStatusLabelColor = (): LabelColor => {
-        switch (props.bookingData.bookStatus) {
+        switch (bookingData.bookStatus) {
             case 'PENDING':
                 return 'warning'
             case 'CONFIRM':
@@ -42,11 +47,50 @@ function BookDetail(props: IBookDetailProps) {
                 return 'info'
             case 'FINISH':
                 return 'default'
-        
+
             default:
                 return 'default'
         }
     }
+    const renderButtonCancelBooking = () => (
+        <LoadingButton
+            type="button"
+            variant="text"
+            size="large"
+            onClick={onCancelBooking}
+            color="error"
+        >
+            {constant.cancelBooking}
+        </LoadingButton>
+    )
+    const renderButtonDownloadQuotation = () => (
+        <LoadingButton type="button" variant="contained" size="large" onClick={onDownloadQuotation}>
+            {constant.downloadQuotation}
+        </LoadingButton>
+    )
+    const renderButtonDownloadInvoice = () => (
+        <LoadingButton
+            type="button"
+            variant="contained"
+            size="large"
+            onClick={onDownloadInvoice}
+            color="info"
+        >
+            {constant.downloadInvoice}
+        </LoadingButton>
+    )
+    const renderButtonPaymentQRCode = () => (
+        <LoadingButton
+            type="button"
+            variant="contained"
+            size="large"
+            onClick={onPaymentQRCode}
+            color="inherit"
+        >
+            {constant.paymentQRCode}
+        </LoadingButton>
+    )
+    
     return (
         <Stack spacing={5}>
             <Paper elevation={9} sx={{ borderRadius: 2, p: 3 }}>
@@ -59,7 +103,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.bookingNo}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.bookingData.bookId}
+                            {bookingData.bookId}
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -67,7 +111,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.equipmentName}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.bookingData.eqName}
+                            {bookingData.eqName}
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -76,7 +120,7 @@ function BookDetail(props: IBookDetailProps) {
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
                             <Label color={getBookingStatusLabelColor()} sx={{ mr: 1 }}>
-                                {props.bookingData.bookStatus}
+                                {bookingData.bookStatus}
                             </Label>
                         </Typography>
                     </Grid>
@@ -103,8 +147,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {/* {props.bookingData.duration} */}
-                            2 Hrs.
+                            {/* {bookingData.duration} */}2 Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -112,48 +155,41 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.bookName}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {/* {props.bookingData.bookName} */}
+                            {/* {bookingData.bookName} */}
                             Jennarong Saenpaeng
                         </Typography>
                     </Grid>
                 </Grid>
                 <Divider sx={{ mx: -3, mt: 3 }} />
                 <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
-                    <LoadingButton
-                        type="button"
-                        variant="text"
-                        size="large"
-                        onClick={props.onCancelBooking}
-                        color="error"
-                    >
-                        {constant.cancelBooking}
-                    </LoadingButton>
-                    <LoadingButton
-                        type="button"
-                        variant="contained"
-                        size="large"
-                        onClick={props.onDownloadQuotation}
-                    >
-                        {constant.downloadQuotation}
-                    </LoadingButton>
-                    <LoadingButton
-                        type="button"
-                        variant="contained"
-                        size="large"
-                        onClick={props.onDownloadInvoice}
-                        color="info"
-                    >
-                        {constant.downloadInvoice}
-                    </LoadingButton>
-                    <LoadingButton
-                        type="button"
-                        variant="contained"
-                        size="large"
-                        onClick={props.onPaymentQRCode}
-                        color="inherit"
-                    >
-                        {constant.paymentQRCode}
-                    </LoadingButton>
+                    {{
+                        PENDING: <>{renderButtonDownloadQuotation()}</>,
+                        CONFIRM: (
+                            <>
+                                {renderButtonCancelBooking()}
+                                {renderButtonDownloadQuotation()}
+                            </>
+                        ),
+                        WATTING_FOR_PAYMENT: (
+                            <>
+                                {renderButtonDownloadQuotation()}
+                                {renderButtonDownloadInvoice()}
+                                {renderButtonPaymentQRCode()}
+                            </>
+                        ),
+                        WATTING_FOR_PAYMENT_CONFIRM: (
+                            <>
+                                {renderButtonDownloadQuotation()}
+                                {renderButtonDownloadInvoice()}
+                            </>
+                        ),
+                        FINISH: (
+                            <>
+                                {renderButtonDownloadQuotation()}
+                                {renderButtonDownloadInvoice()}
+                            </>
+                        ),
+                    }[bookingData.bookStatus] || <></>}
                 </Stack>
             </Paper>
         </Stack>
