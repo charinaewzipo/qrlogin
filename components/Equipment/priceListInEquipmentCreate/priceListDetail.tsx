@@ -38,6 +38,10 @@ export default ({ nestIndex, control }, handleAddSub) => {
         { id: 1, name: 'Only one', price: 90.99 },
         { id: 2, name: 'At least one', price: 80.99 },
     ]
+
+    const handleChangeDropdownSubOptionType = () => {
+
+    }
     return (
         <div>
             <div style={{ marginLeft: 10 }}>
@@ -149,8 +153,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
                         </div>
                     )
                 })}
-                <Stack sx={{mt:2}} alignItems="flex-end" spacing={1.5}>
-                    <Stack direction={'row'} spacing={1}>
+                    <Stack sx={{mt:2}} justifyContent="flex-end" spacing={1.5} direction={'row'} >
                         <RHFSelect
                             name="mamamiya"
                             // name={`items[${index}].subDetail`}
@@ -161,8 +164,11 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                 sx: { textTransform: 'capitalize' },
                             }}
                             sx={{ maxWidth: { md: 160 } }}
+                            onChange={handleChangeDropdownSubOptionType}
+                            placeholder="Sub option type"
+                            
                         >
-                            <MenuItem
+                            {/* <MenuItem
                                 value="Fixed"
                                 // onClick={() => handleClearService(index)}
                                 sx={{
@@ -174,7 +180,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                 }}
                             ></MenuItem>
 
-                            <Divider />
+                            <Divider /> */}
 
                             {SUB_DETAIL_OPTIONS.map((option) => (
                                 <MenuItem
@@ -200,12 +206,11 @@ export default ({ nestIndex, control }, handleAddSub) => {
                             onClick={() => append({ field1: 'field1' })}
                             sx={{ flexShrink: 0 }}
                             variant="contained"
-                            // disabled
+                            disabled={1+2===3? true : false}
                         >
                             Add Sub detail
                         </Button>
                     </Stack>
-                </Stack>
             </div>
 
             <hr />
