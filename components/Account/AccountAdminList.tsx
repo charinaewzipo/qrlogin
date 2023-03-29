@@ -95,7 +95,7 @@ const mockTableData2: IV1RespGetMemberRead[] = [
         uiBookingUsed: 2,
     },
     {
-        uId: 12345,
+        uId: 123456,
         uTitle: 'Mr',
         uFirstName: 'John',
         uSurname: 'Doe',
@@ -126,7 +126,7 @@ const mockTableData2: IV1RespGetMemberRead[] = [
         uiBookingUsed: 2,
     },
     {
-        uId: 12345,
+        uId: 123457,
         uTitle: 'Mr',
         uFirstName: 'John',
         uSurname: 'Doe',

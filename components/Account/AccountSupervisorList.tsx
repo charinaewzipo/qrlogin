@@ -30,6 +30,8 @@ import {
 import AccountSupervisorRow from '@ku/components/Account/AccountSupervisorRow'
 import { fetchGetAssessments } from '@ku/services/assessment'
 import AccountSupervisorToolsbar from '@ku/components/Account/AccountSupervisorToolsbar'
+import { get, isEmpty } from 'lodash'
+import { fetchGetMemberRead, fetchGetMemberStatusStats, fetchPostMemberDelete } from '@ku/services/account'
 
 const TABLE_HEAD = [
   { id: 'accountName', label: 'Account Name', align: 'left' },
@@ -42,70 +44,107 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', align: 'left', },
   { id: 'button', label: '', align: 'left', },
 ]
-const mockTableData: IAccountUser[] = [
+const mockStatusStat = {
+  memberCountAll: 4,
+  memberCountActive: 2,
+  memberCountInactive: 1,
+  memberCountLocked: 1,
+}
+const mockTableData2: IV1RespGetMemberRead[] = [
   {
-    id: "27658a79-ac6c-4003-b927-23b260840208",
-    name: "Eleanor PenaEleanor PenaEleanor PenaEleanor Pena",
-    email: "eleanor.pena@ku.ac.thEleanor PenaEleanor Pena",
-    permission: "User",
-    studentID: "1579900542880",
-    supervisorName: "Anna YesmanPenaEleanor Pen",
-    creditLimit: 0,
-    bookLimit: 0,
-    phone: "0854888882",
-    expiredate: new Date().toString(),
-    status: "Active",
-    department: "Master studentPenaEleanor Pen",
-    major: "InformationInformationInformationPenaEleanor Pen "
+    uId: 12345,
+    uTitle: 'Mr',
+    uFirstName: 'John',
+    uSurname: 'Doe',
+    uAddress: '123 Main St, Anytown USA',
+    uPhoneNumber: '0854888882',
+    authId: 67890,
+    authEmail: 'johndoe@example.com',
+    authAccountStatus: 'Active',
+    authIsPdpaAccept: true,
+    authIsVerifyEmail: true,
+    authIsAdvisorApprove: true,
+    authAdvisorStatus: 'approved',
+    authPermission: 'member',
+    uiId: 54321,
+    uiTypePerson: 'student',
+    uiDepartment: 'Computer Science',
+    uiPosition: null,
+    uiStudentId: '1579900542880',
+    uiCardExpireDate: new Date('2024-05-31'),
+    uiCardPicture: 'https://example.com/card.png',
+    uiPersonPicture: 'https://example.com/person.png',
+    uiAdvisorCode: null,
+    uiAdvisorId: 98765,
+    uiAdvisorName: 'Jane Smith',
+    uiCreditLimit: 1000,
+    uiCreditUsed: 500,
+    uiBookingLimit: 10,
+    uiBookingUsed: 2,
   },
   {
-    id: "34658a79-ac6c-4003-b927-23b261840208",
-    name: "Eleanor Pena",
-    email: "eleanor.pena@ku.ac.th",
-    permission: "Supervisor",
-    studentID: "1579900542881",
-    supervisorName: "",
-    creditLimit: 21000,
-    bookLimit: 10,
-    phone: "0854888882",
-    expiredate: "",
-    status: "Inactive",
-    department: "Master studentstudent",
-    major: "Information technical"
+    uId: 123456,
+    uTitle: 'Mr',
+    uFirstName: 'John',
+    uSurname: 'Doe',
+    uAddress: '123 Main St, Anytown USA',
+    uPhoneNumber: '0854888882',
+    authId: 67890,
+    authEmail: 'johndoe@example.com',
+    authAccountStatus: 'Locked',
+    authIsPdpaAccept: true,
+    authIsVerifyEmail: true,
+    authIsAdvisorApprove: true,
+    authAdvisorStatus: 'approved',
+    authPermission: 'member',
+    uiId: 54321,
+    uiTypePerson: 'student',
+    uiDepartment: 'Computer Science',
+    uiPosition: null,
+    uiStudentId: '1579900542880',
+    uiCardExpireDate: new Date('2024-05-31'),
+    uiCardPicture: 'https://example.com/card.png',
+    uiPersonPicture: 'https://example.com/person.png',
+    uiAdvisorCode: null,
+    uiAdvisorId: 98765,
+    uiAdvisorName: 'Jane Smith',
+    uiCreditLimit: 1000,
+    uiCreditUsed: 1500,
+    uiBookingLimit: 10,
+    uiBookingUsed: 2,
   },
   {
-    id: "37558a79-ac6c-4003-b927-23b360840208",
-    name: "Eleanor Pena",
-    email: "eleanor.pena@ku.ac.th",
-    permission: "Finance",
-    studentID: "1579900542820",
-    supervisorName: "",
-    creditLimit: 0,
-    bookLimit: 0,
-    phone: "0854888882",
-    expiredate: new Date().toString(),
-    status: "Locked",
-    department: "Master student",
-    major: "Information technical"
+    uId: 123457,
+    uTitle: 'Mr',
+    uFirstName: 'John',
+    uSurname: 'Doe',
+    uAddress: '123 Main St, Anytown USA',
+    uPhoneNumber: '0854888882',
+    authId: 67890,
+    authEmail: 'johndoe@example.com',
+    authAccountStatus: 'Inactive',
+    authIsPdpaAccept: true,
+    authIsVerifyEmail: true,
+    authIsAdvisorApprove: true,
+    authAdvisorStatus: 'approved',
+    authPermission: 'member',
+    uiId: 54321,
+    uiTypePerson: 'student',
+    uiDepartment: 'Computer Science',
+    uiPosition: null,
+    uiStudentId: '1579900542880',
+    uiCardExpireDate: new Date('2024-05-31'),
+    uiCardPicture: 'https://example.com/card.png',
+    uiPersonPicture: 'https://example.com/person.png',
+    uiAdvisorCode: null,
+    uiAdvisorId: 98765,
+    uiAdvisorName: 'Jane Smith',
+    uiCreditLimit: 1000,
+    uiCreditUsed: 500,
+    uiBookingLimit: 10,
+    uiBookingUsed: 10,
   },
-  {
-    id: "11658a79-ac6c-4003-b927-53b260840208",
-    name: "Eleanor Pena",
-    email: "eleanor.pena@ku.ac.th",
-    permission: "Admin",
-    studentID: "1579900542480",
-    supervisorName: "Anna Yesman",
-    creditLimit: 0,
-    bookLimit: 10,
-    phone: "0854888882",
-    expiredate: new Date().toString(),
-    status: "Pending",
-    department: "Master student",
-    major: "Information technical"
-  },
-
 ]
-
 AccountSupervisorList.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 
 export default function AccountSupervisorList() {
@@ -114,7 +153,8 @@ export default function AccountSupervisorList() {
     defaultOrderBy: 'createDate',
   }) // TODO: please change createDate
 
-  const [tableData, setTableData] = useState<IAccountUser[]>([])
+  const [tableData, setTableData] = useState<IV1RespGetMemberRead[]>([])
+  const [StatusStat, setStatusStat] = useState<IV1RespGetMemberStatusStats>(null)
   const [filterStudentID, setFilterStudentID] = useState('')
   const [filterEmail, setFilterEmail] = useState('')
   const [filterName, setFilterName] = useState('')
@@ -125,35 +165,60 @@ export default function AccountSupervisorList() {
 
   const isFiltered = filterName !== ''
   const isNotFound = !tableData.length && !!filterName
-
-  const getLengthByStatus = (status: string) =>
-    tableData.filter((item) => item.status === status).length
-
   const TABS = [
-    { value: 'all', label: 'All', color: 'default', count: tableData.length },
+    { value: 'all', label: 'All', color: 'default', count: get(StatusStat, 'memberCountAll', 0) },
     {
       value: 'pending',
-      label: 'Pending',
+      label: 'pending',
       color: 'info',
-      count: getLengthByStatus('Pending'),
+      count: get(StatusStat, 'memberCountInactive', 0)
+      ,
     },
-    { value: 'active', label: 'Active', color: 'success', count: getLengthByStatus('Active') },
+    {
+      value: 'active', label: 'Active', color: 'success', count: get(StatusStat, 'memberCountActive', 0)
+    },
 
-    { value: 'locked', label: 'Locked', color: 'error', count: getLengthByStatus('Locked') },
+    {
+      value: 'locked', label: 'Locked', color: 'error', count: get(StatusStat, 'memberCountLocked', 0)
+    },
   ] as const
 
   useEffect(() => {
-    getAssessmentList()
+    GetMemberStatusStats()
+    GetMemberRead()
   }, [])
 
-  const getAssessmentList = async () => {
-    // TODO: Add filter parameter
-    const response = await fetchGetAssessments()
-    if (response.data) {
-      setTableData(mockTableData)
-      // setTableData(response.data)
-    }
+  const GetMemberStatusStats = async () => {
+    await fetchGetMemberStatusStats().then(response => {
+      if (response.code === 200) {
+        setStatusStat(mockStatusStat)
+        // setStatusStat(response.data)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
   }
+  const GetMemberRead = async () => {
+    const query: IV1QueryGetMemberRead & IV1QueryPagination = {
+      page: page,
+      limit: rowsPerPage,
+      authPermission: '',
+      authEmail: '',
+      uiStudentId: '',
+      fullName: '',
+      authAccountStatus: '',
+    }
+    await fetchGetMemberRead(query)
+      .then(response => {
+        if (response.code === 200) {
+          setTableData(mockTableData2)
+          // setTableData(response.data)
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+  }
+
 
   const handleCountdown = (value: string, key: string) => {
     setPage(0)
@@ -187,10 +252,27 @@ export default function AccountSupervisorList() {
     handleCountdown(filterStudentID, name)
   }
 
-  const handleViewRow = (id: string) => {
-    push(MERGE_PATH(ACCOUNT_PATH, 'detail', id))
+  const handleViewRow = (id: number) => {
+    push(MERGE_PATH(ACCOUNT_PATH, 'detail', id.toString()))
   }
-
+  const handleRemoveRow = (id: number) => {
+    console.log("id", id)
+    const PostMemberDelete = async () => {
+      const query: IV1PostMemberDelete = {
+        uId: id
+      }
+      await fetchPostMemberDelete(query)
+        .then(response => {
+          if (response.code === 200) {
+            // setTableData(mockTableData2)
+            // setTableData(response.data)
+          }
+        }).catch(err => {
+          console.log(err)
+        })
+    }
+    PostMemberDelete()
+  }
   // const handleResetFilter = () => {
   //     setFilterName('')
   // }
@@ -259,14 +341,15 @@ export default function AccountSupervisorList() {
                 />
 
                 <TableBody>
-                  {tableData
+                  {!isEmpty(tableData) && tableData
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row) => {
                       return (
                         <AccountSupervisorRow
-                          key={row.id}
+                          key={get(row, 'uId', 0)}
                           row={row}
-                          onViewRow={() => handleViewRow(row.id)}
+                          onViewRow={() => handleViewRow(get(row, 'uId', 0))}
+                          onRemove={() => handleRemoveRow(get(row, 'uId', 0))}
                         />
                       )
                     })}
