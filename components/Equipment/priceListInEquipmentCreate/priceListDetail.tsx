@@ -6,7 +6,7 @@ import { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material'
 import Iconify from '@sentry/components/iconify'
 
-export default ({ nestIndex, control }) => {
+export default ({ nestIndex, control ,getSubEQU}) => {
     const { fields, remove, append } = useFieldArray({
         control,
         name: `test[${nestIndex}].nestedArray`,
@@ -15,19 +15,20 @@ export default ({ nestIndex, control }) => {
     const [selectedSubOption, setSelectedSubOption] = useState(null);
 
     useEffect(() => {
-        console.log('fields', fields)
+        // console.log('fields', fields)
+        getSubEQU(fields)
     }, [fields])
 
     const CHECKED_SUB_OPTIONS = [
-        { id: 1, name: 'Default', price: 90.99 },
-        { id: 2, name: 'Uncheck', price: 80.99 },
+        { id: 1, name: 'Default' },
+        { id: 2, name: 'Uncheck' },
     ]
     
     const UNIT_OPTIONS = [
-        { id: 1, name: 'Baht/Hour', price: 90.99 },
-        { id: 2, name: 'Baht/Sample', price: 80.99 },
-        { id: 3, name: 'Baht/Booking', price: 70.99 },
-        { id: 4, name: 'Baht/Times', price: 70.99 },
+        { id: 1, name: 'Baht/Hour' },
+        { id: 2, name: 'Baht/Sample' },
+        { id: 3, name: 'Baht/Booking'},
+        { id: 4, name: 'Baht/Times'},
     ]
 
     const SUB_DETAIL_OPTIONS = [
@@ -39,8 +40,8 @@ export default ({ nestIndex, control }) => {
         <div>
             <div style={{ marginLeft: 10 }}>
                 {fields.map((item, k) => {
-                    console.log('item ได้อะไรน้า',item)
-                      console.log('k ได้อะไรน้า',k)
+                    // console.log('item ได้อะไรน้า',item)
+                    //   console.log('k ได้อะไรน้า',k)
                     return (
                         <div
                             key={item.id}

@@ -1,5 +1,5 @@
 import sum from 'lodash/sum'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 // form
 import { useFormContext, useFieldArray } from 'react-hook-form'
 // @mui
@@ -8,7 +8,7 @@ import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } fro
 import { fNumber, fCurrency } from '@sentry/utils/formatNumber'
 
 import NestedArray from "./priceListDetail";
-
+import { clamp, cloneDeep, get ,isEmpty} from 'lodash'
 // @types
 // import { InvoiceItem } from '@sentry/@types/invoice';
 // components
@@ -64,6 +64,8 @@ export default function PriceListNewEditDetails() {
 
     const totalPrice = sum(totalOnRow) - values.discount + values.taxes
 
+    const [subEquipment, setSubEquipment] = useState(null);
+
     useEffect(() => {
         setValue('totalPrice', totalPrice)
     }, [setValue, totalPrice])
@@ -89,6 +91,10 @@ export default function PriceListNewEditDetails() {
         })
     }
 
+    const getSubEQU = (stateChild) => {
+        setSubEquipment(stateChild)
+    }
+
     const handleRemove = (index: number) => {
         remove(index)
     }
@@ -104,10 +110,10 @@ export default function PriceListNewEditDetails() {
 
     const handleSelectService = useCallback(
         (index: number, option: string) => {
-            setValue(
-                `items[${index}].price`,
-                SERVICE_OPTIONS.find((service) => service.name === option)?.price
-            )
+            // setValue(
+            //     `items[${index}].price`,
+            //     SERVICE_OPTIONS.find((service) => service.name === option)?.price
+            // )
             setValue(
                 `items[${index}].total`,
                 values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
@@ -146,7 +152,7 @@ export default function PriceListNewEditDetails() {
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
                 {fields.map((item, index) => {
-                    console.log('item', item)
+                    // console.log('item', item)
                     return (
                         <Stack key={item.id}  spacing={1.5}>
                             <Stack
@@ -212,12 +218,13 @@ export default function PriceListNewEditDetails() {
                                     label="Description"
                                 />
 
-                                <RHFTextField
+                                {isEmpty(subEquipment) ? <>
+                                    <RHFTextField
                                     size="small"
                                     name={`items[${index}].unitPrice`}
                                     label="Unit price *"
                                 />
-
+                                
                                 <RHFSelect
                                     name={`items[${index}].unit`}
                                     size="small"
@@ -262,7 +269,8 @@ export default function PriceListNewEditDetails() {
                                             {option.name}
                                         </MenuItem>
                                     ))}
-                                </RHFSelect>
+                                </RHFSelect></> : <></>}
+                                
                                 <Button
                                     size="small"
                                     color="error"
@@ -277,6 +285,7 @@ export default function PriceListNewEditDetails() {
                             <NestedArray
                                 nestIndex={index}
                                 {...{ control}}
+                                getSubEQU={getSubEQU}
                                 // handdleAddSub = {}
                             />
 
