@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import { useFieldArray } from 'react-hook-form'
 
 // import Input from "./components/input";
@@ -11,6 +11,8 @@ export default ({ nestIndex, control }, handleAddSub) => {
         control,
         name: `test[${nestIndex}].nestedArray`,
     })
+
+    const [selectedSubOption, setSelectedSubOption] = useState(null);
 
     const handleRemove = () => {
         append({ field1: 'field1' })
@@ -35,13 +37,10 @@ export default ({ nestIndex, control }, handleAddSub) => {
     ]
 
     const SUB_DETAIL_OPTIONS = [
-        { id: 1, name: 'Only one', price: 90.99 },
-        { id: 2, name: 'At least one', price: 80.99 },
+        { id: 1, name: 'Only one'},
+        { id: 2, name: 'At least one' },
     ]
 
-    const handleChangeDropdownSubOptionType = () => {
-
-    }
     return (
         <div>
             <div style={{ marginLeft: 10 }}>
@@ -69,7 +68,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                     }}
                                     sx={{ maxWidth: { md: 160 }, width: '100%' }}
                                 >
-                                    <MenuItem
+                                    {/* <MenuItem
                                         value="Fixed"
                                         // onClick={() => handleClearService(index)}
                                         sx={{
@@ -81,7 +80,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                         }}
                                     >
                                         Fixed
-                                    </MenuItem>
+                                    </MenuItem> */}
 
                                     <Divider />
 
@@ -164,8 +163,9 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                 sx: { textTransform: 'capitalize' },
                             }}
                             sx={{ maxWidth: { md: 160 } }}
-                            onChange={handleChangeDropdownSubOptionType}
+                            onChange={()=>setSelectedSubOption(true)}
                             placeholder="Sub option type"
+                            defaultValue={selectedSubOption}
                             
                         >
                             {/* <MenuItem
@@ -206,7 +206,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
                             onClick={() => append({ field1: 'field1' })}
                             sx={{ flexShrink: 0 }}
                             variant="contained"
-                            disabled={1+2===3? true : false}
+                            disabled={selectedSubOption? false : true}
                         >
                             Add Sub detail
                         </Button>
