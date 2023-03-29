@@ -1,4 +1,4 @@
-import React,{useState} from 'react'
+import React,{useEffect, useState} from 'react'
 import { useFieldArray } from 'react-hook-form'
 
 // import Input from "./components/input";
@@ -6,7 +6,7 @@ import { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material'
 import Iconify from '@sentry/components/iconify'
 
-export default ({ nestIndex, control }, handleAddSub) => {
+export default ({ nestIndex, control }) => {
     const { fields, remove, append } = useFieldArray({
         control,
         name: `test[${nestIndex}].nestedArray`,
@@ -14,15 +14,9 @@ export default ({ nestIndex, control }, handleAddSub) => {
 
     const [selectedSubOption, setSelectedSubOption] = useState(null);
 
-    const handleRemove = () => {
-        append({ field1: 'field1' })
-    }
-
-    const CHECKED_OPTIONS = [
-        { id: 1, name: 'Fixed', price: 90.99 },
-        { id: 2, name: 'Default', price: 80.99 },
-        { id: 3, name: 'Optional', price: 70.99 },
-    ]
+    useEffect(() => {
+        console.log('fields', fields)
+    }, [fields])
 
     const CHECKED_SUB_OPTIONS = [
         { id: 1, name: 'Default', price: 90.99 },
@@ -45,6 +39,8 @@ export default ({ nestIndex, control }, handleAddSub) => {
         <div>
             <div style={{ marginLeft: 10 }}>
                 {fields.map((item, k) => {
+                    console.log('item ได้อะไรน้า',item)
+                      console.log('k ได้อะไรน้า',k)
                     return (
                         <div
                             key={item.id}
@@ -101,9 +97,9 @@ export default ({ nestIndex, control }, handleAddSub) => {
                                         </MenuItem>
                                     ))}
                                 </RHFSelect>
-                                <RHFTextField size="small" name={`2`} label="Name *" />
-                                <RHFTextField size="small" name={`2`} label="Description" />
-                                <RHFTextField size="small" name={`2`} label="Unit price	 *" />
+                                <RHFTextField size="small" name={`item[${item.id}].name`} label="Name *" />
+                                <RHFTextField size="small" name={`item[${item.id}].desc`} label="Description" />
+                                <RHFTextField size="small" name={`item[${item.id}].unitPrice`} label="Unit price	 *" />
                                 <RHFSelect
                                     name={`2`}
                                     size="small"
