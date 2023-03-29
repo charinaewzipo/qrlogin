@@ -27,24 +27,24 @@ declare type InvoiceItem = {
 // ----------------------------------------------------------------------
 
 const SERVICE_OPTIONS = [
-    { id: 1, name: 'full stack development', price: 90.99 },
-    { id: 2, name: 'backend development', price: 80.99 },
-    { id: 3, name: 'ui design', price: 70.99 },
-    { id: 4, name: 'ui/ux design', price: 60.99 },
-    { id: 5, name: 'front end development', price: 40.99 },
+    { id: 1, name: 'full stack development' },
+    { id: 2, name: 'backend development' },
+    { id: 3, name: 'ui design' },
+    { id: 4, name: 'ui/ux design' },
+    { id: 5, name: 'front end development' },
 ]
 
 const CHECKED_OPTIONS = [
-    { id: 1, name: 'Fixed', price: 90.99 },
-    { id: 2, name: 'Default', price: 80.99 },
-    { id: 3, name: 'Optional', price: 70.99 },
+    { id: 1, name: 'Fixed' },
+    { id: 2, name: 'Default' },
+    { id: 3, name: 'Optional' },
 ]
 
 const UNIT_OPTIONS = [
-    { id: 1, name: 'Baht/Hour', price: 90.99 },
-    { id: 2, name: 'Baht/Sample', price: 80.99 },
-    { id: 3, name: 'Baht/Booking', price: 70.99 },
-    { id: 4, name: 'Baht/Times', price: 70.99 },
+    { id: 1, name: 'Baht/Hour' },
+    { id: 2, name: 'Baht/Sample' },
+    { id: 3, name: 'Baht/Booking' },
+    { id: 4, name: 'Baht/Times' },
 ]
 
 
@@ -164,8 +164,9 @@ export default function PriceListNewEditDetails() {
                                         sx: { textTransform: 'capitalize' },
                                     }}
                                     sx={{ maxWidth: { md: 160 }, width: '100%' }}
+                                    defaultValue={index===0 ? 'Fixed' : ''}
                                 >
-                                    <MenuItem
+                                    {/* <MenuItem
                                         value="Fixed"
                                         onClick={() => handleClearService(index)}
                                         sx={{
@@ -177,7 +178,7 @@ export default function PriceListNewEditDetails() {
                                         }}
                                     >
                                         Fixed
-                                    </MenuItem>
+                                    </MenuItem> */}
 
                                     <Divider />
 
@@ -227,8 +228,9 @@ export default function PriceListNewEditDetails() {
                                         sx: { textTransform: 'capitalize' },
                                     }}
                                     sx={{ maxWidth: { md: 160 } }}
+                                    defaultValue={index===0 ? 'Baht/Hour' : ''}
                                 >
-                                    <MenuItem
+                                    {/* <MenuItem
                                         value="Fixed"
                                         onClick={() => handleClearService(index)}
                                         sx={{
@@ -242,7 +244,7 @@ export default function PriceListNewEditDetails() {
                                         Fixed
                                     </MenuItem>
 
-                                    <Divider />
+                                    <Divider /> */}
 
                                     {UNIT_OPTIONS.map((option) => (
                                         <MenuItem

@@ -101,7 +101,7 @@ export default ({ nestIndex, control }) => {
                                 <RHFTextField size="small" name={`item[${item.id}].desc`} label="Description" />
                                 <RHFTextField size="small" name={`item[${item.id}].unitPrice`} label="Unit price	 *" />
                                 <RHFSelect
-                                    name={`2`}
+                                    name={`item[${item.id}].unit`}
                                     size="small"
                                     label="Unit *"
                                     InputLabelProps={{ shrink: true }}
@@ -111,7 +111,7 @@ export default ({ nestIndex, control }) => {
                                     }}
                                     sx={{ maxWidth: { md: 160 } }}
                                 >
-                                    <MenuItem
+                                    {/* <MenuItem
                                         value="Fixed"
                                         // onClick={() => handleClearService(index)}
                                         sx={{
@@ -123,7 +123,7 @@ export default ({ nestIndex, control }) => {
                                         }}
                                     >
                                         Fixed
-                                    </MenuItem>
+                                    </MenuItem> */}
 
                                     <Divider />
 
