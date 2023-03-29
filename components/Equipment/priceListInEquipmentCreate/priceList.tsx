@@ -47,10 +47,6 @@ const UNIT_OPTIONS = [
     { id: 4, name: 'Baht/Times', price: 70.99 },
 ]
 
-const SUB_DETAIL_OPTIONS = [
-    { id: 1, name: 'Only one', price: 90.99 },
-    { id: 2, name: 'At least one', price: 80.99 },
-]
 
 // ----------------------------------------------------------------------
 
@@ -61,12 +57,6 @@ export default function PriceListNewEditDetails() {
         control,
         name: 'items',
     })
-
-    // const {
-    //     fields: FieldsSub,
-    //     append: AppendSub,
-    //     remove: RemoveSub,
-    // } = useFieldArray({ control, name: 'itemsSub' })
 
     const values = watch()
 
@@ -79,7 +69,8 @@ export default function PriceListNewEditDetails() {
     }, [setValue, totalPrice])
 
     useEffect(() => {
-        handleAdd()
+        console.log('fields first time',fields)
+        // handleAdd()
     }, [])
 
     useEffect(() => {
@@ -157,7 +148,7 @@ export default function PriceListNewEditDetails() {
                 {fields.map((item, index) => {
                     console.log('item', item)
                     return (
-                        <Stack key={item.id} alignItems="flex-end" spacing={1.5}>
+                        <Stack key={item.id}  spacing={1.5}>
                             <Stack
                                 direction={{ xs: 'column', md: 'row' }}
                                 spacing={2}
