@@ -53,10 +53,12 @@ interface IV1RespGetBookingMeRead {
     payFees: number
     payTotal: number
 }
+
 interface IV1EquipmentPictures {
     eqpicLink: string
     eqpicSort: number
 }
+
 interface IV1EquipmentPrice {
     eqpId: number
     eqpEqId: number
@@ -74,6 +76,7 @@ interface IV1EquipmentPrice {
     eqpUpdatedAt: string
     eqSubPrice: IV1EquipmentSubPrice[]
 }
+
 interface IV1EquipmentSubPrice {
     eqsubpId: number
     eqsubpChecked: string
@@ -85,4 +88,13 @@ interface IV1EquipmentSubPrice {
     eqsubpTotal: number
     eqsubpCreatedAt: string
     eqsubpUpdatedAt: string
+}
+
+interface IV1PostBookingPayments {
+    bookId: number
+    paySlipPicture: string
+    payRemark: string
+    payBillingAddress: string
+    payDateTime: string
+    payAmount: number
 }

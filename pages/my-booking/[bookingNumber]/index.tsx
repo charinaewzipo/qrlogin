@@ -14,6 +14,8 @@ import UserPaymentNotice, { PaymentNoticeFormValuesProps } from '@ku/components/
 import PaymentSummary from '@ku/components/MyBooking/PaymentSummary'
 import EquipmentDetail from '@ku/components/MyBooking/EquipmentDetail'
 import TableView from '@ku/components/MyBooking/TableView'
+import numeral from 'numeral'
+import { formatISO } from 'date-fns'
 
 MyBookingDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -128,7 +130,7 @@ export function MyBookingDetail() {
     const permission : PERMISSION = 'Admin'
     const { enqueueSnackbar } = useSnackbar();
     const router = useRouter()
-    const [errorMsg, setErrorMsg] = useState('')
+    const [paymentErrorMsg, setpaymentErrorMsg] = useState('')
 
     const {
         query: { bookingNumber },
@@ -154,6 +156,16 @@ export function MyBookingDetail() {
     }
     const handlePaymentNotice = (data: PaymentNoticeFormValuesProps) => {
         console.log(data)
+        const formattedData: IV1PostBookingPayments = {
+            bookId: mockData.bookId,
+            paySlipPicture: 'https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg',
+            payRemark: data.remark,
+            payBillingAddress: data.billingAddress,
+            payDateTime: formatISO(data.paymentDateTime),
+            payAmount: numeral(data.amount).value(),
+        }
+        console.log(formattedData)
+        
     }
     const handleRecheck = () => {
         //TODO: qr link
@@ -188,13 +200,7 @@ export function MyBookingDetail() {
                             />
                             <Stack spacing={5}>
                                 <BookDetail
-                                    bookNo={mockData.bookId}
-                                    eqName={mockData.eqName}
-                                    bookstatus={mockData.bookStatus}
-                                    bookDate={'19/08/2022'}
-                                    bookTime={[]}
-                                    duration={'2 Hrs.'}
-                                    bookName={'Jennarong Saenpaeng'}
+                                    bookingData={mockData}
                                     onDownloadQuotation={handleDownloadQuotation}
                                     onCancelBooking={handleCancelBooking}
                                     onDownloadInvoice={handleDownloadInvoice}
@@ -214,7 +220,7 @@ export function MyBookingDetail() {
                                 />
                                 <UserPaymentNotice
                                     onSubmit={handlePaymentNotice}
-                                    errorMsg={''}
+                                    errorMsg={paymentErrorMsg}
                                     totalAmount={paymentData.payTotal}
                                     eqName={mockData.eqName}
                                     bookId={mockData.bookId}

@@ -1,6 +1,6 @@
 import { LoadingButton } from '@mui/lab'
 import { Stack, Paper, Typography, Divider, Grid } from '@mui/material'
-import Label from '@sentry/components/label'
+import Label, { LabelColor } from '@sentry/components/label'
 
 const constant = {
     bookSummary: 'Book summary',
@@ -22,22 +22,34 @@ const constant = {
     cancel: 'Cancel',
 }
 interface IBookDetailProps {
-    bookNo: number
-    eqName: string
-    bookstatus: TBookStatus
-    bookDate: string
-    bookTime: Date[]
-    duration: string
-    bookName: string
+    bookingData: IV1RespGetBookingMeRead
     onDownloadQuotation: () => void
     onDownloadInvoice: () => void
     onPaymentQRCode: () => void
     onCancelBooking: () => void
 }
 function BookDetail(props: IBookDetailProps) {
+
+    const getBookingStatusLabelColor = (): LabelColor => {
+        switch (props.bookingData.bookStatus) {
+            case 'PENDING':
+                return 'warning'
+            case 'CONFIRM':
+                return 'success'
+            case 'WATTING_FOR_PAYMENT':
+                return 'info'
+            case 'WATTING_FOR_PAYMENT_CONFIRM':
+                return 'info'
+            case 'FINISH':
+                return 'default'
+        
+            default:
+                return 'default'
+        }
+    }
     return (
         <Stack spacing={5}>
-            <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
+            <Paper elevation={9} sx={{ borderRadius: 2, p: 3 }}>
                 <Typography gutterBottom variant="h6">
                     {constant.bookSummary}
                 </Typography>
@@ -47,7 +59,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.bookingNo}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.bookNo}
+                            {props.bookingData.bookId}
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -55,7 +67,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.equipmentName}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.eqName}
+                            {props.bookingData.eqName}
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -63,8 +75,8 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.status}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            <Label color="info" sx={{ mr: 1 }}>
-                                {props.bookstatus}
+                            <Label color={getBookingStatusLabelColor()} sx={{ mr: 1 }}>
+                                {props.bookingData.bookStatus}
                             </Label>
                         </Typography>
                     </Grid>
@@ -73,7 +85,7 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.bookingDate}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.bookDate}
+                            19/08/2022
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -91,7 +103,8 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.duration}
+                            {/* {props.bookingData.duration} */}
+                            2 Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={4}>
@@ -99,7 +112,8 @@ function BookDetail(props: IBookDetailProps) {
                             {constant.bookName}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {props.bookName}
+                            {/* {props.bookingData.bookName} */}
+                            Jennarong Saenpaeng
                         </Typography>
                     </Grid>
                 </Grid>
