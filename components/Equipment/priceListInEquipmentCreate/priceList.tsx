@@ -290,6 +290,7 @@ export default function PriceListNewEditDetails() {
                 spacing={2}
                 direction={{ xs: 'column-reverse', md: 'row' }}
                 alignItems={{ xs: 'flex-start', md: 'center' }}
+                justifyContent={'flex-end'}
             >
                 <Button
                     size="small"

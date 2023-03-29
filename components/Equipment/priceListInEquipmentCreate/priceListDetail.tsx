@@ -21,6 +21,11 @@ export default ({ nestIndex, control }, handleAddSub) => {
         { id: 2, name: 'Default', price: 80.99 },
         { id: 3, name: 'Optional', price: 70.99 },
     ]
+
+    const CHECKED_SUB_OPTIONS = [
+        { id: 1, name: 'Default', price: 90.99 },
+        { id: 2, name: 'Uncheck', price: 80.99 },
+    ]
     
     const UNIT_OPTIONS = [
         { id: 1, name: 'Baht/Hour', price: 90.99 },
@@ -76,7 +81,7 @@ export default ({ nestIndex, control }, handleAddSub) => {
 
                                     <Divider />
 
-                                    {CHECKED_OPTIONS.map((option) => (
+                                    {CHECKED_SUB_OPTIONS.map((option) => (
                                         <MenuItem
                                             key={option.id}
                                             value={option.name}
