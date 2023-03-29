@@ -130,15 +130,10 @@ export function MyBookingDetail() {
     const router = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
 
-    const onFormSubmit = (data: IAccountFormValuesProps) => {
-        //TODO: api submit
-        enqueueSnackbar('Account create success.')
-        setErrorMsg('error msg')
-        console.log('submit', data)
-    }
-    const onFormCancel = () => {
-        router.push(ACCOUNT_PATH)
-    }
+    const {
+        query: { bookingNumber },
+    } = useRouter()
+    
     const handleQrCode = () => {
 		//TODO: qr link
 	}
@@ -170,7 +165,7 @@ export function MyBookingDetail() {
     return (
         <>
             <Head>
-                <title>Account Create | KU</title>
+                <title>My Booking: Detail | KU</title>
             </Head>
             <Container>
                 <Box
@@ -183,11 +178,11 @@ export function MyBookingDetail() {
                     <div className={styles.page}>
                         <div className="wrapper">
                             <CustomBreadcrumbs
-                                heading="Accounts"
+                                heading="My Booking"
                                 links={[
-                                    { name: 'Accounts', href: '/account' },
-                                    { name: 'List', href: '/account' },
-                                    { name: 'Create an account' },
+                                    { name: 'My Booking', href: '/my-booking' },
+                                    { name: 'List', href: '/my-booking' },
+                                    { name: `Booking: ${bookingNumber}` },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
