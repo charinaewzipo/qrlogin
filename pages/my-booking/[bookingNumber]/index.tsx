@@ -61,6 +61,22 @@ const mockData: IV1RespGetBookingMeRead = {
         eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
         eqpicSort: 2,
       },
+      {
+        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+        eqpicSort: 3,
+      },
+      {
+        eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+        eqpicSort: 4,
+      },
+      {
+        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+        eqpicSort: 5,
+      },
+      {
+        eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+        eqpicSort: 6,
+      },
     ],
     eqCreatedAt: '2023-03-13T16:21:30.894Z',
     eqUpdatedAt: '2023-03-16T16:21:30.894Z',

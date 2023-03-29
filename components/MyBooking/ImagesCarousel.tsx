@@ -8,6 +8,7 @@ import { Box } from '@mui/material';
 import Image from '@sentry/components/image';
 // import LightboxModal from '@sentry/components/LightboxModal';
 import { CarouselArrowIndex } from '@sentry/components/carousel';
+import LightboxModal from './LightboxModal';
 
 // ----------------------------------------------------------------------
 
@@ -175,23 +176,25 @@ export default function ImagesCarousel({ images, width, height }: Props) {
               </Slider>
           </Box>
 
-          {/* <LightboxModal
-        animationDuration={320}
-        images={imagesLightbox}
-        mainSrc={imagesLightbox[selectedImage]}
-        photoIndex={selectedImage}
-        setPhotoIndex={setSelectedImage}
-        isOpen={openLightbox}
-        onCloseRequest={() => setOpenLightbox(false)}
-        onMovePrevRequest={() => {
-          handlePrevious();
-          setSelectedImage((selectedImage + imagesLightbox.length - 1) % imagesLightbox.length);
-        }}
-        onMoveNextRequest={() => {
-          handleNext();
-          setSelectedImage((selectedImage + 1) % imagesLightbox.length);
-        }}
-      /> */}
+          <LightboxModal
+              animationDuration={320}
+              images={imagesLightbox}
+              mainSrc={imagesLightbox[selectedImage]}
+              photoIndex={selectedImage}
+              setPhotoIndex={setSelectedImage}
+              isOpen={openLightbox}
+              onCloseRequest={() => setOpenLightbox(false)}
+              onMovePrevRequest={() => {
+                  handlePrevious()
+                  setSelectedImage(
+                      (selectedImage + imagesLightbox.length - 1) % imagesLightbox.length
+                  )
+              }}
+              onMoveNextRequest={() => {
+                  handleNext()
+                  setSelectedImage((selectedImage + 1) % imagesLightbox.length)
+              }}
+          />
       </RootStyle>
   )
 }
