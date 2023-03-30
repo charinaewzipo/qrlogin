@@ -256,8 +256,8 @@ export default function EquipmentScheduleDetailPage() {
     time: Yup.string().required('Time is require'),
   })
   const defaultValues: FormValuesProps = {
-    date: get(dataDetail, 'createdAt', addDays(new Date(), 1)),
-    time: get(dataDetail, 'time', 'Afternoon (13:00 - 22:00)'),
+    date: get(dataDetail, 'eqUpdatedAt', addDays(new Date(), 1)),
+    time: get(dataDetail, 'eqAvascheTimes[0]', 'Afternoon (13:00 - 22:00)').toString(),
   }
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(EquipmentScheduleScheme),
@@ -408,7 +408,7 @@ export default function EquipmentScheduleDetailPage() {
               href: MERGE_PATH(EQUIPMENT_PATH, 'schedule'),
             },
             {
-              name: 'Create',
+              name: `${format(get(dataDetail, 'eqUpdatedAt', (new Date())), 'dd MMM yyyy')} (${get(dataDetail, 'eqAvascheTimes[0]', 'Afternoon (13:00 - 22:00)').toString()})`,
             },
           ]}
         />
