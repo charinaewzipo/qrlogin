@@ -140,15 +140,12 @@ const title = [
     { value: 'Other', label: 'Other' },
 ]
 const accountStatus = [
-    { value: 'Active', label: 'Active' },
-    { value: 'Inactive', label: 'Inactive' },
-    { value: 'Lock', label: 'Lock' },
+    { value: 'Active', label: 'Create' },
 ]
-const privillege = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Supervisor', label: 'Supervisor' },
-    { value: 'User', label: 'User' },
+const EquipmentStatus = [
+    { value: 'Available', label: 'Available' },
+    { value: 'Unavailable', label: 'Unavailable' },
+    { value: 'Temporary Unavailable', label: 'Temporary Unavailable' },
 ]
 
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -257,7 +254,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
         }),
         firstName: Yup.string().required('Firstname is require'),
         surName: Yup.string().required('Surname is require'),
-        address: Yup.string().required('Address is require'),
         phoneNumber: Yup.string()
             .required('Phone number is require')
             .test({
@@ -573,12 +569,12 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         {/* <Box sx={{width:'50%'}}> */}
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
-                                name="privillege"
-                                label={isRequire(constant.privillege)}
+                                name="EquipmentStatus"
+                                label={isRequire('EquipmentStatus')}
                                 InputLabelProps={{ shrink: true }}
                             >
-                                {privillege.map(({ value, label }) => (
-                                    <option value={value} key={`${value}-privillege-option`}>
+                                {EquipmentStatus.map(({ value, label }) => (
+                                    <option value={value} key={`${value}-EquipmentStatus-option`}>
                                         {label}
                                     </option>
                                 ))}
@@ -593,23 +589,24 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
                         <Stack gap={3} flexDirection="row">
                             <RHFTextField
-                                name="department"
+                                name="Equipment name"
                                 key={'department-textfield'}
-                                label={isRequire(constant.department)}
+                                label={'Equipment name *'}
                                 inputProps={{ maxLength: 100 }}
                             />{' '}
                             <RHFTextField
                                 name="department"
                                 key={'department-textfield'}
-                                label={isRequire(constant.department)}
+                                label={isRequire('Equipment code name')}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
                                 name="accountStatus"
-                                label={isRequire(constant.accountStatus)}
+                                label={isRequire('Brand')}
                                 InputLabelProps={{ shrink: true }}
+                                placeholder={'Brand'}
                             >
                                 {accountStatus.map(({ value, label }) => (
                                     <option value={value} key={`${value}-accountStatus-option`}>
@@ -620,14 +617,14 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             <RHFTextField
                                 name="department"
                                 key={'department-textfield'}
-                                label={isRequire(constant.department)}
+                                label={isRequire('Model')}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
                             name="address"
                             multiline
-                            label={isRequire(constant.address)}
+                            label={('Description')}
                             inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
