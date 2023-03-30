@@ -93,3 +93,31 @@ interface IV1RespGetEquipmentUnavailableStatsSchedule {
     upcomingCount: number
     finishCount: number
 }
+interface IV1GetEquipmentUnavailable {
+    eqId: number
+    months: number
+    years: number
+}
+
+interface IV1RespUnavaliableEquipments {
+    eqDate: Object<key, Array<number>>
+}
+
+interface IV1PostEquipmentUnavailableCreate {
+    date: timestamp
+    times: Array<number>
+    eqId: Array<number>
+    status?: string
+}
+
+interface IV1RespPostEquipmentUnavailableCreate {
+    equnavascheId: number
+}
+
+interface IV1PostEquipmentUnavailableDelete {
+    equnavascheId: number
+}
+
+interface IV1RespPostEquipmentUnavailableDelete {
+    equnavascheId: number
+}

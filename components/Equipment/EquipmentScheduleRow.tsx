@@ -20,7 +20,6 @@ export default function EquipmentScheduleRow({
   onRemove
 }: Props) {
   const theme = useTheme();
-  const { activeDate, time, createBy, createAt, status, id } = row;
   return (
     <>
       <TableRow

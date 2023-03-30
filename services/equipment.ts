@@ -22,6 +22,24 @@ const fetchPostEquipmentDelete = (
 ): Promise<IAPIResponse<IV1RespPostEquipmentDelete>> => {
     return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
 }
+//EQ9.GET: api/v1/equipment/unavailable
+const fetchGetEquipmentUnavailable = (
+    query: IV1GetEquipmentUnavailable
+): Promise<IAPIResponse<IV1RespUnavaliableEquipments>> => {
+    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+}
+//EQ10.POST: api/v1/equipment/unavailable/create
+const fetchPostEquipmentUnavailableCreate = (
+    query: IV1PostEquipmentUnavailableCreate
+): Promise<IAPIResponse<IV1RespPostEquipmentUnavailableCreate>> => {
+    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+}
+//EQ11.POST: api/v1/equipment/unavailable/delete
+const fetchPostEquipmentUnavailableDelete = (
+    query: IV1PostEquipmentUnavailableDelete
+): Promise<IAPIResponse<IV1RespPostEquipmentUnavailableDelete>> => {
+    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+}
 
 //EQ12.GET: api/v1/equipment/unavailable/schedule
 const fetchGetUnAvailableSchedule = (
@@ -41,4 +59,7 @@ export {
     fetchPostEquipmentDelete,
     fetchGetUnAvailableSchedule,
     fetchGetUnAvailableScheduleStats,
+    fetchGetEquipmentUnavailable,
+    fetchPostEquipmentUnavailableCreate,
+    fetchPostEquipmentUnavailableDelete,
 }

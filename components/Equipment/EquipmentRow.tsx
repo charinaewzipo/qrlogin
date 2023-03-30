@@ -59,7 +59,7 @@ export default function EquipmentRow({
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} >
             <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, width: 350 }}>
-              {get(row, 'eqName', '')}
+              {`${get(row, 'eqName', '')} (${get(row, 'eqCode', '')})`}
             </Typography>
             <Typography variant="body2" sx={{ color: "text.secondary", ...styledTextOverFlow, width: 350 }}>
               {get(row, 'eqDescription', '')}
