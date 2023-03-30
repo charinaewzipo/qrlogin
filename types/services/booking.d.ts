@@ -1,8 +1,8 @@
 type TBookStatus =
     | 'PENDING'
     | 'CONFIRM'
-    | 'WATTING_FOR_PAYMENT'
-    | 'WATTING_FOR_PAYMENT_CONFIRM'
+    | 'WAITING_FOR_PAYMENT'
+    | 'WAITING_FOR_PAYMENT_CONFIRM'
     | 'CANCELED'
     | 'FINISH'
 
@@ -33,7 +33,7 @@ interface IV1TablePayments {
 interface IV1RespGetBookingMeRead {
     eqId: number
     eqCreateBy: number
-    eqStatus: STATUS_Equipment
+    eqStatus: IEquipmentStatus
     eqCode: string
     eqName: string
     eqBrand: string
@@ -42,12 +42,15 @@ interface IV1RespGetBookingMeRead {
     eqPictures: IV1EquipmentPictures[]
     eqCreatedAt: string
     eqUpdatedAt: string
-    eqPrices: IV1EquipmentPrice[]
-    eqPriceSubTotal: number
     bookId: number
     bookOwner: number
     bookAdvisor: number
     bookStatus: TBookStatus
+    bookCreatedAt: string
+    eqRtimDays: string
+    eqRtimTimes: number[]
+    eqPrices: IV1EquipmentPrice[]
+    eqPriceSubTotal: number
     payOt: number
     payDiscount: number
     payFees: number
