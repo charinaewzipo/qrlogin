@@ -4,10 +4,8 @@ import { Box, Container, Stack } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
-import AccountForm, { IAccountFormValuesProps } from '@ku/components/Account/AccountForm'
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { ACCOUNT_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
 import BookDetail from '@ku/components/MyBooking/BookDetail'
 import UserPaymentNotice, { PaymentNoticeFormValuesProps } from '@ku/components/MyBooking/UserPaymentNotice'
@@ -53,91 +51,94 @@ const mockData: IV1RespGetBookingMeRead = {
     eqModel: "MacBook Pro",
     eqDescription: "Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals",
     eqPictures: [
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
-        eqpicSort: 2,
-      },
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
-        eqpicSort: 1,
-      },
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
-        eqpicSort: 3,
-      },
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
-        eqpicSort: 4,
-      },
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
-        eqpicSort: 5,
-      },
-      {
-        eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
-        eqpicSort: 6,
-      },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 2,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 1,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 3,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 4,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 5,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 6,
+        },
     ],
     eqCreatedAt: '2023-03-13T16:21:30.894Z',
     eqUpdatedAt: '2023-03-16T16:21:30.894Z',
     eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "member",
-        eqpSubOption: "basic",
-        eqpChecked: "yes",
-        eqpIsChecked: true,
-        eqpName: "Basic membership",
-        eqpDescription: "Access to basic features",
-        eqpQuantity: 1,
-        eqpTotal: 100,
-        eqpUnitPrice: 100,
-        eqpUnitPer: "month",
-        eqpCreatedAt: '2023-03-13T16:21:30.894Z',
-        eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-        eqSubPrice: [
-          {
-            eqsubpId: 1,
-            eqsubpChecked: "no",
-            eqsubpName: "Premium membership",
-            eqsubpDescription: "Access to premium features",
-            eqsubpUnitPrice: 200,
-            eqsubpUnitPer: "month",
-            eqsubpQuantity: 1,
-            eqsubpTotal: 200,
-            eqsubpCreatedAt: '2023-03-13T16:21:30.894Z',
-            eqsubpUpdatedAt: '2023-03-13T16:21:30.894Z',
-          },
-        ],
-      },
-      {
-        eqpId: 2,
-        eqpEqId: 2,
-        eqpTypePerson: "member",
-        eqpSubOption: "basic",
-        eqpChecked: "yes",
-        eqpIsChecked: true,
-        eqpName: "Basic membership",
-        eqpDescription: "Access to basic features",
-        eqpQuantity: 1,
-        eqpTotal: 100,
-        eqpUnitPrice: 100,
-        eqpUnitPer: "month",
-        eqpCreatedAt: '2023-03-13T16:21:30.894Z',
-        eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-        eqSubPrice: [],
-      },
+        {
+            eqpId: 1,
+            eqpEqId: 1,
+            eqpTypePerson: "member",
+            eqpSubOption: "basic",
+            eqpChecked: "yes",
+            eqpIsChecked: true,
+            eqpName: "Basic membership",
+            eqpDescription: "Access to basic features",
+            eqpQuantity: 1,
+            eqpTotal: 100,
+            eqpUnitPrice: 100,
+            eqpUnitPer: "month",
+            eqpCreatedAt: '2023-03-13T16:21:30.894Z',
+            eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
+            eqSubPrice: [
+                {
+                    eqsubpId: 1,
+                    eqsubpChecked: "no",
+                    eqsubpName: "Premium membership",
+                    eqsubpDescription: "Access to premium features",
+                    eqsubpUnitPrice: 200,
+                    eqsubpUnitPer: "month",
+                    eqsubpQuantity: 1,
+                    eqsubpTotal: 200,
+                    eqsubpCreatedAt: '2023-03-13T16:21:30.894Z',
+                    eqsubpUpdatedAt: '2023-03-13T16:21:30.894Z',
+                },
+            ],
+        },
+        {
+            eqpId: 2,
+            eqpEqId: 2,
+            eqpTypePerson: "member",
+            eqpSubOption: "basic",
+            eqpChecked: "yes",
+            eqpIsChecked: true,
+            eqpName: "Basic membership",
+            eqpDescription: "Access to basic features",
+            eqpQuantity: 1,
+            eqpTotal: 100,
+            eqpUnitPrice: 100,
+            eqpUnitPer: "month",
+            eqpCreatedAt: '2023-03-13T16:21:30.894Z',
+            eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
+            eqSubPrice: [],
+        },
     ],
     eqPriceSubTotal: 100,
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
-    bookStatus: 'WATTING_FOR_PAYMENT',
+    bookStatus: 'CONFIRM',
     payOt: 0,
     payDiscount: 10,
     payFees: 0,
     payTotal: 100,
+    bookCreatedAt: '2023-03-13T16:21:30.894Z',
+    eqRtimDays: '2023-03-13T16:21:30.894Z',
+    eqRtimTimes: [8, 10, 14],
 };
   
   
@@ -241,7 +242,7 @@ export function MyBookingDetail() {
                                     onDownloadAsPdf={handleOnDownloadAsPdf}
                                     bookingData={mockData}
                                 />
-                                {mockData.bookStatus === 'WATTING_FOR_PAYMENT' ? (
+                                {mockData.bookStatus === 'WAITING_FOR_PAYMENT' ? (
                                     <UserPaymentNotice
                                         onSubmit={handlePaymentNotice}
                                         errorMsg={paymentErrorMsg}

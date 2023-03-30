@@ -1,6 +1,8 @@
 import { LoadingButton } from '@mui/lab'
 import { Stack, Paper, Typography, Divider, Grid } from '@mui/material'
 import Label, { LabelColor } from '@sentry/components/label'
+import { format } from 'date-fns'
+import { lowerCase } from 'lodash'
 
 const constant = {
     bookSummary: 'Book summary',
@@ -41,9 +43,9 @@ function BookDetail({
                 return 'warning'
             case 'CONFIRM':
                 return 'success'
-            case 'WATTING_FOR_PAYMENT':
+            case 'WAITING_FOR_PAYMENT':
                 return 'info'
-            case 'WATTING_FOR_PAYMENT_CONFIRM':
+            case 'WAITING_FOR_PAYMENT_CONFIRM':
                 return 'info'
             case 'FINISH':
                 return 'default'
@@ -90,6 +92,8 @@ function BookDetail({
             {constant.paymentQRCode}
         </LoadingButton>
     )
+    const renderBookingTime = (times: number[]) =>
+        times.map((time, i) => `${time}:00-${time}:59${i < times.length - 1 ? ', ' : ''}`)
     
     return (
         <Stack spacing={5}>
@@ -120,7 +124,7 @@ function BookDetail({
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
                             <Label color={getBookingStatusLabelColor()} sx={{ mr: 1 }}>
-                                {bookingData.bookStatus}
+                                {lowerCase(bookingData.bookStatus)}
                             </Label>
                         </Typography>
                     </Grid>
@@ -129,7 +133,7 @@ function BookDetail({
                             {constant.bookingDate}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            19/08/2022
+                            {format(new Date(bookingData.bookCreatedAt), 'dd/MM/yyyy')}
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
@@ -137,9 +141,11 @@ function BookDetail({
                             {constant.bookingTime}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            <Label color="info" sx={{ mr: 1 }}>
-                                18:00 - 18:59
-                            </Label>
+                            {bookingData.eqRtimTimes.map((time) => (
+                                <Label color="info" sx={{ mr: 1 }}>
+                                    {`${time}:00-${time}:59`}
+                                </Label>
+                            ))}
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
@@ -147,7 +153,7 @@ function BookDetail({
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {/* {bookingData.duration} */}2 Hrs.
+                            {bookingData.eqRtimTimes.length} Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>

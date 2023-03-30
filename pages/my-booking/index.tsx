@@ -282,7 +282,6 @@ export default function BookingReportPage() {
                                                 <MyBookingRow
                                                     key={row.bookId}
                                                     row={row}
-                                                    selected={false}
                                                     onViewRow={() => {
                                                         // handleViewRow(row.id)
                                                     }}
