@@ -98,7 +98,7 @@ function BookDetail({
                     {constant.bookSummary}
                 </Typography>
                 <Grid container rowGap={2} mt={6}>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.bookingNo}
                         </Typography>
@@ -106,7 +106,7 @@ function BookDetail({
                             {bookingData.bookId}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.equipmentName}
                         </Typography>
@@ -114,7 +114,7 @@ function BookDetail({
                             {bookingData.eqName}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.status}
                         </Typography>
@@ -124,7 +124,7 @@ function BookDetail({
                             </Label>
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.bookingDate}
                         </Typography>
@@ -132,7 +132,7 @@ function BookDetail({
                             19/08/2022
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.bookingTime}
                         </Typography>
@@ -142,7 +142,7 @@ function BookDetail({
                             </Label>
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.duration}
                         </Typography>
@@ -150,7 +150,7 @@ function BookDetail({
                             {/* {bookingData.duration} */}2 Hrs.
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} sm={4}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.bookName}
                         </Typography>

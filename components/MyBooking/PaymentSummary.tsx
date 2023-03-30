@@ -25,7 +25,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                     {constant.paymentSummary}
                 </Typography>
                 <Grid container rowGap={2} mt={6}>
-                    <Grid item xs={4}>
+                    <Grid item xs={6} md={3.5}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.paymentDate}
                         </Typography>
@@ -36,7 +36,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                             )}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={6} md={3.5}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.paymentAmount}
                         </Typography>
@@ -44,7 +44,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                             {payData.payAmount}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={12} md={5}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.billingAddress}
                         </Typography>
@@ -52,7 +52,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                             {payData.payBillingAddress}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={6} md={3.5}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.paymentReceiptNumber}
                         </Typography>
@@ -60,7 +60,7 @@ function PaymentSummary({ payData, onDownloadPayslip, onDownloadReceipt }: IPaym
                             {payData.payReceiptNumber}
                         </Typography>
                     </Grid>
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={6} md={3.5}>
                         <Typography gutterBottom variant="subtitle2" color="text.secondary">
                             {constant.paymentConfirmationDate}
                         </Typography>

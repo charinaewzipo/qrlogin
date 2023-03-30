@@ -35,7 +35,7 @@ const paymentData: IV1TablePayments = {
     payFees: 1.5,
     payTotal: 100,
     payRemark: 'Payment for services rendered',
-    payBillingAddress: '123 Main St, Anytown USA',
+    payBillingAddress: '14/55 หมู่ 12 ต.รอบเวียง อ.เมือง จ.เชียงใหม่ 57300',
     payReceiptNumber: 'RECEIPT123',
     payDateTime: '2023-03-15T10:00:00Z',
     payAmount: 100,
@@ -133,7 +133,7 @@ const mockData: IV1RespGetBookingMeRead = {
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
-    bookStatus: "CONFIRM",
+    bookStatus: 'WATTING_FOR_PAYMENT',
     payOt: 0,
     payDiscount: 10,
     payFees: 0,
@@ -171,6 +171,7 @@ export function MyBookingDetail() {
         //TODO: qr link
     }
     const handlePaymentNotice = (data: PaymentNoticeFormValuesProps) => {
+        setpaymentErrorMsg('')
         console.log(data)
         const formattedData: IV1PostBookingPayments = {
             bookId: mockData.bookId,
@@ -180,6 +181,8 @@ export function MyBookingDetail() {
             payDateTime: formatISO(data.paymentDateTime),
             payAmount: numeral(data.amount).value(),
         }
+        enqueueSnackbar('Payment notice to financial success.')
+        setpaymentErrorMsg('Network Error')
         console.log(formattedData)
         
     }

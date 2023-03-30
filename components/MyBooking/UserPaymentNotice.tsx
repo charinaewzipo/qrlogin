@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -58,6 +58,13 @@ interface IUserPaymentNoticeProps {
 }
 function UserPaymentNotice(props: IUserPaymentNoticeProps) {
     const [openConfirmPayment, setOpenConfirmPayment] = useState(false)
+    const scrollRef = useRef(null)
+    useEffect(() => {
+        if (props.errorMsg !== '') {
+            scrollRef.current.scrollIntoView()
+        }
+    }, [props.errorMsg])
+    
     const paymentNoticeSchema = Yup.object().shape({
         paymentMethod: Yup.string(),
         paymentDateTime: Yup.date()
@@ -158,7 +165,7 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
 
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(handleOpenConfirm)}>
-            <Stack spacing={5}>
+            <Stack spacing={5} ref={scrollRef} sx={{ scrollMarginTop: (theme) => theme.spacing(8) }}>
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
