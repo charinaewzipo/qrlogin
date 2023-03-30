@@ -13,5 +13,5 @@ interface IAccountUser {
     department?:string
     major?: string
 }
-type STATUS = 'Active' | 'Inactive' | 'Locked' |'Pending'
-type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
+type IAccountUserStatus = 'Active' | 'Inactive' | 'Locked' |'Pending'
+type IAccountUserPermission = 'Admin' | 'Finance' | 'Supervisor' | 'User'
