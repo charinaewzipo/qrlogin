@@ -148,7 +148,7 @@ export default function EquipmentSchedulePage() {
       limit: rowsPerPage,
       startTime: '',
       endTime: '',
-      status: 'PENDING',
+      status: filterStatus,
     }
     await fetchGetUnAvailableSchedule(query).then(response => {
       if (response.code === 200) {
