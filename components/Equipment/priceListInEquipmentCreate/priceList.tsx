@@ -159,7 +159,7 @@ export default function PriceListNewEditDetails() {
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
                 {fields.map((item, index) => {
-                    console.log('item', item.subs)
+                    // console.log('item', item.subs)
                     return (
                         <Stack key={item.id}  spacing={1.5}>
                             <Stack
@@ -225,7 +225,7 @@ export default function PriceListNewEditDetails() {
                                     label="Description"
                                 />
 
-                                {item.subs ? <></>:<>
+                                {values.items[index].subs ? <></>:<>
                                     <RHFTextField
                                     size="small"
                                     name={`items[${index}].unitPrice`}
