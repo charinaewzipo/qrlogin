@@ -67,9 +67,29 @@ interface IV1EquipmentSubSchemaPrice {
 }
 
 interface IV1QueryGetEquipmentRead {
-    eqId: string
-    eqStatus: string
-    eqSearch: string
-    eqSortName: boolean
-    eqSortCode: boolean
+    eqId?: string
+    eqStatus?: string
+    eqSearch?: string
+    eqSortName?: boolean
+    eqSortCode?: boolean
+}
+interface IV1QueryGetEquipmentUnavailableSchedule {
+    startTime?: timestamp
+    endTime?: timestamp
+    status?: string
+}
+
+interface IV1RespGetEquipmentUnavailableSchedule {
+    equnavascheId: number
+    equnavascheCreatedByName: string
+    equnavascheDays: timestamp
+    equnavascheTimes: Array<number>
+    equnavascheStatus: string
+    equnavascheCreatedAt: timestamp
+    equnavascheUpdatedAt: timestamp
+}
+
+interface IV1RespGetEquipmentUnavailableStatsSchedule {
+    upcomingCount: number
+    finishCount: number
 }

@@ -51,40 +51,41 @@ import { format } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get } from 'lodash'
+import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats } from '@ku/services/equipment'
 
 
-const mockDataTable: IEquipmentSchedule[] = [{
-  id: "27658a79-ac6c-4003-b927-23b260840201",
-  activeDate: new Date().toString(),
-  time: "Full Day",
-  createBy: 'Simsimi ok',
-  createAt: new Date().toString(),
-  status: "Finish"
-},
-{
-  id: "27658a79-ac6c-4003-b927-23b260840202",
-  activeDate: new Date().toString(),
-  time: "Early morning",
-  createBy: 'Simsimi ok',
-  createAt: new Date().toString(),
-  status: "Finish"
-}, {
-  id: "27658a79-ac6c-4003-b927-23b260840203",
-  activeDate: new Date().toString(),
-  time: "Early morning",
-  createBy: 'Simsimi okSimsimi okSimsimi okSimsimi ok',
-  createAt: new Date().toString(),
-  status: "Pending"
-}, {
-  id: "27658a79-ac6c-4003-b927-23b260840204",
-  activeDate: new Date().toString(),
-  time: "Afternoon",
-  createBy: 'Simsimi ok',
-  createAt: new Date().toString(),
-  status: "Pending"
-},
+const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
+  {
+    equnavascheId: 123,
+    equnavascheCreatedByName: 'Simsimi ok',
+    equnavascheDays: 'Full Day',
+    equnavascheTimes: [0, 1],
+    equnavascheStatus: 'PENDING',
+    equnavascheCreatedAt: 1648435200,
+    equnavascheUpdatedAt: 1648435200,
+  },
+  {
+    equnavascheId: 1234,
+    equnavascheCreatedByName: 'Simsimi ok',
+    equnavascheDays: 'Early morning',
+    equnavascheTimes: [0, 1],
+    equnavascheStatus: 'PENDING',
+    equnavascheCreatedAt: 1648435200,
+    equnavascheUpdatedAt: 1648435200,
+  }, {
+    equnavascheId: 1235,
+    equnavascheCreatedByName: 'Simsimi ok',
+    equnavascheDays: 'Early morning',
+    equnavascheTimes: [0, 1],
+    equnavascheStatus: 'PENDING',
+    equnavascheCreatedAt: 1648435200,
+    equnavascheUpdatedAt: 1648435200,
+  },
 ]
-
+const mockStats = {
+  upcomingCount: 2,
+  finishCount: 2,
+}
 const TABLE_HEAD = [
   { id: 'activeDate', label: 'Active date', align: 'left', width: 150 },
   { id: 'time', label: 'Time', align: 'left' },
@@ -114,56 +115,84 @@ export default function EquipmentSchedulePage() {
     onChangeRowsPerPage,
   } = useTable();
 
-  const [tableData, setTableData] = useState<IEquipmentSchedule[]>([])
+  const [tableData, setTableData] = useState<IV1RespGetEquipmentUnavailableSchedule[]>([])
+  const [scheduleStats, setScheduleStats] = useState<IV1RespGetEquipmentUnavailableStatsSchedule>()
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
   const [filterStatus, setFilterStatus] = useState('upcoming')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
-  const [detailSchedule, setDetailSchedule] = useState<IEquipmentSchedule>(null)
+  const [detailSchedule, setDetailSchedule] = useState<IV1RespGetEquipmentUnavailableSchedule>(null)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
   useEffect(() => {
-    getEquipmentList()
+    GetUnAvailableScheduleStats()
+    GetUnAvailableSchedule()
   }, [])
 
-  const getLengthByStatus = (status: string) =>
-    tableData.filter((item) => item.status === status).length
+  const GetUnAvailableScheduleStats = async () => {
+    await fetchGetUnAvailableScheduleStats().then(response => {
+      if (response.code === 200) {
+        setScheduleStats(mockStats)
+        // setScheduleStats(response.data)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  const GetUnAvailableSchedule = async () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
+      page: page,
+      limit: rowsPerPage,
+      startTime: '',
+      endTime: '',
+      status: 'PENDING',
+    }
+    await fetchGetUnAvailableSchedule(query).then(response => {
+      if (response.code === 200) {
+        setTableData(mockDataTable)
+        // setStatusStat(response.data)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+
+
   const TABS = [
 
-    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: getLengthByStatus('Pending') },
+    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
     {
       value: 'Finish',
       label: 'Finish',
       color: 'default',
-      count: getLengthByStatus('Finish'),
+      count: get(scheduleStats, 'finishCount', 0),
     },
 
   ] as const
-  const getEquipmentList = async () => {
-    // TODO: Add filter parameter
-    const response = await fetchGetAssessments()
-    if (response.data) {
-      setTableData(mockDataTable)
-      // setTableData(response.data)
-    }
-  }
+
   const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
     setPage(0)
     setFilterStatus(newValue)
     console.log("filterStatus", filterStatus)
   }
 
-  const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id))
+  const handleViewRow = (id: number) => {
+    push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id.toString()))
   };
 
-  const handleOnCancel = (item: IEquipmentSchedule) => {
+  const handleOnCancel = (item: IV1RespGetEquipmentUnavailableSchedule) => {
     setDetailSchedule(item)
     setOpenConfirmModal(true)
 
+  }
+  const handleOnClickModal = () => {
+    setOpenConfirmModal(false)
+    get(detailSchedule, 'equnavascheStatus', '') === 'PENDING' ?
+      enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`)
+      : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`, { variant: 'error' })
   }
   const isNotFound = (!tableData.length)
   return (
@@ -248,9 +277,9 @@ export default function EquipmentSchedulePage() {
                     .map((row) => {
                       return (
                         <EquipmentScheduleRow
-                          key={row.id}
+                          key={get(row, 'equnavascheId', -1)}
                           row={row}
-                          onViewRow={() => handleViewRow(row.id)}
+                          onViewRow={() => handleViewRow(get(row, 'equnavascheId', -1))}
                           onRemove={() => handleOnCancel(row)}
                         />
                       )
@@ -285,7 +314,7 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} ${get(detailSchedule, 'time', 'Full day')} schedule` },
+              { sx: { mb: 0 }, text: `To cancel upcoming ${format((get(detailSchedule, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')} ${get(detailSchedule, 'equnavascheDays', 'Full day')} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
               <Typography
@@ -308,12 +337,9 @@ export default function EquipmentSchedulePage() {
             size="large"
             type="button"
             variant="contained"
-            onClick={() => {
-              setOpenConfirmModal(false)
-              get(detailSchedule, 'status', 'Pending') === 'Pending' ?
-                enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`)
-                : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`, { variant: 'error' })
-            }}
+            onClick={
+              handleOnClickModal
+            }
           >
             {"Yes, Cancel"}
           </LoadingButton>}
