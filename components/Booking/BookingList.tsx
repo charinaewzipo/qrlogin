@@ -6,12 +6,13 @@ import BookingCard from "./BookingCard";
 import SkeletonCardItem from "./SkeletonCardItem";
 
 type Props = {
-  data: IBookingProduct[];
+  data: Array<IV1RespGetBookingMeRead & IV1TablePayments>;
   loading: boolean;
+  showLoadMore: boolean;
   onLoadmore: () => void;
 };
 
-export default function BookingList({ data, loading, onLoadmore }: Props) {
+export default function BookingList({ data, loading, onLoadmore, showLoadMore }: Props) {
   return (
     <>
       <Box
@@ -35,7 +36,7 @@ export default function BookingList({ data, loading, onLoadmore }: Props) {
         )}
 
       </Box>
-      <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
+      {showLoadMore && <Box sx={{ mt: 4, display: 'flex', justifyContent: 'center' }}>
 
         <LoadingButton
           color='inherit'
@@ -45,7 +46,7 @@ export default function BookingList({ data, loading, onLoadmore }: Props) {
         >
           Load more equipment...
         </LoadingButton>
-      </Box>
+      </Box>}
     </>
   );
 }
