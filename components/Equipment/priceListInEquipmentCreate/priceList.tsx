@@ -53,7 +53,7 @@ const UNIT_OPTIONS = [
 export default function PriceListNewEditDetails() {
     const { control, setValue, watch, resetField } = useFormContext()
 
-    const { fields, append, remove } = useFieldArray({
+    const { fields, append, remove , update } = useFieldArray({
         control,
         name: 'items',
     })
@@ -70,29 +70,36 @@ export default function PriceListNewEditDetails() {
         setValue('totalPrice', totalPrice)
     }, [setValue, totalPrice])
 
-    useEffect(() => {
-        console.log('fields first time',fields)
-        // handleAdd()
-    }, [])
+    // useEffect(() => {
+    //     console.log('fields first time',fields)
+    //     // handleAdd()
+    // }, [])
 
     useEffect(() => {
-        console.log('fields', fields)
+        console.log('fields หน้าแรกได้ค่า =', fields)
         // console.log('FieldsSub',FieldsSub)
     }, [fields])
+    
     const handleAdd = () => {
         append({
             title: '',
             description: '',
-            service: '',
-            // quantity: 1,
-            // price: 0,
-            // total: 0,
-            subs: [],
+            subs: false,
         })
     }
 
-    const getSubEQU = (stateChild) => {
-        setSubEquipment(stateChild)
+    const getSubEQU = (indexEquipment , stateChild) => {
+         console.log('ค่าจากgetsubEquหน้าแรก',indexEquipment,'และ',stateChild)
+        
+        // setSubEquipment(stateChild)
+        if(isEmpty(stateChild)){
+            console.log('เข้าอิฟ')
+            setValue(`items.${indexEquipment}.subs`, false);
+        }
+        else{
+            console.log('เข้าเอลฟ์')
+            setValue(`items.${indexEquipment}.subs`, true);
+        }
     }
 
     const handleRemove = (index: number) => {
@@ -152,7 +159,7 @@ export default function PriceListNewEditDetails() {
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
                 {fields.map((item, index) => {
-                    // console.log('item', item)
+                    console.log('item', item.subs)
                     return (
                         <Stack key={item.id}  spacing={1.5}>
                             <Stack
@@ -218,7 +225,7 @@ export default function PriceListNewEditDetails() {
                                     label="Description"
                                 />
 
-                                {isEmpty(subEquipment) ? <>
+                                {item.subs ? <></>:<>
                                     <RHFTextField
                                     size="small"
                                     name={`items[${index}].unitPrice`}
@@ -269,7 +276,7 @@ export default function PriceListNewEditDetails() {
                                             {option.name}
                                         </MenuItem>
                                     ))}
-                                </RHFSelect></> : <></>}
+                                </RHFSelect></>}
                                 
                                 <Button
                                     size="small"
