@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { ChangeEvent, useEffect, useState, useCallback } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -17,10 +17,11 @@ import {
     Box,
     Paper,
     Button,
-    Tabs,Tab
+    Tabs,
+    Tab,
 } from '@mui/material'
 import Image from '@sentry/components/image'
-import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
+import FormProvider, { RHFSelect, RHFTextField, RHFUpload } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
 import { fData, fNumber } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
@@ -180,8 +181,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
-    const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff');
-
+    const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff')
 
     const RegisterSchema = Yup.object().shape({
         privillege: Yup.string().required('Privillege is require'),
@@ -331,48 +331,58 @@ function EquipmentCreateForm(props: AccountFormProps) {
         //TODO: cancel form
         console.log('canncel')
     }
-    
-    const permissionMe : PERMISSION = 'Admin'
+
+    const permissionMe: PERMISSION = 'Admin'
 
     const listAllTab = {
-        SciKUStudentAndStaff:{
-          value: 'SciKUStudentAndStaff',
-          label: 'SciKU Student & Staff',
-          component: <PriceListNewEditDetails/>,
+        SciKUStudentAndStaff: {
+            value: 'SciKUStudentAndStaff',
+            label: 'SciKU Student & Staff',
+            component: <PriceListNewEditDetails />,
         },
-        KUStudentAndStaff:{
-          value: 'KUStudentAndStaff',
-          label: 'KUStudent & Staff',
-          component:  <PriceListNewEditDetails/>,
+        KUStudentAndStaff: {
+            value: 'KUStudentAndStaff',
+            label: 'KUStudent & Staff',
+            component: <PriceListNewEditDetails />,
         },
-        OtherUniversity:{
-          value: 'Other University',
-          label: 'Other University',
-          component:  <PriceListNewEditDetails/>,
+        OtherUniversity: {
+            value: 'Other University',
+            label: 'Other University',
+            component: <PriceListNewEditDetails />,
         },
-        GovernmentOffice:{
-          value: 'Government Office',
-          label: 'Government Office',
-          component:  <PriceListNewEditDetails/>,
+        GovernmentOffice: {
+            value: 'Government Office',
+            label: 'Government Office',
+            component: <PriceListNewEditDetails />,
         },
-        privateCompany:{
+        privateCompany: {
             value: 'Private-Company',
             label: 'Private Company',
-            component:  <PriceListNewEditDetails/>,
-          },
+            component: <PriceListNewEditDetails />,
+        },
     }
-    const permissionTab = ():PERMISSION => {
-        if ( (permissionMe as PERMISSION) === 'Supervisor' ) {
+    const permissionTab = (): PERMISSION => {
+        if ((permissionMe as PERMISSION) === 'Supervisor') {
             return 'Admin'
         } else {
             return permissionUser
         }
     }
     const listPermissionTab: { [key in PERMISSION] } = {
-        Supervisor : [listAllTab.SciKUStudentAndStaff, listAllTab.KUStudentAndStaff, listAllTab.OtherUniversity, listAllTab.GovernmentOffice , listAllTab.privateCompany],
-        User : [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity, listAllTab.GovernmentOffice],
-        Finance : [listAllTab.SciKUStudentAndStaff],
-        Admin : [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity]
+        Supervisor: [
+            listAllTab.SciKUStudentAndStaff,
+            listAllTab.KUStudentAndStaff,
+            listAllTab.OtherUniversity,
+            listAllTab.GovernmentOffice,
+            listAllTab.privateCompany,
+        ],
+        User: [
+            listAllTab.SciKUStudentAndStaff,
+            listAllTab.OtherUniversity,
+            listAllTab.GovernmentOffice,
+        ],
+        Finance: [listAllTab.SciKUStudentAndStaff],
+        Admin: [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity],
     }
     const methods = useForm<IAccountFormValuesProps>({
         resolver: yupResolver(RegisterSchema),
@@ -476,7 +486,31 @@ function EquipmentCreateForm(props: AccountFormProps) {
         }
         props.onSubmit(submitData)
     }
+    const values = watch()
 
+    const handleDrop = useCallback(
+        (acceptedFiles: File[]) => {
+            const files = values.images || []
+
+            const newFiles = acceptedFiles.map((file) =>
+                Object.assign(file, {
+                    preview: URL.createObjectURL(file),
+                })
+            )
+
+            setValue('images', [...files, ...newFiles])
+        },
+        [setValue, values.images]
+    )
+
+    const handleRemoveFile = (inputFile: File | string) => {
+        const filtered = values.images && values.images?.filter((file) => file !== inputFile)
+        setValue('images', filtered)
+    }
+
+    const handleRemoveAllFiles = () => {
+        setValue('images', [])
+    }
     const handleChangeNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
         fieldName: keyof IAccountFormValuesProps,
@@ -600,64 +634,43 @@ function EquipmentCreateForm(props: AccountFormProps) {
                     </Stack>
 
                     <Typography sx={{ marginTop: 3 }}>Images</Typography>
-                    <Stack flexDirection={'row'} flexWrap={'wrap'} gap={1.5}>
-                        {[...Array(idImageLength).keys()].map((i) => (
-                            <Controller
-                                key={`id-image-upload-${i}`}
-                                name={`idImages.${i}`}
-                                control={control}
-                                render={({ field }) => (
-                                    <Upload
-                                        dropzoneHelper={
-                                            <Box sx={{ py: 3, px: 1 }}>
-                                                <Typography
-                                                    gutterBottom
-                                                    variant="h5"
-                                                    sx={{ ml: -2 }}
-                                                >
-                                                    Select image files
-                                                </Typography>
-                                                <Typography
-                                                    variant="body2"
-                                                    component="p"
-                                                    whiteSpace="pre-line"
-                                                    sx={{ ml: -2 }}
-                                                >
-                                                    Drop files here or click
-                                                    <Typography
-                                                        variant="body2"
-                                                        component="span"
-                                                        sx={{
-                                                            mx: 0.5,
-                                                            color: 'primary.main',
-                                                            textDecoration: 'underline',
-                                                        }}
-                                                    >
-                                                        {`browse\n`}
-                                                    </Typography>
-                                                    {`thorough your machine.\n`}
-                                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
-                                                    {`Max size of 1024KB`}
-                                                </Typography>
-                                            </Box>
-                                        }
-                                        accept={{ 'image/*': ['.jpeg', '.jpg', '.png'] }}
-                                        file={field.value}
-                                        onDrop={(files) =>
-                                            field.onChange(URL.createObjectURL(files[0]))
-                                        }
-                                        onDelete={() => field.onChange('')}
+                    <Upload
+                        dropzoneHelper={
+                            <Box sx={{ py: 3, pl: 5 }}>
+                                <Typography gutterBottom variant="h5" sx={{ ml: -2 }}>
+                                    Select image files
+                                </Typography>
+                                <Typography
+                                    variant="body2"
+                                    component="p"
+                                    whiteSpace="pre-line"
+                                    sx={{ ml: -2 }}
+                                >
+                                    Drop files here or click
+                                    <Typography
+                                        variant="body2"
+                                        component="span"
                                         sx={{
-                                            width: get(field, 'value', '') === '' ? '100%' : '100%',
-                                            flex: get(field, 'value', '') === '' ? '' : '50%',
-                                            '& > div > div': {},
+                                            mx: 0.5,
+                                            color: 'primary.main',
+                                            textDecoration: 'underline',
                                         }}
-                                        maxSize={200000}
-                                    />
-                                )}
-                            />
-                        ))}
-                    </Stack>
+                                    >
+                                        {`browse`}
+                                    </Typography>
+                                    {`thorough your machine.\n`}
+                                    {`Allowed *.jpeg, *.jpg, *.png\n`}
+                                    {`Max size of 1024KB`}
+                                </Typography>
+                            </Box>
+                        }
+                        thumbnail
+                        multiple={true}
+                        files={values.images}
+                        onDrop={handleDrop}
+                        onRemove={handleRemoveFile}
+                        // onDelete={() => field.onChange('')}
+                    />
                 </Paper>
                 <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack>
@@ -719,48 +732,118 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         <Stack justifyContent="space-between" gap={2} sx={{ mt: 2 }}>
                             <Stack flexDirection="row" justifyContent={'space-between'} gap={2}>
                                 {' '}
-                                <LoadingButton type="submit" variant="outlined" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="outlined"
+                                    size="large"
+                                    fullWidth
+                                >
                                     07:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     08:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     09:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     10:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     11:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     12:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     13:00
                                 </LoadingButton>
                             </Stack>
                             <Stack flexDirection="row" justifyContent={'space-between'} gap={2}>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     14:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     15:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     16:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     17:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     18:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="contained"
+                                    size="large"
+                                    fullWidth
+                                >
                                     19:00
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="outlined" size="large" fullWidth>
+                                <LoadingButton
+                                    type="submit"
+                                    variant="outlined"
+                                    size="large"
+                                    fullWidth
+                                >
                                     20:00
                                 </LoadingButton>
                             </Stack>
@@ -770,20 +853,28 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
                 <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                     Price list
-                    <Tabs sx={{padding:'12px'}} value={currentTab} onChange={(event, newValue) => setCurrentTab(newValue)}>
-                                {get(listPermissionTab,permissionTab(),[]).map((tab) => (
-                                    <Tab key={tab.value} label={tab.label} icon={tab.icon} value={tab.value} />
-                                ))}
-                            </Tabs>
-
-                            {get(listPermissionTab,permissionTab(),[]).map(
-                                (tab) =>
-                                    tab.value === currentTab && (
-                                    <Box key={tab.value} sx={{ mt: 5 }}>
-                                        {tab.component}
-                                    </Box>
-                                    )
-                            )}
+                    <Tabs
+                        sx={{ padding: '12px' }}
+                        value={currentTab}
+                        onChange={(event, newValue) => setCurrentTab(newValue)}
+                    >
+                        {get(listPermissionTab, permissionTab(), []).map((tab) => (
+                            <Tab
+                                key={tab.value}
+                                label={tab.label}
+                                icon={tab.icon}
+                                value={tab.value}
+                            />
+                        ))}
+                    </Tabs>
+                    {get(listPermissionTab, permissionTab(), []).map(
+                        (tab) =>
+                            tab.value === currentTab && (
+                                <Box key={tab.value} sx={{ mt: 5 }}>
+                                    {tab.component}
+                                </Box>
+                            )
+                    )}
                 </Paper>
 
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
