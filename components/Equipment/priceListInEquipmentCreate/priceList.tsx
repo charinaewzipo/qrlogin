@@ -1,7 +1,7 @@
 import sum from 'lodash/sum'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useState ,useMemo} from 'react'
 // form
-import { useFormContext, useFieldArray } from 'react-hook-form'
+import { useFormContext, useFieldArray ,useForm} from 'react-hook-form'
 // @mui
 import { Box, Stack, Button, Divider, Typography, InputAdornment, MenuItem } from '@mui/material'
 // utils
@@ -46,12 +46,52 @@ const UNIT_OPTIONS = [
     { id: 3, name: 'Baht/Booking' },
     { id: 4, name: 'Baht/Times' },
 ]
+const defaultValuesForm = {
+    EquipmentName: undefined,
+    EquipmentStatus: undefined,
+    accountExpiryDate: null,
+    accountStatus: "Active",
+    address: "",
+    avatar: "",
+    bookingLimit: "5",
+    companyName: "",
+    creditLimit: "15,000",
+    department: "",
+    email: "",
+    firstName: "",
+    idImages: [],
+    items: [],
+    otherTitle: "",
+    password: "",
+    phoneNumber: "",
+    position: "",
+    positionName: "",
+    privillege: "User",
+    staffId: "",
+    studentId: "",
+    supervisorCode: "",
+    supervisorStatus: null,
+    surName: "",
+    title: "",
+    totalPrice: NaN,
+    typeOfPerson: "",
+    universityName: "",
+    subs:false
+}
 
 
 // ----------------------------------------------------------------------
 
 export default function PriceListNewEditDetails() {
-    const { control, setValue, watch, resetField } = useFormContext()
+    const defaultValues = useMemo(
+        () => ({
+          items: [defaultValuesForm]
+        }),[]
+      );
+
+    const { control, setValue, watch, resetField } = useForm(
+        {defaultValues}
+    )
 
     const { fields, append, remove , update } = useFieldArray({
         control,
@@ -60,32 +100,30 @@ export default function PriceListNewEditDetails() {
 
     const values = watch()
 
-    const totalOnRow = values.items?.map((item: InvoiceItem) => item.quantity * item.price)
+    // const totalOnRow = values.items?.map((item: InvoiceItem) => item.quantity * item.price)
 
-    const totalPrice = sum(totalOnRow) - values.discount + values.taxes
+    // const totalPrice = sum(totalOnRow) - values.discount + values.taxes
 
-    const [subEquipment, setSubEquipment] = useState(null);
+    // const [subEquipment, setSubEquipment] = useState(null);
 
-    useEffect(() => {
-        setValue('totalPrice', totalPrice)
-    }, [setValue, totalPrice])
+    // useEffect(() => {
+    //     setValue('totalPrice', totalPrice)
+    // }, [setValue, totalPrice])
 
     // useEffect(() => {
     //     console.log('fields first time',fields)
-    //     // handleAdd()
+    //     handleAdd()
     // }, [])
 
     useEffect(() => {
         console.log('fields หน้าแรกได้ค่า =', fields)
-        // console.log('FieldsSub',FieldsSub)
+        console.log('values',values)
     }, [fields])
     
     const handleAdd = () => {
-        append({
-            title: '',
-            description: '',
-            subs: false,
-        })
+        append(
+            defaultValuesForm
+        )
     }
 
     const getSubEQU = (indexEquipment , stateChild) => {
@@ -106,50 +144,50 @@ export default function PriceListNewEditDetails() {
         remove(index)
     }
 
-    const handleClearService = useCallback(
-        (index: number) => {
-            resetField(`items[${index}].quantity`)
-            resetField(`items[${index}].price`)
-            resetField(`items[${index}].total`)
-        },
-        [resetField]
-    )
+    // const handleClearService = useCallback(
+    //     (index: number) => {
+    //         resetField(`items[${index}].quantity`)
+    //         resetField(`items[${index}].price`)
+    //         resetField(`items[${index}].total`)
+    //     },
+    //     [resetField]
+    // )
 
-    const handleSelectService = useCallback(
-        (index: number, option: string) => {
-            // setValue(
-            //     `items[${index}].price`,
-            //     SERVICE_OPTIONS.find((service) => service.name === option)?.price
-            // )
-            setValue(
-                `items[${index}].total`,
-                values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-            )
-        },
-        [setValue, values.items]
-    )
+    // const handleSelectService = useCallback(
+    //     (index: number, option: string) => {
+    //         // setValue(
+    //         //     `items[${index}].price`,
+    //         //     SERVICE_OPTIONS.find((service) => service.name === option)?.price
+    //         // )
+    //         setValue(
+    //             `items[${index}].total`,
+    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
+    //         )
+    //     },
+    //     [setValue, values.items]
+    // )
 
-    const handleChangeQuantity = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-            setValue(`items[${index}].quantity`, Number(event.target.value))
-            setValue(
-                `items[${index}].total`,
-                values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-            )
-        },
-        [setValue, values.items]
-    )
+    // const handleChangeQuantity = useCallback(
+    //     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    //         setValue(`items[${index}].quantity`, Number(event.target.value))
+    //         setValue(
+    //             `items[${index}].total`,
+    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
+    //         )
+    //     },
+    //     [setValue, values.items]
+    // )
 
-    const handleChangePrice = useCallback(
-        (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-            setValue(`items[${index}].price`, Number(event.target.value))
-            setValue(
-                `items[${index}].total`,
-                values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-            )
-        },
-        [setValue, values.items]
-    )
+    // const handleChangePrice = useCallback(
+    //     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
+    //         setValue(`items[${index}].price`, Number(event.target.value))
+    //         setValue(
+    //             `items[${index}].total`,
+    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
+    //         )
+    //     },
+    //     [setValue, values.items]
+    // )
 
     return (
         <Box sx={{ p: 3 }}>
@@ -199,7 +237,7 @@ export default function PriceListNewEditDetails() {
                                         <MenuItem
                                             key={option.id}
                                             value={option.name}
-                                            onClick={() => handleSelectService(index, option.name)}
+                                            // onClick={() => handleSelectService(index, option.name)}
                                             sx={{
                                                 mx: 1,
                                                 my: 0.5,
@@ -264,7 +302,7 @@ export default function PriceListNewEditDetails() {
                                         <MenuItem
                                             key={option.id}
                                             value={option.name}
-                                            onClick={() => handleSelectService(index, option.name)}
+                                            // onClick={() => handleSelectService(index, option.name)}
                                             sx={{
                                                 mx: 1,
                                                 my: 0.5,

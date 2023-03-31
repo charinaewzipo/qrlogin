@@ -50,7 +50,7 @@ export interface IAccountFormValuesProps {
     surName: string
     address: string
     phoneNumber: string
-    idImages: string[]
+    idImages: (File | string)[]
     creditLimit: string
     bookingLimit: string
     supervisorCode: string
@@ -494,7 +494,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 })
             )
 
-            setValue('idImages', [String(...files),String(...newFiles)])
+            setValue('idImages', [...files ,...newFiles] )
         },
         [setValue, values.idImages]
     )
@@ -864,14 +864,15 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             />
                         ))}
                     </Tabs>
-                    {get(listPermissionTab, permissionTab(), []).map(
+                    <PriceListNewEditDetails />
+                    {/* {get(listPermissionTab, permissionTab(), []).map(
                         (tab) =>
                             tab.value === currentTab && (
                                 <Box key={tab.value} sx={{ mt: 5 }}>
                                     {tab.component}
                                 </Box>
                             )
-                    )}
+                    )} */}
                 </Paper>
 
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
