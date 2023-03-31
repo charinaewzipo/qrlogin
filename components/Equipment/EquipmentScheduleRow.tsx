@@ -4,12 +4,12 @@ import { TableRow, TableCell, Typography, Button } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
 import { format } from 'date-fns'
-import { isEmpty, noop } from 'lodash';
+import { get, isEmpty, noop } from 'lodash';
 import Iconify from '@sentry/components/iconify/Iconify';
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IEquipmentSchedule
+  row: IV1RespGetEquipmentUnavailableSchedule
   onViewRow: VoidFunction
   onRemove?: VoidFunction
 }
@@ -20,7 +20,6 @@ export default function EquipmentScheduleRow({
   onRemove
 }: Props) {
   const theme = useTheme();
-  const { activeDate, time, createBy, createAt, status, id } = row;
   return (
     <>
       <TableRow
@@ -30,20 +29,24 @@ export default function EquipmentScheduleRow({
         onClick={onViewRow}
         sx={{ cursor: 'pointer' }}
       >
-        <TableCell align="left"><Typography variant="body2" > {!isEmpty(activeDate) && format(new Date(activeDate), 'dd MMM yyyy')}</Typography> </TableCell>
-        <TableCell align="left"> <Typography variant="body2" >{time}</Typography></TableCell>
-        <TableCell align="left"> <Typography variant="body2" >{createBy}</Typography></TableCell>
+        <TableCell align="left"><Typography variant="body2" >
+
+          {format((get(row, 'equnavascheUpdatedAt', new Date())), 'dd MMM yyyy')}
+
+        </Typography> </TableCell>
+        <TableCell align="left"> <Typography variant="body2" >{get(row, 'equnavascheDays', '')}</Typography></TableCell>
+        <TableCell align="left"> <Typography variant="body2" >{get(row, 'equnavascheCreatedByName', '')}</Typography></TableCell>
 
         <TableCell align="left">
-          {!isEmpty(createAt) && format(new Date(createAt), 'dd MMM yyyy  HH:mm:ss')}
+          {format((get(row, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')}
         </TableCell>
 
         <TableCell align="left">
-          <Label color={status === 'Pending' ? 'warning' : 'default'}>{status}</Label>
+          <Label color={get(row, 'equnavascheStatus', '') === 'PENDING' ? 'warning' : 'default'}>{get(row, 'equnavascheStatus', '').toLocaleLowerCase()}</Label>
         </TableCell>
         <TableCell align="left">
 
-          {status === 'Pending' && <Button
+          {get(row, 'equnavascheStatus', '') === 'PENDING' && <Button
             color="error"
             sx={{ flexShrink: 0 }}
             onClick={(e) => {
