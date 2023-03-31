@@ -23,69 +23,187 @@ import {
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
-import Label from '@sentry/components/label'
+
 import Iconify from '@sentry/components/iconify'
 import Scrollbar from '@sentry/components/scrollbar'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
-  TablePaginationCustom,
   TableSelectedAction,
   TableSkeleton,
   getComparator,
 } from '@sentry/components/table'
-import AccountAdminRow from '@ku/components/Account/AccountAdminRow'
-import { fetchGetAssessments } from '@ku/services/assessment'
-import { useSnackbar } from 'notistack'
-import AccountAdminToolsbar from '@ku/components/Account/AccountAdminToolsbar'
-import { Typography } from '@mui/material'
+
 import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
 import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
 import Image from '@sentry/components/image/Image'
+import { fetchGetEquipmentRead } from '@ku/services/equipment'
+import { get, isEmpty } from 'lodash'
 
 
-const mockDataTable: IEquipmentUser[] = [{
-  id: "27658a79-ac6c-4003-b927-23b260840201",
-  name: "Brycen Jimenez",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg',
-  createdAt: new Date().toString(),
-  lastestUpdate: new Date().toString(),
-  status: "Available"
-},
-{
-  id: "27658a79-ac6c-4003-b927-23b260840202",
-  name: "Coating Material (CM1)",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg',
-  createdAt: new Date(1994, 12, 10).toString(),
-  lastestUpdate: new Date(1924, 12, 10).toString(),
-  status: "Unavailable"
-},
-{
-  id: "27658a79-ac6c-4003-b927-23b260840203",
-  name: "Material coating descriptions",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createdAt: new Date(1995, 12, 10).toString(),
-  lastestUpdate: new Date(1944, 12, 10).toString(),
-  status: "Temporary Unavailable"
-}, {
-  id: "27658a79-ac6c-4003-b927-23b260840204",
-  name: "Aaterial coating descriptions",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createdAt: new Date(1995, 12, 10).toString(),
-  lastestUpdate: new Date(1944, 12, 10).toString(),
-  status: "Temporary Unavailable"
-}
-]
+const mockTableData: IV1PostEquipmentRead[] =
+  [{
+    eqId: "ABC123",
+    eqStatus: "available",
+    eqCode: "EQ001",
+    eqName: "Power Drill",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1548435200, // April 26, 2022
+    eqUpdatedAt: 1949577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }, {
+    eqId: "ABC124",
+    eqStatus: "Unavailable",
+    eqCode: "EQ001",
+    eqName: "DeWalt",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1448435200, // April 26, 2022
+    eqUpdatedAt: 1649577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }, {
+    eqId: "ABC125",
+    eqStatus: "Temporary Unavailable",
+    eqCode: "EQ001",
+    eqName: "ABC124 Drill",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1648435200, // April 26, 2022
+    eqUpdatedAt: 1649577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }]
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Equipment', align: 'left', width: 350 },
-  { id: 'createdAt', label: 'Create at', align: 'left', width: 150 },
-  { id: 'lastestUpdate', label: 'Latest update', align: 'left', width: 150 },
-  { id: 'status', label: 'Status', align: 'left', width: 150 },
+  { id: 'eqName', label: 'Equipment', align: 'left', width: 350 },
+  { id: 'eqCreatedAt', label: 'Create at', align: 'left', width: 150 },
+  { id: 'eqUpdatedAt', label: 'Latest update', align: 'left', width: 150 },
+  { id: 'eqStatus', label: 'Status', align: 'left', width: 150 },
 ];
 const ROLE_OPTIONS = [
   'all',
@@ -114,32 +232,45 @@ export default function EquipmentList() {
     onChangeRowsPerPage,
   } = useTable();
 
-  const [tableData, setTableData] = useState<IEquipmentUser[]>([])
+  const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const theme = useTheme()
   const { push } = useRouter()
+
   useEffect(() => {
-    getEquipmentList()
+    GetEquipmentRead()
   }, [])
 
-
-  const getEquipmentList = async () => {
-    // TODO: Add filter parameter
-    const response = await fetchGetAssessments()
-    if (response.data) {
-      setTableData(mockDataTable)
-      // setTableData(response.data)
+  const GetEquipmentRead = async () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: page,
+      limit: rowsPerPage,
+      eqId: '',
+      eqStatus: filterName,
+      eqSearch: filterRole,
+      eqSortName: false,
+      eqSortCode: false,
     }
+    await fetchGetEquipmentRead(query).then(response => {
+      if (response.code === 200) {
+        setTableData(mockTableData)
+        // setStatusStat(response.data)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
   }
+
+
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
     setPage(0);
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
-        console.log("filterName")
+        GetEquipmentRead()
       }, 1000)
     );
   };
@@ -152,7 +283,7 @@ export default function EquipmentList() {
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
-        console.log("setFilterRole")
+        GetEquipmentRead()
       }, 1000)
     );
   };
@@ -164,7 +295,7 @@ export default function EquipmentList() {
     comparator,
     // filterName,
   }: {
-    tableData: IEquipmentUser[];
+    tableData: IV1PostEquipmentRead[];
     comparator: (a: any, b: any) => number;
     // filterName: string;
   }) {
@@ -220,7 +351,6 @@ export default function EquipmentList() {
                 color='info'
                 startIcon={<Iconify icon="eva:clock-fill" />}
                 sx={{
-                  // bgcolor: "#1890FF",
                   bgcolor: 'info.main',
                   mr: 1
                 }}
@@ -252,35 +382,35 @@ export default function EquipmentList() {
           <Scrollbar>
 
             <TableContainer sx={{ minWidth: 960, position: 'relative', overflow: 'unset' }}>
-                <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
-                    <TableHeadCustom
-                    sx={{ "& th": { color: theme.palette.text.primary } }}
-                    headLabel={[{ id: 'equipmentList', label: 'Equipment List', align: 'left' }]} />
-                </Table>
-                <TableSelectedAction
-                  sx={{ "& .MuiCheckbox-root": { display:'none' } }}
-                  dense={dense}
-                  numSelected={selected.length}
-                  rowCount={tableData.length}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => row.id)
-                    )
-                  }
-                  action={
-                    <Tooltip title="Export selected to excel">
-                      <IconButton color="primary" onClick={() => handleExportRows(selected)}>
-                        <Image
-                          disabledEffect
-                          alt={'excel'}
-                          src={'assets/icons/files/ic_file_excel.svg'}
-                          sx={{ width: 24, height: 24 }}
-                        />
-                      </IconButton>
-                    </Tooltip>
-                  }
-                />
+              <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
+                <TableHeadCustom
+                  sx={{ "& th": { color: theme.palette.text.primary } }}
+                  headLabel={[{ id: 'equipmentList', label: 'Equipment List', align: 'left' }]} />
+              </Table>
+              <TableSelectedAction
+                sx={{ "& .MuiCheckbox-root": { display: 'none' } }}
+                dense={dense}
+                numSelected={selected.length}
+                rowCount={tableData.length}
+                onSelectAllRows={(checked) =>
+                  onSelectAllRows(
+                    checked,
+                    tableData.map((row) => get(row, 'eqId', ''))
+                  )
+                }
+                action={
+                  <Tooltip title="Export selected to excel">
+                    <IconButton color="primary" onClick={() => handleExportRows(selected)}>
+                      <Image
+                        disabledEffect
+                        alt={'excel'}
+                        src={'assets/icons/files/ic_file_excel.svg'}
+                        sx={{ width: 24, height: 24 }}
+                      />
+                    </IconButton>
+                  </Tooltip>
+                }
+              />
             </TableContainer>
 
             <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
@@ -296,30 +426,26 @@ export default function EquipmentList() {
                   onSelectAllRows={(checked) =>
                     onSelectAllRows(
                       checked,
-                      tableData.map((row) => row.id)
+                      tableData.map((row) => get(row, 'eqId', ''))
                     )
                   }
                 />
                 <TableBody>
-                  {dataFiltered
+                  {!isEmpty(dataFiltered) && dataFiltered
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) =>
                       row ? (
                         <EquipmentRow
-                          key={row.id}
+                          key={get(row, 'eqId', '')}
                           row={row}
-                          selected={selected.includes(row.id)}
-                          onSelectRow={() => onSelectRow(row.id)}
-                          onViewRow={() => handleViewRow(row.id)}
+                          selected={selected.includes(get(row, 'eqId', ''))}
+                          onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
+                          onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
                         />
                       ) : (
                         !isNotFound && <TableSkeleton key={index} />
                       )
                     )}
-
-                  <TableEmptyRows
-                    emptyRows={emptyRows(page, rowsPerPage, dataFiltered.length)}
-                  />
                   <TableNoData isNotFound={isNotFound} />
                 </TableBody>
               </Table>

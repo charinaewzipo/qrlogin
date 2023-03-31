@@ -7,17 +7,19 @@ import Image from '@sentry/components/image/Image';
 import Label from '@sentry/components/label/Label';
 // utils
 import { format } from 'date-fns'
-import { isEmpty } from 'lodash';
+import { get, isEmpty } from 'lodash';
 
 // ----------------------------------------------------------------------
 
 type Props = {
-  row: IEquipmentUser;
+  row: IV1PostEquipmentRead;
   selected: boolean;
   onSelectRow: VoidFunction;
   onViewRow: VoidFunction;
 };
-
+const styledTextOverFlow = {
+  whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
+}
 export default function EquipmentRow({
   row,
   selected,
@@ -26,8 +28,6 @@ export default function EquipmentRow({
 
 }: Props) {
   const theme = useTheme();
-
-  const { name, cover, createdAt, lastestUpdate, status, id } = row;
 
   // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
 
@@ -39,8 +39,9 @@ export default function EquipmentRow({
   //   setOpenMenuActions(null);
   // };
 
+
   return (
-    <TableRow hover selected={selected} key={id} onClick={onViewRow} sx={{ cursor: 'pointer' }} >
+    <TableRow hover selected={selected} key={get(row, 'eqId', '')} onClick={onViewRow} sx={{ cursor: 'pointer' }} >
       <TableCell padding="checkbox" onClick={e => e.stopPropagation()}>
         <Checkbox checked={selected} onClick={onSelectRow} />
       </TableCell>
@@ -52,35 +53,35 @@ export default function EquipmentRow({
         >
           <Image
             disabledEffect
-            alt={name}
-            src={cover}
+            alt={get(row, 'eqName', '')}
+            src={row.eqPicture[0].eqpicLink}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} >
-            <Typography variant="subtitle2" noWrap >
-              {name}
+            <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, width: 350 }}>
+              {`${get(row, 'eqName', '')} (${get(row, 'eqCode', '')})`}
             </Typography>
-            <Typography variant="body2" noWrap sx={{ color: "text.secondary" }}>
-              {name}
+            <Typography variant="body2" sx={{ color: "text.secondary", ...styledTextOverFlow, width: 350 }}>
+              {get(row, 'eqDescription', '')}
             </Typography>
           </Box>
         </Box>
 
       </TableCell>
 
-      <TableCell> {!isEmpty(createdAt) && format(new Date(createdAt), 'dd MMM yyyy HH:mm')}</TableCell>
-      <TableCell> {!isEmpty(lastestUpdate) && format(new Date(lastestUpdate), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell> {format((get(row, 'eqCreatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell> {format((get(row, 'eqUpdatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
 
       <TableCell align="left">
         <Label
           color={
-            (status === 'Unavailable' && 'default') ||
-            (status === 'Temporary Unavailable' && 'warning') ||
+            (get(row, 'eqStatus', '') === 'Unavailable' && 'default') ||
+            (get(row, 'eqStatus', '') === 'Temporary Unavailable' && 'warning') ||
             'success'
           }
           sx={{ textTransform: 'capitalize' }}
         >
-          {status}
+          {get(row, 'eqStatus', '')}
         </Label>
       </TableCell>
     </TableRow>
