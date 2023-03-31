@@ -121,3 +121,23 @@ interface IV1PostEquipmentUnavailableDelete {
 interface IV1RespPostEquipmentUnavailableDelete {
     equnavascheId: number
 }
+
+interface IV1QueryGetEquipmentMaintenanceRead {
+    eqId?: number
+    eqmtnId?: number
+    eqmtnDate?: string
+    eqmtnCreatedAt?: string
+}
+
+interface IV1GetEquipmentMaintenanceRead {
+    eqId: number
+    eqmtnId: number
+    eqmtnDescription: string
+    eqmtnCost: number
+    eqmtnDate: string
+    eqmtnCreatedAt: string
+    eqmtnUpdatedAt: string
+    eqmtnPicLink: string
+    eqmtnPicCreatedAt: string
+    eqmtnPicUpdatedAt: string
+}
