@@ -151,7 +151,7 @@ export default ({ nestIndex, control ,getSubEQU}) => {
                 })}
                     <Stack sx={{mt:2}} justifyContent="flex-end" spacing={1.5} direction={'row'} >
                         <RHFSelect
-                            name="mamamiya"
+                            name="subDetail"
                             // name={`items[${index}].subDetail`}
                             size="small"
                             label="Sub option type"

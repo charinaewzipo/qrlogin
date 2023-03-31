@@ -567,7 +567,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
                         {/* <Box sx={{width:'50%'}}> */}
-                        <Stack gap={3} flexDirection="row">
+                        <Stack gap={3} flexDirection="row" width={{md:'48.9%', sm:'48.7%',xs:'47.9%'}}>
                             <RHFSelect
                                 name="EquipmentStatus"
                                 label={isRequire('EquipmentStatus')}
