@@ -310,7 +310,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         surName: '',
         address: '',
         phoneNumber: '',
-        idImages: [''],
+        idImages: [],
         creditLimit: '15,000',
         bookingLimit: '5',
         supervisorCode: '',
@@ -486,7 +486,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
-            const files = values.images || []
+            const files = values.idImages || []
 
             const newFiles = acceptedFiles.map((file) =>
                 Object.assign(file, {
@@ -494,18 +494,18 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 })
             )
 
-            setValue('images', [...files, ...newFiles])
+            setValue('idImages', [String(...files),String(...newFiles)])
         },
-        [setValue, values.images]
+        [setValue, values.idImages]
     )
 
     const handleRemoveFile = (inputFile: File | string) => {
-        const filtered = values.images && values.images?.filter((file) => file !== inputFile)
-        setValue('images', filtered)
+        const filtered = values.idImages && values.idImages?.filter((file) => file !== inputFile)
+        setValue('idImages', filtered)
     }
 
     const handleRemoveAllFiles = () => {
-        setValue('images', [])
+        setValue('idImages', [])
     }
     const handleChangeNumber = (
         e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
@@ -663,7 +663,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         }
                         thumbnail
                         multiple={true}
-                        files={values.images}
+                        files={values.idImages}
                         onDrop={handleDrop}
                         onRemove={handleRemoveFile}
                         // onDelete={() => field.onChange('')}
