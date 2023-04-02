@@ -28,13 +28,16 @@ import { clamp, cloneDeep, get } from 'lodash'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IEquipmentCreateFormValuesProps {
-    EquipmentStatus: string
-    EquipmentName: string
-    EquipmentCodeName: Number
-    Brand: String
-    Model: String
-    Description: String
-    images: Array<File>
+    eqStatus: string
+    eqCode: Number
+    eqName: string
+    eqBrand: String
+    eqModel: String
+    eqDescription: String
+    eqPicture: Array<File>
+    eqavascheDays: Array<String>
+    eqavascheTimes: Array<Number>
+    eqtypeperson : Array<IV1EquipmentTypePerson>
     items: Array<Object>
     subs: boolean
 }
@@ -69,28 +72,23 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
     const RegisterSchema = Yup.object().shape({
         // equipmentStatus: Yup.string().required('Equipment status is require'),
-        equipmentName: Yup.string().required('Equipment name is require'),
-        codeName: Yup.string().required('Equipment code name is require'),
+        eqName: Yup.string().required('Equipment name is require'),
+        eqCode: Yup.string().required('Equipment code name is require'),
         // equipmentImage: Yup.string().required('Equipment image is require at least 1 image'),
     })
 
     const defaultValues = {
-        EquipmentStatus: '',
-        EquipmentName: '',
-        EquipmentCodeName: 0,
-        Brand: 'Active',
-        Model: '',
-        Description: '',
-        images:[],
-        items: [
-            {
-                EquipmentName: '',
-                EquipmentStatus: '',
-                accountExpiryDate: '',
-                accountStatus: 'Active',
-                address: '',
-            },
-        ],
+        eqStatus: '',
+        eqCode: 0,
+        eqName: '',
+        eqBrand: '',
+        eqModel: '',
+        eqDescription: '',
+        eqPicture: [],
+        eqavascheDays: [],
+        eqavascheTimes: [],
+        eqtypeperson : [],
+        items:[],
         subs: false,
     }
 
@@ -184,7 +182,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
-            const files = values.images || []
+            const files = values.eqPicture || []
 
             const newFiles = acceptedFiles.map((file) =>
                 Object.assign(file, {
@@ -192,14 +190,14 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 })
             )
 
-            setValue('images', [...files, ...newFiles])
+            setValue('eqPicture', [...files, ...newFiles])
         },
-        [setValue, values.images]
+        [setValue, values.eqPicture]
     )
 
     const handleRemoveFile = (inputFile: File | string) => {
-        const filtered = values.images && values.images?.filter((file) => file !== inputFile)
-        setValue('images', filtered)
+        const filtered = values.eqPicture && values.eqPicture?.filter((file) => file !== inputFile)
+        setValue('eqPicture', filtered)
     }
 
     const isRequire = (label: string, isRequire: boolean = true) => {
@@ -218,7 +216,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             width={{ md: '48.9%', sm: '48.7%', xs: '47.9%' }}
                         >
                             <RHFSelect
-                                name="equipmentStatus"
+                                name="eqStatus"
                                 label={isRequire('EquipmentStatus')}
                                 InputLabelProps={{ shrink: true }}
                             >
@@ -232,20 +230,20 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
                         <Stack gap={3} flexDirection="row">
                             <RHFTextField
-                                name="equipmentName"
+                                name="eqName"
                                 key={'equipmentName-textfield'}
                                 label={isRequire('Equipment name')}
                                 inputProps={{ maxLength: 100, minLength: 6 }}
                             />{' '}
                             <RHFTextField
-                                name="codeName"
-                                key={'codeName-textfield'}
+                                name="eqCode"
+                                key={'eqCode-textfield'}
                                 label={isRequire('Equipment code name')}
                                 inputProps={{ maxLength: 100, minLength: 2 }}
                             />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
-                            <RHFSelect name="Brand" label={'Brand'} placeholder={'Brand'}>
+                            <RHFSelect name="eqBrand" label={'Brand'} placeholder={'Brand'}>
                                 {accountStatus.map(({ value, label }) => (
                                     <option value={value} key={`${value}-accountStatus-option`}>
                                         {label}
@@ -253,14 +251,14 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                 ))}
                             </RHFSelect>
                             <RHFTextField
-                                name="Model"
+                                name="eqModel"
                                 key={'Model-textfield'}
                                 label={'Model'}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
-                            name="Description"
+                            name="eqDescription"
                             multiline
                             label={'Description'}
                             minRows={4}
@@ -301,7 +299,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         }
                         thumbnail
                         multiple={true}
-                        files={values.images}
+                        files={values.eqPicture}
                         onDrop={handleDrop}
                         onRemove={handleRemoveFile}
                         // onDelete={() => field.onChange('')}
