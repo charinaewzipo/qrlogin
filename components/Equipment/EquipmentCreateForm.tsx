@@ -22,12 +22,10 @@ import {
 } from '@mui/material'
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField, RHFUpload } from '@sentry/components/hook-form'
-import { Upload, UploadAvatar } from '@sentry/components/upload'
-import { fData, fNumber } from '@sentry/utils/formatNumber'
+import { Upload } from '@sentry/components/upload'
+import { fNumber } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
-import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
-import AccountForm from '@ku/components/Account/AccountForm'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IAccountFormValuesProps {
     EquipmentName: any,
@@ -99,22 +97,7 @@ const constant = {
     waitSupervisorApprove: 'Please wait for supervisor approve.',
     approve: 'Approve',
 }
-const typeOfPerson = [
-    { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
-    { value: 'KU Student & Staff', label: 'KU Student & Staff' },
-    { value: 'Other University', label: 'Other University' },
-    { value: 'Government office', label: 'Government office' },
-    { value: 'Private company', label: 'Private company' },
-]
-const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU Student & Staff')
-const position = [
-    { value: 'Lecturer', label: 'Lecturer' },
-    { value: 'Researcher', label: 'Researcher' },
-    { value: 'Ph.D. student', label: 'Ph.D. student' },
-    { value: 'Master student', label: 'Master student' },
-    { value: 'Bachelor student', label: 'Bachelor student' },
-    { value: 'Other', label: 'Other' },
-]
+
 const department = [
     {
         value: 'Dept. of Applied Radiation and Isotope',
@@ -133,17 +116,7 @@ const department = [
     { value: 'Dept. of Statustics', label: 'Dept. of Statustics' },
     { value: 'Dept. of Zoology', label: 'Dept. of Zoology' },
 ]
-const title = [
-    { value: 'Mr', label: 'Mr' },
-    { value: 'Miss', label: 'Miss' },
-    { value: 'Mrs', label: 'Mrs' },
-    { value: 'Ms', label: 'Ms' },
-    { value: 'Dr', label: 'Dr' },
-    { value: 'Asst.Prof', label: 'Asst.Prof' },
-    { value: 'Assoc.Prof', label: 'Assoc.Prof' },
-    { value: 'Prof', label: 'Prof' },
-    { value: 'Other', label: 'Other' },
-]
+
 const accountStatus = [
     // { value: 'Active', label: 'Create' },
 ]
@@ -161,9 +134,7 @@ interface AccountFormProps {
     permission?: PERMISSION
     errorMsg: string
 }
-interface IIdImageUpload {
-    index: number
-}
+
 function EquipmentCreateForm(props: AccountFormProps) {
     // const { currentTab, setCurrentTab } = useState('general');
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
@@ -615,31 +586,26 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                     </option>
                                 ))}
                             </RHFSelect>
-                            {/* <RHFSelect
-                                name="privillege"
-                                key={'department-textfield'}
-                                label={isRequire(constant.privillege)}
-                                InputLabelProps={{ shrink: true }}
-                            ></RHFSelect> */}
+
                         </Stack>
 
                         <Stack gap={3} flexDirection="row">
                             <RHFTextField
                                 name="Equipment name"
-                                key={'department-textfield'}
+                                key={'equipmentName-textfield'}
                                 label={'Equipment name *'}
-                                inputProps={{ maxLength: 100 }}
+                                inputProps={{ maxLength: 100 ,minLength:6}}
                             />{' '}
                             <RHFTextField
-                                name="department"
-                                key={'department-textfield'}
+                                name="codeName"
+                                key={'codeName-textfield'}
                                 label={isRequire('Equipment code name')}
-                                inputProps={{ maxLength: 100 }}
+                                inputProps={{ maxLength: 100 ,minLength:2}}
                             />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
-                                name="accountStatus"
+                                name="Brand"
                                 label={('Brand')}
                                 InputLabelProps={{ shrink: true }}
                                 placeholder={'Brand'}
@@ -651,17 +617,16 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                 ))}
                             </RHFSelect>
                             <RHFTextField
-                                name="department"
-                                key={'department-textfield'}
+                                name="Model"
+                                key={'Model-textfield'}
                                 label={('Model')}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
-                            name="address"
+                            name="Description"
                             multiline
                             label={('Description')}
-                            inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
                     </Stack>
