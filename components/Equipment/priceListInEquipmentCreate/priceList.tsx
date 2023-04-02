@@ -98,16 +98,6 @@ export default function PriceListNewEditDetails() {
 
     const values = watch()
 
-    // const totalOnRow = values.items?.map((item: InvoiceItem) => item.quantity * item.price)
-
-    // const totalPrice = sum(totalOnRow) - values.discount + values.taxes
-
-    // const [subEquipment, setSubEquipment] = useState(null);
-
-    // useEffect(() => {
-    //     setValue('totalPrice', totalPrice)
-    // }, [setValue, totalPrice])
-
     useEffect(() => {
         console.log('values',values)
       
@@ -142,51 +132,6 @@ export default function PriceListNewEditDetails() {
         remove(index)
     }
 
-    // const handleClearService = useCallback(
-    //     (index: number) => {
-    //         resetField(`items[${index}].quantity`)
-    //         resetField(`items[${index}].price`)
-    //         resetField(`items[${index}].total`)
-    //     },
-    //     [resetField]
-    // )
-
-    // const handleSelectService = useCallback(
-    //     (index: number, option: string) => {
-    //         // setValue(
-    //         //     `items[${index}].price`,
-    //         //     SERVICE_OPTIONS.find((service) => service.name === option)?.price
-    //         // )
-    //         setValue(
-    //             `items[${index}].total`,
-    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-    //         )
-    //     },
-    //     [setValue, values.items]
-    // )
-
-    // const handleChangeQuantity = useCallback(
-    //     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-    //         setValue(`items[${index}].quantity`, Number(event.target.value))
-    //         setValue(
-    //             `items[${index}].total`,
-    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-    //         )
-    //     },
-    //     [setValue, values.items]
-    // )
-
-    // const handleChangePrice = useCallback(
-    //     (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>, index: number) => {
-    //         setValue(`items[${index}].price`, Number(event.target.value))
-    //         setValue(
-    //             `items[${index}].total`,
-    //             values.items.map((item: InvoiceItem) => item.quantity * item.price)[index]
-    //         )
-    //     },
-    //     [setValue, values.items]
-    // )
-
     return (
         <Box sx={{ p: 3 }}>
             <Typography variant="h6" sx={{ color: 'text.disabled', mb: 3 }}>
@@ -195,7 +140,7 @@ export default function PriceListNewEditDetails() {
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
                 {fields.map((item, index) => {
-                    console.log('item',item)
+                    // console.log('item',item)
                     return (
                         <Stack key={item.id}  spacing={1.5}>
                             <Stack
@@ -327,12 +272,12 @@ export default function PriceListNewEditDetails() {
                                 </Button>
                             </Stack>
 
-                            <NestedArray
+                            {/* <NestedArray
                                 nestIndex={index}
                                 {...{ control}}
                                 getSubEQU={getSubEQU}
                                 // handdleAddSub = {}
-                            />
+                            /> */}
 
                           
                         </Stack>

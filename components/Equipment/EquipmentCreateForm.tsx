@@ -28,36 +28,15 @@ import { clamp, cloneDeep, get } from 'lodash'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IAccountFormValuesProps {
-    EquipmentName: any,
-    EquipmentStatus: any,
-    accountExpiryDate: null,
-    accountStatus: string,
-    address: string,
-    avatar: string,
-    bookingLimit: string,
-    companyName: string,
-    creditLimit: string,
-    department: string,
-    email: string,
-    firstName: string,
-    idImages: [],
-    items: [],
-    otherTitle: string,
-    password: string,
-    phoneNumber: string,
-    position: string,
-    positionName: string,
-    privillege: string,
-    staffId: string,
-    studentId: string,
-    supervisorCode: string,
-    supervisorStatus: null,
-    surName: string,
-    title: string,
-    totalPrice: any,
-    typeOfPerson: string,
-    universityName: string,
-    subs:boolean
+    EquipmentStatus: string
+    EquipmentName: string
+    EquipmentCodeName: Number
+    Brand: String
+    Model: String
+    Description: String
+    images: Array<File>
+    items: Array<Object>
+    subs: boolean
 }
 const constant = {
     createEquipments: 'Create Equipments',
@@ -98,25 +77,6 @@ const constant = {
     approve: 'Approve',
 }
 
-const department = [
-    {
-        value: 'Dept. of Applied Radiation and Isotope',
-        label: 'Dept. of Applied Radiation and Isotope',
-    },
-    { value: 'Dept. of Biochemistry', label: 'Dept. of Biochemistry' },
-    { value: 'Dept. of Botany', label: 'Dept. of Botany' },
-    { value: 'Dept. of Chemistry', label: 'Dept. of Chemistry' },
-    { value: 'Dept. of Computer Science', label: 'Dept. of Computer Science' },
-    { value: 'Dept. of Earth Sciences', label: 'Dept. of Earth Sciences' },
-    { value: 'Dept. of Genetics', label: 'Dept. of Genetics' },
-    { value: 'Dept. of Material Science', label: 'Dept. of Material Science' },
-    { value: 'Dept. of Mathematics', label: 'Dept. of Mathematics' },
-    { value: 'Dept. of Microbiology', label: 'Dept. of Microbiology' },
-    { value: 'Dept. of Physics', label: 'Dept. of Physics' },
-    { value: 'Dept. of Statustics', label: 'Dept. of Statustics' },
-    { value: 'Dept. of Zoology', label: 'Dept. of Zoology' },
-]
-
 const accountStatus = [
     // { value: 'Active', label: 'Create' },
 ]
@@ -156,71 +116,28 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const RegisterSchema = Yup.object().shape({
         // equipmentStatus: Yup.string().required('Equipment status is require'),
         equipmentName: Yup.string().required('Equipment name is require'),
-        codeName:Yup.string().required('Equipment code name is require'),
-        accountStatus: Yup.string().required('Account Status is require'),
-        avatar: Yup.string(),
+        codeName: Yup.string().required('Equipment code name is require'),
+        // equipmentImage: Yup.string().required('Equipment image is require at least 1 image'),
     })
 
     const defaultValues = {
-        EquipmentName: undefined,
-        EquipmentStatus: undefined,
-        accountExpiryDate: null,
-        accountStatus: "Active",
-        address: "",
-        avatar: "",
-        bookingLimit: "5",
-        companyName: "",
-        creditLimit: "15,000",
-        department: "",
-        email: "",
-        firstName: "",
-        idImages: [],
-        items: [{EquipmentName: undefined,
-            EquipmentStatus: undefined,
-            accountExpiryDate: null,
-            accountStatus: "Active",
-            address: "",
-            avatar: "",
-            bookingLimit: "5",
-            companyName: "",
-            creditLimit: "15,000",
-            department: "",
-            email: "",
-            firstName: "",
-            idImages: [],
-            items: [],
-            otherTitle: "",
-            password: "",
-            phoneNumber: "",
-            position: "",
-            positionName: "",
-            privillege: "User",
-            staffId: "",
-            studentId: "",
-            supervisorCode: "",
-            supervisorStatus: null,
-            surName: "",
-            title: "",
-            totalPrice: NaN,
-            typeOfPerson: "",
-            universityName: "",
-            subs:false}],
-        otherTitle: "",
-        password: "",
-        phoneNumber: "",
-        position: "",
-        positionName: "",
-        privillege: "User",
-        staffId: "",
-        studentId: "",
-        supervisorCode: "",
-        supervisorStatus: null,
-        surName: "",
-        title: "",
-        totalPrice: NaN,
-        typeOfPerson: "",
-        universityName: "",
-        subs:false
+        EquipmentStatus: '',
+        EquipmentName: '',
+        EquipmentCodeName: 0,
+        Brand: 'Active',
+        Model: '',
+        Description: '',
+        images:[],
+        items: [
+            {
+                EquipmentName: '',
+                EquipmentStatus: '',
+                accountExpiryDate: '',
+                accountStatus: 'Active',
+                address: '',
+            },
+        ],
+        subs: false,
     }
 
     const onFormSubmit = () => {
@@ -286,7 +203,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         Finance: [listAllTab.SciKUStudentAndStaff],
         Admin: [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity],
     }
-    const methods = useForm({ resolver: yupResolver(RegisterSchema),defaultValues})
+    const methods = useForm({ resolver: yupResolver(RegisterSchema), defaultValues })
 
     const {
         handleSubmit,
@@ -298,98 +215,22 @@ function EquipmentCreateForm(props: AccountFormProps) {
         trigger,
     } = methods
 
-    const [
-        watchIdImages,
-        watchTypeOfPerson,
-        watchPosition,
-        watchTitle,
-        watchSupervisorCode,
-        watchSupervisorStatus,
-        watchPrivillege,
-    ] = watch([
-        'idImages',
-        'typeOfPerson',
-        'position',
-        'title',
-        'supervisorCode',
-        'supervisorStatus',
-        'privillege',
-    ])
-
-    useEffect(() => {
-        if (props.permission && props.permission === 'User') {
-            fetchSupervisorData('123456')
-        }
-        clearTimeout(supervisorTimeout)
-        setValue('supervisorStatus', 'waiting')
-        setSupervisorTimeout(
-            setTimeout(() => {
-                fetchSupervisorData(watchSupervisorCode)
-            }, 500)
-        )
-    }, [watchSupervisorCode])
-
-    useEffect(() => {
-        if (isSubmitted) trigger()
-        if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
-            if (isPositionOther) setValue('position', '')
-            if (!department.map((d) => d.value).includes(getValues('department')))
-                setValue('department', '')
-        }
-        if (isFinance) {
-            if (getValues('typeOfPerson') !== 'KU Student & Staff') setValue('typeOfPerson', '')
-            //ตอนปรับ privillege เป็น finance
-            //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
-        }
-    }, [watchTypeOfPerson, watchPosition, watchPrivillege])
 
     useEffect(() => {
         if (props.errorMsg !== '') window.scrollTo(0, 0)
     }, [props.errorMsg])
 
-    const isKu = checkIsKuPerson(watchTypeOfPerson)
-    const isStudent = checkIsStudent(watchPosition)
-    const isStaff = checkIsStaff(watchPosition)
-    const isKuStudent = checkIsKuStudent(watchPosition, watchTypeOfPerson)
-    const isPositionOther = checkIsOther(watchPosition)
-    const isTitleOther = checkIsOther(watchTitle)
-    const isUser = checkIsUser(watchPrivillege)
-    const isFinance = checkIsFinance(watchPrivillege)
-
-    const fetchSupervisorData = async (code: string) => {
-        setValue('supervisorStatus', null)
-        if (!code) return
-        if (code.length < 6) return
-        try {
-            setValue('supervisorStatus', 'fetching')
-            const response = await fetchGetSupervisor(code)
-            if (response.code === 200) {
-                setValue('supervisorStatus', 'found')
-                setSupervisor(response.data)
-            } else {
-                setSupervisor(null)
-                setValue('supervisorStatus', 'notFound')
-            }
-        } catch (error) {
-            console.log(error)
-            setValue('supervisorStatus', null)
-        }
-        trigger('supervisorCode')
-    }
-
     const onSubmit = async (data: IAccountFormValuesProps) => {
+        console.log('กดส่งละได้ค่า', data)
         const submitData = cloneDeep(data)
-        if (checkIsFinance(submitData.privillege)) {
-            submitData.creditLimit = '0'
-            submitData.bookingLimit = '0'
-        }
+
         props.onSubmit(submitData)
     }
     const values = watch()
 
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
-            const files = values.idImages || []
+            const files = values.images || []
 
             const newFiles = acceptedFiles.map((file) =>
                 Object.assign(file, {
@@ -397,71 +238,19 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 })
             )
 
-            setValue('idImages', [...files ,...newFiles] )
+            setValue('images', [...files, ...newFiles])
         },
-        [setValue, values.idImages]
+        [setValue, values.images]
     )
 
     const handleRemoveFile = (inputFile: File | string) => {
-        const filtered = values.idImages && values.idImages?.filter((file) => file !== inputFile)
-        setValue('idImages', filtered)
+        const filtered = values.images && values.images?.filter((file) => file !== inputFile)
+        setValue('images', filtered)
     }
-
-    const handleRemoveAllFiles = () => {
-        setValue('idImages', [])
-    }
-    const handleChangeNumber = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        fieldName: keyof IAccountFormValuesProps,
-        option?: 'comma'
-    ) => {
-        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
-        const oldValue = getValues(fieldName)
-        let newValue = e.target.value
-        if (option === 'comma') {
-            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
-            for (let i = 0; i < oldValue.length; i++) {
-                if (
-                    oldValue[i] === ',' &&
-                    oldValue[i] !== newValue[i] &&
-                    oldValue.length - 1 === newValue.length
-                ) {
-                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
-                    break
-                }
-            }
-        }
-        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
-        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
-            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
-            setValue(fieldName, formattedValue)
-            if (isSubmitted) trigger()
-            setTimeout(() => {
-                //set text cursor at same position after setValue
-                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd
-                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
-            }, 0)
-        }
-    }
-
-    const idImageWithoutEmpty = watchIdImages.filter((idImage) => idImage)
-    const idImageLength = clamp(idImageWithoutEmpty.length + 1, 1, 2)
 
     const isRequire = (label: string, isRequire: boolean = true) => {
         return `${label} ${isRequire ? '*' : ''}`
     }
-
-    const collapseableInputStyle = (isShow: boolean) => ({
-        flex: isShow ? '100%' : '0%',
-        transform: `scaleZ(${isShow ? '1' : '0'})`,
-        transitionDuration: '.2s',
-        transformOrigin: 'right',
-        marginLeft: isShow ? 3 : -3,
-        '& > div': {
-            transitionDuration: '.2s',
-            opacity: isShow ? 1 : 0,
-        },
-    })
 
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -469,7 +258,11 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
-                        <Stack gap={3} flexDirection="row" width={{md:'48.9%', sm:'48.7%',xs:'47.9%'}}>
+                        <Stack
+                            gap={3}
+                            flexDirection="row"
+                            width={{ md: '48.9%', sm: '48.7%', xs: '47.9%' }}
+                        >
                             <RHFSelect
                                 name="equipmentStatus"
                                 label={isRequire('EquipmentStatus')}
@@ -481,7 +274,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                     </option>
                                 ))}
                             </RHFSelect>
-
                         </Stack>
 
                         <Stack gap={3} flexDirection="row">
@@ -489,21 +281,17 @@ function EquipmentCreateForm(props: AccountFormProps) {
                                 name="equipmentName"
                                 key={'equipmentName-textfield'}
                                 label={isRequire('Equipment name')}
-                                inputProps={{ maxLength: 100 ,minLength:6}}
+                                inputProps={{ maxLength: 100, minLength: 6 }}
                             />{' '}
                             <RHFTextField
                                 name="codeName"
                                 key={'codeName-textfield'}
                                 label={isRequire('Equipment code name')}
-                                inputProps={{ maxLength: 100 ,minLength:2}}
+                                inputProps={{ maxLength: 100, minLength: 2 }}
                             />
                         </Stack>
                         <Stack gap={3} flexDirection="row">
-                            <RHFSelect
-                                name="Brand"
-                                label={('Brand')}
-                                placeholder={'Brand'}
-                            >
+                            <RHFSelect name="Brand" label={'Brand'} placeholder={'Brand'}>
                                 {accountStatus.map(({ value, label }) => (
                                     <option value={value} key={`${value}-accountStatus-option`}>
                                         {label}
@@ -513,19 +301,20 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             <RHFTextField
                                 name="Model"
                                 key={'Model-textfield'}
-                                label={('Model')}
+                                label={'Model'}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>
                         <RHFTextField
                             name="Description"
                             multiline
-                            label={('Description')}
+                            label={'Description'}
                             minRows={4}
                         />
                     </Stack>
 
                     <Typography sx={{ marginTop: 3 }}>Images</Typography>
+
                     <Upload
                         dropzoneHelper={
                             <Box sx={{ py: 3, pl: 5 }}>
@@ -558,21 +347,22 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         }
                         thumbnail
                         multiple={true}
-                        files={values.idImages}
+                        files={values.images}
                         onDrop={handleDrop}
                         onRemove={handleRemoveFile}
                         // onDelete={() => field.onChange('')}
                     />
                 </Paper>
+
                 <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack>
                         <Stack flexDirection="row" justifyContent="space-between">
                             <Typography>Available date of week</Typography>
                             <Stack flexDirection="row" gap={2}>
-                                <LoadingButton type="submit" variant="contained" size="small">
+                                <LoadingButton variant="contained" size="small">
                                     Available
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="outlined" size="small">
+                                <LoadingButton variant="outlined" size="small">
                                     Unavailable
                                 </LoadingButton>
                             </Stack>
@@ -584,25 +374,25 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             gap={2}
                             sx={{ mt: 2 }}
                         >
-                            <LoadingButton type="submit" variant="outlined" size="large" fullWidth>
+                            <LoadingButton variant="outlined" size="large" fullWidth>
                                 Sunday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                            <LoadingButton variant="contained" size="large" fullWidth>
                                 Monday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                            <LoadingButton variant="contained" size="large" fullWidth>
                                 Tuesday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                            <LoadingButton variant="contained" size="large" fullWidth>
                                 Wednesday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                            <LoadingButton variant="contained" size="large" fullWidth>
                                 Thursday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="contained" size="large" fullWidth>
+                            <LoadingButton variant="contained" size="large" fullWidth>
                                 Friday
                             </LoadingButton>
-                            <LoadingButton type="submit" variant="outlined" size="large" fullWidth>
+                            <LoadingButton variant="outlined" size="large" fullWidth>
                                 Saturday
                             </LoadingButton>
                         </Stack>
@@ -612,10 +402,10 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         <Stack flexDirection="row" justifyContent="space-between">
                             <Typography>Available times</Typography>
                             <Stack flexDirection="row" gap={2}>
-                                <LoadingButton type="submit" variant="contained" size="small">
+                                <LoadingButton variant="contained" size="small">
                                     Available
                                 </LoadingButton>
-                                <LoadingButton type="submit" variant="outlined" size="small">
+                                <LoadingButton variant="outlined" size="small">
                                     Unavailable
                                 </LoadingButton>
                             </Stack>
@@ -624,118 +414,48 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         <Stack justifyContent="space-between" gap={2} sx={{ mt: 2 }}>
                             <Stack flexDirection="row" justifyContent={'space-between'} gap={2}>
                                 {' '}
-                                <LoadingButton
-                                    type="submit"
-                                    variant="outlined"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="outlined" size="large" fullWidth>
                                     07:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     08:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     09:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     10:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     11:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     12:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     13:00
                                 </LoadingButton>
                             </Stack>
                             <Stack flexDirection="row" justifyContent={'space-between'} gap={2}>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     14:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     15:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     16:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     17:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     18:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="contained"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="contained" size="large" fullWidth>
                                     19:00
                                 </LoadingButton>
-                                <LoadingButton
-                                    type="submit"
-                                    variant="outlined"
-                                    size="large"
-                                    fullWidth
-                                >
+                                <LoadingButton variant="outlined" size="large" fullWidth>
                                     20:00
                                 </LoadingButton>
                             </Stack>
