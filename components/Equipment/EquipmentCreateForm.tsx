@@ -29,7 +29,7 @@ import { fetchGetSupervisor } from '@ku/services/supervisor'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IEquipmentCreateFormValuesProps {
     eqStatus: string
-    eqCode: Number
+    eqCode: String
     eqName: string
     eqBrand: String
     eqModel: String
@@ -78,8 +78,8 @@ function EquipmentCreateForm(props: AccountFormProps) {
     })
 
     const defaultValues = {
-        eqStatus: '',
-        eqCode: 0,
+        eqStatus: 'Available',
+        eqCode: '',
         eqName: '',
         eqBrand: '',
         eqModel: '',
@@ -88,7 +88,18 @@ function EquipmentCreateForm(props: AccountFormProps) {
         eqavascheDays: [],
         eqavascheTimes: [],
         eqtypeperson : [],
-        items:[],
+        items:[
+            {
+                checked: "Fixed",
+                data: "",
+                price: "",
+                chrildren: [
+                //   { data: "sub 1.1", price: {tab1:100 , tab2:200 ,tab3:300,tab4:400,tab5:500} },
+                //   { data: "sub 1.2", price: {tab1:100 , tab2:200 ,tab3:500,tab4:400,tab5:500} },
+                //   { data: "sub 1.3", price: {tab1:100 , tab2:200 ,tab3:900,tab4:400,tab5:500} },
+                ],
+              }
+        ],
         subs: false,
     }
 
@@ -217,7 +228,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         >
                             <RHFSelect
                                 name="eqStatus"
-                                label={isRequire('EquipmentStatus')}
+                                label={isRequire('Equipment status')}
                                 InputLabelProps={{ shrink: true }}
                             >
                                 {EquipmentStatus.map(({ value, label }) => (
@@ -237,7 +248,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             />{' '}
                             <RHFTextField
                                 name="eqCode"
-                                key={'eqCode-textfield'}
+                                key={'eq-Code-textfield'}
                                 label={isRequire('Equipment code name')}
                                 inputProps={{ maxLength: 100, minLength: 2 }}
                             />

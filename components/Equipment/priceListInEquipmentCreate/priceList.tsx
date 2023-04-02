@@ -26,14 +26,6 @@ declare type InvoiceItem = {
 }
 // ----------------------------------------------------------------------
 
-const SERVICE_OPTIONS = [
-    { id: 1, name: 'full stack development' },
-    { id: 2, name: 'backend development' },
-    { id: 3, name: 'ui design' },
-    { id: 4, name: 'ui/ux design' },
-    { id: 5, name: 'front end development' },
-]
-
 const CHECKED_OPTIONS = [
     { id: 1, name: 'Fixed' },
     { id: 2, name: 'Default' },
@@ -47,7 +39,12 @@ const UNIT_OPTIONS = [
     { id: 4, name: 'Baht/Times' },
 ]
 const defaultValuesForm = {
-    subs:false
+    checked:'Fixed',
+    name:'',
+    description:'',
+    unitPrice:'',
+    unit:'',
+    sub:[]
 }
 
 
