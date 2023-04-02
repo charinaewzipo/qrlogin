@@ -4,7 +4,7 @@ import { Box, Container } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
-import AccountForm, { IAccountFormValuesProps } from '@ku/components/Account/AccountForm'
+import  { IEquipmentCreateFormValuesProps } from '@ku/components/Equipment/EquipmentCreateForm'
 import EquipmentCreateForm from '@ku/components/Equipment/EquipmentCreateForm'
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
@@ -21,10 +21,10 @@ export function EquipmentCreate() {
     const router = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
 
-    const onFormSubmit = (data: IAccountFormValuesProps) => {
+    const onFormSubmit = (data: IEquipmentCreateFormValuesProps) => {
         //TODO: api submit
         enqueueSnackbar('Account create success.')
-        setErrorMsg('error msg')
+        // setErrorMsg('error msg')
         console.log('submit', data)
     }
 

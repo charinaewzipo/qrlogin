@@ -99,13 +99,13 @@ export default function PriceListNewEditDetails() {
     const values = watch()
 
     useEffect(() => {
-        console.log('values',values)
+        // console.log('values',values)
       
     }, [])
 
     useEffect(() => {
-        console.log('fields หน้าแรกได้ค่า =', fields)
-        console.log('values',values)
+        // console.log('fields หน้าแรกได้ค่า =', fields)
+        // console.log('values',values)
     }, [fields])
     
     const handleAdd = () => {
@@ -115,15 +115,15 @@ export default function PriceListNewEditDetails() {
     }
 
     const getSubEQU = (indexEquipment , stateChild) => {
-         console.log('ค่าจากgetsubEquหน้าแรก',indexEquipment,'และ',stateChild)
+        //  console.log('ค่าจากgetsubEquหน้าแรก',indexEquipment,'และ',stateChild)
         
         // setSubEquipment(stateChild)
         if(isEmpty(stateChild)){
-            console.log('เข้าอิฟ')
+            // console.log('เข้าอิฟ')
             setValue(`items.${indexEquipment}.subs`, false);
         }
         else{
-            console.log('เข้าเอลฟ์')
+            // console.log('เข้าเอลฟ์')
             setValue(`items.${indexEquipment}.subs`, true);
         }
     }
@@ -272,12 +272,12 @@ export default function PriceListNewEditDetails() {
                                 </Button>
                             </Stack>
 
-                            {/* <NestedArray
+                            <NestedArray
                                 nestIndex={index}
                                 {...{ control}}
                                 getSubEQU={getSubEQU}
                                 // handdleAddSub = {}
-                            /> */}
+                            />
 
                           
                         </Stack>

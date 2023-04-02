@@ -27,7 +27,7 @@ import { fNumber } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
-export interface IAccountFormValuesProps {
+export interface IEquipmentCreateFormValuesProps {
     EquipmentStatus: string
     EquipmentName: string
     EquipmentCodeName: Number
@@ -41,40 +41,6 @@ export interface IAccountFormValuesProps {
 const constant = {
     createEquipments: 'Create Equipments',
     cancel: 'Cancel',
-    privillege: 'Privillege',
-    accountStatus: 'Account Status',
-    accountExpiryDate: 'Account expiry date',
-    email: 'Email',
-    password: 'Password',
-    passwordPlaceholder: '********** (Auto Generated)',
-    typeOfPerson: 'Type of person',
-    department: 'Department',
-    governmentName: 'Government name',
-    universityName: 'University name',
-    companyName: 'Company name',
-    position: 'Position',
-    studentId: 'StudentId',
-    staffId: 'Staff ID',
-    positionName: 'Position name',
-    title: 'Title',
-    otherTitle: 'Other title',
-    firstName: 'Firstname',
-    surName: 'Surname',
-    address: 'Address',
-    phoneNumber: 'Phone number',
-    studentIdImage: 'Student/Staff ID Image',
-    citizenIdImage: 'Citizen ID Image',
-    creditLimit: 'Credit limit',
-    bookingLimit: 'Booking limit',
-    supervisorDetail: 'Supervisor/Advisor Detail',
-    enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code',
-    supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
-
-    updateAccount: 'Update Account',
-    reset: 'Reset',
-    waitSupervisorApprove: 'Please wait for supervisor approve.',
-    approve: 'Approve',
 }
 
 const accountStatus = [
@@ -88,7 +54,7 @@ const EquipmentStatus = [
 
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
-    onSubmit: (data: IAccountFormValuesProps) => void
+    onSubmit: (data: IEquipmentCreateFormValuesProps) => void
     onCancel: () => void
     updateMode?: boolean
     permission?: PERMISSION
@@ -97,18 +63,6 @@ interface AccountFormProps {
 
 function EquipmentCreateForm(props: AccountFormProps) {
     // const { currentTab, setCurrentTab } = useState('general');
-    const [supervisor, setSupervisor] = useState<ISupervisor | null>()
-    const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>()
-
-    const checkIsKuPerson = (typeOfPerson: string) =>
-        ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
-    const checkIsStudent = (position: string) => position.includes('student')
-    const checkIsStaff = (position: string) => ['Lecturer', 'Researcher'].includes(position)
-    const checkIsKuStudent = (position: string, typeOfPerson: string) =>
-        checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
-    const checkIsOther = (check: string) => check === 'Other'
-    const checkIsUser = (privillege: string) => privillege === 'User'
-    const checkIsFinance = (privillege: string) => privillege === 'Finance'
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
     const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff')
@@ -220,7 +174,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         if (props.errorMsg !== '') window.scrollTo(0, 0)
     }, [props.errorMsg])
 
-    const onSubmit = async (data: IAccountFormValuesProps) => {
+    const onSubmit = async (data: IEquipmentCreateFormValuesProps) => {
         console.log('กดส่งละได้ค่า', data)
         const submitData = cloneDeep(data)
 

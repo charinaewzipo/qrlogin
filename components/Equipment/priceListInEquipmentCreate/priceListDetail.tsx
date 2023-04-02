@@ -15,7 +15,7 @@ export default ({ nestIndex, control ,getSubEQU}) => {
     const [selectedSubOption, setSelectedSubOption] = useState(null);
 
     useEffect(() => {
-        console.log('fields หน้าสองได้ค่า =', fields)
+        // console.log('fields หน้าสองได้ค่า =', fields)
         getSubEQU(nestIndex,fields)
     }, [fields])
 
