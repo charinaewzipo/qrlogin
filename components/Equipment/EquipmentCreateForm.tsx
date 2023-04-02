@@ -149,120 +149,16 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const checkIsOther = (check: string) => check === 'Other'
     const checkIsUser = (privillege: string) => privillege === 'User'
     const checkIsFinance = (privillege: string) => privillege === 'Finance'
-    const checkIsAdmin = (privillege: string) => privillege === 'Admin'
-    const checkIsSupervisor = (privillege: string) => privillege === 'Supervisor'
-    const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
     const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff')
 
     const RegisterSchema = Yup.object().shape({
-        privillege: Yup.string().required('Privillege is require'),
-        email: Yup.string()
-            .email('Email must be a valid email address')
-            .required('Email is required')
-            .when(['position', 'typeOfPerson', 'privillege'], {
-                is: (position, typeOfPerson, privillege) =>
-                    (checkIsKuStudent(position, typeOfPerson) ||
-                        checkIsAdmin(privillege) ||
-                        checkIsFinance(privillege)) &&
-                    !checkIsSupervisor(privillege),
-                then: Yup.string().test({
-                    name: 'email',
-                    message: 'KU student/staff must be @ku.ac.th or @ku.th',
-                    test: (email) => new RegExp(kuStudentEmailRegex).test(email),
-                }),
-            }),
-        password: Yup.string(),
+        // equipmentStatus: Yup.string().required('Equipment status is require'),
+        equipmentName: Yup.string().required('Equipment name is require'),
+        codeName:Yup.string().required('Equipment code name is require'),
         accountStatus: Yup.string().required('Account Status is require'),
-        accountExpiryDate: Yup.date()
-            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
-            .nullable()
-            .test({
-                name: 'accountExpiryDate',
-                message: "Account expiry date must be greater than today's date",
-                test: (date) => {
-                    const datePlusOne = new Date()
-                    datePlusOne.setDate(datePlusOne.getDate() + 1)
-                    datePlusOne.setHours(0, 0, 0, 0)
-                    return date === null || date.getTime() >= datePlusOne.getTime()
-                },
-            }),
         avatar: Yup.string(),
-        typeOfPerson: Yup.string().required('Type of person is require'),
-        department: Yup.string()
-            .nullable()
-            .when('typeOfPerson', {
-                is: (position) => checkIsKuPerson(position) || position === '',
-                then: Yup.string().nullable().required('Department is require'),
-            }),
-        universityName: Yup.string().when('typeOfPerson', {
-            is: 'Other University',
-            then: Yup.string().required('University name is require'),
-        }),
-        governmentName: Yup.string().when('typeOfPerson', {
-            is: 'Government office',
-            then: Yup.string().required('Government name is require'),
-        }),
-        companyName: Yup.string().when('typeOfPerson', {
-            is: 'Private company',
-            then: Yup.string().required('Company name is require'),
-        }),
-        position: Yup.string()
-            .required('Position is require')
-            .when('privillege', {
-                is: (privillege) => checkIsFinance(privillege),
-                then: Yup.string(),
-            }),
-        studentId: Yup.string().when(['position', 'typeOfPerson'], {
-            is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
-            then: Yup.string().required('Student ID is required'),
-        }),
-        staffId: Yup.string(),
-        positionName: Yup.string().when(['position', 'privillege'], {
-            is: (position, privillege) => checkIsOther(position) && !checkIsFinance(privillege),
-            then: Yup.string().required('Position is require'),
-        }),
-        title: Yup.string().required('Title is require'),
-        otherTitle: Yup.string().when('title', {
-            is: (title) => title === 'Other' || title === '',
-            then: Yup.string().required('Other title is require'),
-        }),
-        firstName: Yup.string().required('Firstname is require'),
-        surName: Yup.string().required('Surname is require'),
-        phoneNumber: Yup.string()
-            .required('Phone number is require')
-            .test({
-                name: 'phoneNumber',
-                message: 'Phone number must be numbers',
-                test: (phone) => new RegExp(numberOnlyRegex).test(phone),
-            })
-            .test({
-                name: 'phoneNumber',
-                message: "Phone number must start with '0'",
-                test: (phone) => phone[0] === '0',
-            })
-            .length(10, 'Phone number must be 10 digits'),
-        idImages: Yup.array(Yup.string()),
-        creditLimit: Yup.string().required('Credit limit is require'),
-        bookingLimit: Yup.string().required('Booking limit is require'),
-        //TODO: CHeck supervisorcode เพิ่มตอน api มา
-        supervisorCode: Yup.string().when(['position', 'typeOfPerson', 'privillege'], {
-            is: (position, typeOfPerson, privillege) =>
-                checkIsKuStudent(position, typeOfPerson) && checkIsUser(privillege),
-            then: Yup.string()
-                .required('Supervisor code is require, please contact your supervisor for code')
-                .test({
-                    name: 'supervisorCode',
-                    message: constant.supervisorNotFound,
-                    test: (_, ctx) => ctx.parent.supervisorStatus !== 'notFound',
-                })
-                .test({
-                    name: 'supervisorCode',
-                    message: '',
-                    test: (_, ctx) => ctx.parent.supervisorStatus === 'found',
-                }),
-        }),
     })
 
     const defaultValues = {
@@ -390,7 +286,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         Finance: [listAllTab.SciKUStudentAndStaff],
         Admin: [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity],
     }
-    const methods = useForm({defaultValues})
+    const methods = useForm({ resolver: yupResolver(RegisterSchema),defaultValues})
 
     const {
         handleSubmit,
@@ -573,10 +469,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
                 {!!props.errorMsg && <Alert severity="error">{props.errorMsg}</Alert>}
                 <Paper elevation={3} sx={{ borderRadius: 2, p: 3 }}>
                     <Stack spacing={3}>
-                        {/* <Box sx={{width:'50%'}}> */}
                         <Stack gap={3} flexDirection="row" width={{md:'48.9%', sm:'48.7%',xs:'47.9%'}}>
                             <RHFSelect
-                                name="EquipmentStatus"
+                                name="equipmentStatus"
                                 label={isRequire('EquipmentStatus')}
                                 InputLabelProps={{ shrink: true }}
                             >
@@ -591,9 +486,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
                         <Stack gap={3} flexDirection="row">
                             <RHFTextField
-                                name="Equipment name"
+                                name="equipmentName"
                                 key={'equipmentName-textfield'}
-                                label={'Equipment name *'}
+                                label={isRequire('Equipment name')}
                                 inputProps={{ maxLength: 100 ,minLength:6}}
                             />{' '}
                             <RHFTextField
@@ -607,7 +502,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             <RHFSelect
                                 name="Brand"
                                 label={('Brand')}
-                                InputLabelProps={{ shrink: true }}
                                 placeholder={'Brand'}
                             >
                                 {accountStatus.map(({ value, label }) => (

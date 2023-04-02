@@ -214,6 +214,7 @@ export default function PriceListNewEditDetails() {
                                     }}
                                     sx={{ maxWidth: { md: 160 }, width: '100%' }}
                                     defaultValue={index===0 ? 'Fixed' : ''}
+                                    disabled={index===0 ? true:false}
                                 >
                                     {/* <MenuItem
                                         value="Fixed"
@@ -279,6 +280,7 @@ export default function PriceListNewEditDetails() {
                                     }}
                                     sx={{ maxWidth: { md: 160 } }}
                                     defaultValue={index===0 ? 'Baht/Hour' : ''}
+                                    disabled={index===0 ? true:false}
                                 >
                                     {/* <MenuItem
                                         value="Fixed"
