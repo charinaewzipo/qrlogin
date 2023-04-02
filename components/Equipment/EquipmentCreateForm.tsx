@@ -30,31 +30,36 @@ import { fetchGetSupervisor } from '@ku/services/supervisor'
 import AccountForm from '@ku/components/Account/AccountForm'
 import PriceListNewEditDetails from './priceListInEquipmentCreate/priceList'
 export interface IAccountFormValuesProps {
-    privillege: string
-    email: string
-    password: string
-    accountStatus: string
-    accountExpiryDate: string
-    typeOfPerson: string
-    avatar: string
-    department: string
-    governmentName: string
-    companyName: string
-    position: string
-    studentId: string
-    staffId: string
-    positionName: string
-    title: string
-    otherTitle: string
-    firstName: string
-    surName: string
-    address: string
-    phoneNumber: string
-    idImages: (File | string)[]
-    creditLimit: string
-    bookingLimit: string
-    supervisorCode: string
-    supervisorStatus: 'found' | 'notFound' | 'waiting' | 'fetching'
+    EquipmentName: any,
+    EquipmentStatus: any,
+    accountExpiryDate: null,
+    accountStatus: string,
+    address: string,
+    avatar: string,
+    bookingLimit: string,
+    companyName: string,
+    creditLimit: string,
+    department: string,
+    email: string,
+    firstName: string,
+    idImages: [],
+    items: [],
+    otherTitle: string,
+    password: string,
+    phoneNumber: string,
+    position: string,
+    positionName: string,
+    privillege: string,
+    staffId: string,
+    studentId: string,
+    supervisorCode: string,
+    supervisorStatus: null,
+    surName: string,
+    title: string,
+    totalPrice: any,
+    typeOfPerson: string,
+    universityName: string,
+    subs:boolean
 }
 const constant = {
     createEquipments: 'Create Equipments',
@@ -140,7 +145,7 @@ const title = [
     { value: 'Other', label: 'Other' },
 ]
 const accountStatus = [
-    { value: 'Active', label: 'Create' },
+    // { value: 'Active', label: 'Create' },
 ]
 const EquipmentStatus = [
     { value: 'Available', label: 'Available' },
@@ -290,31 +295,65 @@ function EquipmentCreateForm(props: AccountFormProps) {
     })
 
     const defaultValues = {
-        privillege: 'User',
-        avatar: '',
-        email: '',
-        password: '',
-        accountStatus: 'Active',
+        EquipmentName: undefined,
+        EquipmentStatus: undefined,
         accountExpiryDate: null,
-        typeOfPerson: '',
-        department: '',
-        universityName: '',
-        studentId: '',
-        position: '',
-        staffId: '',
-        positionName: '',
-        companyName: '',
-        title: '',
-        otherTitle: '',
-        firstName: '',
-        surName: '',
-        address: '',
-        phoneNumber: '',
+        accountStatus: "Active",
+        address: "",
+        avatar: "",
+        bookingLimit: "5",
+        companyName: "",
+        creditLimit: "15,000",
+        department: "",
+        email: "",
+        firstName: "",
         idImages: [],
-        creditLimit: '15,000',
-        bookingLimit: '5',
-        supervisorCode: '',
+        items: [{EquipmentName: undefined,
+            EquipmentStatus: undefined,
+            accountExpiryDate: null,
+            accountStatus: "Active",
+            address: "",
+            avatar: "",
+            bookingLimit: "5",
+            companyName: "",
+            creditLimit: "15,000",
+            department: "",
+            email: "",
+            firstName: "",
+            idImages: [],
+            items: [],
+            otherTitle: "",
+            password: "",
+            phoneNumber: "",
+            position: "",
+            positionName: "",
+            privillege: "User",
+            staffId: "",
+            studentId: "",
+            supervisorCode: "",
+            supervisorStatus: null,
+            surName: "",
+            title: "",
+            totalPrice: NaN,
+            typeOfPerson: "",
+            universityName: "",
+            subs:false}],
+        otherTitle: "",
+        password: "",
+        phoneNumber: "",
+        position: "",
+        positionName: "",
+        privillege: "User",
+        staffId: "",
+        studentId: "",
+        supervisorCode: "",
         supervisorStatus: null,
+        surName: "",
+        title: "",
+        totalPrice: NaN,
+        typeOfPerson: "",
+        universityName: "",
+        subs:false
     }
 
     const onFormSubmit = () => {
@@ -334,27 +373,27 @@ function EquipmentCreateForm(props: AccountFormProps) {
         SciKUStudentAndStaff: {
             value: 'SciKUStudentAndStaff',
             label: 'SciKU Student & Staff',
-            component: <PriceListNewEditDetails />,
+            // component: <PriceListNewEditDetails />,
         },
         KUStudentAndStaff: {
             value: 'KUStudentAndStaff',
             label: 'KUStudent & Staff',
-            component: <PriceListNewEditDetails />,
+            // component: <PriceListNewEditDetails />,
         },
         OtherUniversity: {
             value: 'Other University',
             label: 'Other University',
-            component: <PriceListNewEditDetails />,
+            // component: <PriceListNewEditDetails />,
         },
         GovernmentOffice: {
             value: 'Government Office',
             label: 'Government Office',
-            component: <PriceListNewEditDetails />,
+            // component: <PriceListNewEditDetails />,
         },
         privateCompany: {
             value: 'Private-Company',
             label: 'Private Company',
-            component: <PriceListNewEditDetails />,
+            // component: <PriceListNewEditDetails />,
         },
     }
     const permissionTab = (): PERMISSION => {
@@ -380,10 +419,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         Finance: [listAllTab.SciKUStudentAndStaff],
         Admin: [listAllTab.SciKUStudentAndStaff, listAllTab.OtherUniversity],
     }
-    const methods = useForm<IAccountFormValuesProps>({
-        resolver: yupResolver(RegisterSchema),
-        defaultValues,
-    })
+    const methods = useForm({defaultValues})
 
     const {
         handleSubmit,
@@ -604,7 +640,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
                                 name="accountStatus"
-                                label={isRequire('Brand')}
+                                label={('Brand')}
                                 InputLabelProps={{ shrink: true }}
                                 placeholder={'Brand'}
                             >
@@ -617,7 +653,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             <RHFTextField
                                 name="department"
                                 key={'department-textfield'}
-                                label={isRequire('Model')}
+                                label={('Model')}
                                 inputProps={{ maxLength: 100 }}
                             />
                         </Stack>

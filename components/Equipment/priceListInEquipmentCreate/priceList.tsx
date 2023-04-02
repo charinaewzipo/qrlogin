@@ -89,9 +89,7 @@ export default function PriceListNewEditDetails() {
         }),[]
       );
 
-    const { control, setValue, watch, resetField } = useForm(
-        {defaultValues}
-    )
+    const { control, setValue, watch, resetField } = useFormContext()
 
     const { fields, append, remove , update } = useFieldArray({
         control,
@@ -110,10 +108,10 @@ export default function PriceListNewEditDetails() {
     //     setValue('totalPrice', totalPrice)
     // }, [setValue, totalPrice])
 
-    // useEffect(() => {
-    //     console.log('fields first time',fields)
-    //     handleAdd()
-    // }, [])
+    useEffect(() => {
+        console.log('values',values)
+      
+    }, [])
 
     useEffect(() => {
         console.log('fields หน้าแรกได้ค่า =', fields)
@@ -197,7 +195,7 @@ export default function PriceListNewEditDetails() {
 
             <Stack divider={<Divider flexItem sx={{ borderStyle: 'dashed' }} />} spacing={3}>
                 {fields.map((item, index) => {
-                    // console.log('item', item.subs)
+                    console.log('item',item)
                     return (
                         <Stack key={item.id}  spacing={1.5}>
                             <Stack
