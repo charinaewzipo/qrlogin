@@ -53,7 +53,7 @@ const defaultValuesForm = {
 export default function PriceListNewEditDetails() {
     const defaultValues = useMemo(
         () => ({
-          items: [defaultValuesForm]
+          eqsches: [defaultValuesForm]
         }),[]
       );
 
@@ -61,7 +61,7 @@ export default function PriceListNewEditDetails() {
 
     const { fields, append, remove , update } = useFieldArray({
         control,
-        name: 'items',
+        name: 'eqsches',
     })
 
     const values = watch()
@@ -88,11 +88,11 @@ export default function PriceListNewEditDetails() {
         // setSubEquipment(stateChild)
         if(isEmpty(stateChild)){
             // console.log('เข้าอิฟ')
-            setValue(`items.${indexEquipment}.subs`, false);
+            setValue(`eqsches.${indexEquipment}.subs`, false);
         }
         else{
             // console.log('เข้าเอลฟ์')
-            setValue(`items.${indexEquipment}.subs`, true);
+            setValue(`eqsches.${indexEquipment}.subs`, true);
         }
     }
 
@@ -117,7 +117,7 @@ export default function PriceListNewEditDetails() {
                                 sx={{ width: 1 }}
                             >
                                 <RHFSelect
-                                    name={`items[${index}].checked`}
+                                    name={`eqsches[${index}].checked`}
                                     size="small"
                                     label="Checked *"
                                     InputLabelProps={{ shrink: true }}
@@ -165,25 +165,25 @@ export default function PriceListNewEditDetails() {
 
                                 <RHFTextField
                                     size="small"
-                                    name={`items[${index}].name`}
+                                    name={`eqsches[${index}].name`}
                                     label="Name *"
                                 />
 
                                 <RHFTextField
                                     size="small"
-                                    name={`items[${index}].description`}
+                                    name={`eqsches[${index}].description`}
                                     label="Description"
                                 />
 
-                                {values.items[index].subs ? <></>:<>
+                                {values.eqsches[index].subs ? <></>:<>
                                     <RHFTextField
                                     size="small"
-                                    name={`items[${index}].unitPrice`}
+                                    name={`eqsches[${index}].unitPrice`}
                                     label="Unit price *"
                                 />
                                 
                                 <RHFSelect
-                                    name={`items[${index}].unit`}
+                                    name={`eqsches[${index}].unit`}
                                     size="small"
                                     label="Unit *"
                                     InputLabelProps={{ shrink: true }}

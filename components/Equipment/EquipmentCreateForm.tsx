@@ -34,13 +34,39 @@ export interface IEquipmentCreateFormValuesProps {
     eqBrand: String
     eqModel: String
     eqDescription: String
-    eqPicture: Array<File>
+    eqPicture: Array<IV1EquipmentPicture>
     eqavascheDays: Array<String>
     eqavascheTimes: Array<Number>
-    eqtypeperson : Array<IV1EquipmentTypePerson>
-    items: Array<Object>
-    subs: boolean
+    eqtypeperson: Array<IV1EquipmentTypePerson>
 }
+export interface IV1EquipmentPicture {
+    eqpicLink: string
+    eqpicSort: number
+}
+
+export interface IV1EquipmentTypePerson {
+    eqpscheTypePerson: string
+    eqsches: Array<IV1EquipmentSchemaPrice>
+}
+
+export interface IV1EquipmentSchemaPrice {
+    eqpscheSubOption: string | null
+    eqpscheChecked: string
+    eqpscheName: string
+    eqpscheDescription: string | null
+    eqpscheUnitPrice: number
+    eqpscheUnitPer: string | null
+    eqsubsches: Array<IV1EquipmentSubSchemaPrice> | null
+}
+
+export interface IV1EquipmentSubSchemaPrice {
+    eqsubpscheChecked: string
+    eqsubpscheName: string
+    eqsubpscheDescription: string | null
+    eqsubpscheUnitPrice: number
+    eqsubpscheUnitPer: string
+}
+
 const constant = {
     createEquipments: 'Create Equipments',
     cancel: 'Cancel',
@@ -87,20 +113,30 @@ function EquipmentCreateForm(props: AccountFormProps) {
         eqPicture: [],
         eqavascheDays: [],
         eqavascheTimes: [],
-        eqtypeperson : [],
-        items:[
+        eqtypeperson: [
             {
-                checked: "Fixed",
-                data: "",
-                price: "",
-                chrildren: [
-                //   { data: "sub 1.1", price: {tab1:100 , tab2:200 ,tab3:300,tab4:400,tab5:500} },
-                //   { data: "sub 1.2", price: {tab1:100 , tab2:200 ,tab3:500,tab4:400,tab5:500} },
-                //   { data: "sub 1.3", price: {tab1:100 , tab2:200 ,tab3:900,tab4:400,tab5:500} },
+                eqpscheTypePerson: 'KUStudents',
+                eqsches: [
+                    {
+                        eqpscheSubOption: '',
+                        eqpscheChecked: 'Fixed',
+                        eqpscheName: '',
+                        eqpscheDescription: '',
+                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPer: 'Baht/Hour',
+                        eqsubsches: [
+                            // {
+                            //     eqsubpscheChecked: '',
+                            //     eqsubpscheName: '',
+                            //     eqsubpscheDescription: '', 
+                            //     eqsubpscheUnitPrice: 0,
+                            //     eqsubpscheUnitPer: '',
+                            // },
+                        ],
+                    },
                 ],
-              }
+            },
         ],
-        subs: false,
     }
 
     const onFormSubmit = () => {
@@ -177,7 +213,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
         watch,
         trigger,
     } = methods
-
 
     useEffect(() => {
         if (props.errorMsg !== '') window.scrollTo(0, 0)
