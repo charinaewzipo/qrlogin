@@ -53,7 +53,7 @@ const defaultValuesForm = {
 export default function PriceListNewEditDetails() {
     const defaultValues = useMemo(
         () => ({
-          eqsches: [defaultValuesForm]
+            eqsches: [defaultValuesForm]
         }),[]
       );
 
@@ -61,7 +61,7 @@ export default function PriceListNewEditDetails() {
 
     const { fields, append, remove , update } = useFieldArray({
         control,
-        name: 'eqsches',
+        name: 'eqtypeperson[0].eqsches',
     })
 
     const values = watch()
@@ -88,11 +88,11 @@ export default function PriceListNewEditDetails() {
         // setSubEquipment(stateChild)
         if(isEmpty(stateChild)){
             // console.log('เข้าอิฟ')
-            setValue(`eqsches.${indexEquipment}.subs`, false);
+            setValue(`eqtypeperson[0].eqsches.${indexEquipment}.subs`, false);
         }
         else{
             // console.log('เข้าเอลฟ์')
-            setValue(`eqsches.${indexEquipment}.subs`, true);
+            setValue(`eqtypeperson[0].eqsches.${indexEquipment}.subs`, true);
         }
     }
 
@@ -117,7 +117,7 @@ export default function PriceListNewEditDetails() {
                                 sx={{ width: 1 }}
                             >
                                 <RHFSelect
-                                    name={`eqsches[${index}].checked`}
+                                    name={`eqtypeperson[0].eqsches[${index}].eqpscheChecked`}
                                     size="small"
                                     label="Checked *"
                                     InputLabelProps={{ shrink: true }}
@@ -165,25 +165,25 @@ export default function PriceListNewEditDetails() {
 
                                 <RHFTextField
                                     size="small"
-                                    name={`eqsches[${index}].name`}
+                                    name={`eqtypeperson[0].eqsches[${index}].eqpscheName`}
                                     label="Name *"
                                 />
 
                                 <RHFTextField
                                     size="small"
-                                    name={`eqsches[${index}].description`}
+                                    name={`eqtypeperson[0].eqsches[${index}].eqpscheDescription`}
                                     label="Description"
                                 />
 
-                                {values.eqsches[index].subs ? <></>:<>
+                                {values.eqtypeperson[0].eqsches[index].subs ? <></>:<>
                                     <RHFTextField
                                     size="small"
-                                    name={`eqsches[${index}].unitPrice`}
+                                    name={`eqtypeperson[0].eqsches[${index}].eqpscheUnitPrice`}
                                     label="Unit price *"
                                 />
                                 
                                 <RHFSelect
-                                    name={`eqsches[${index}].unit`}
+                                    name={`eqtypeperson[0].eqsches[${index}].eqpscheUnitPer`}
                                     size="small"
                                     label="Unit *"
                                     InputLabelProps={{ shrink: true }}
