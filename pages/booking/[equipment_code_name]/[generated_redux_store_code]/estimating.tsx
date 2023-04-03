@@ -7,15 +7,24 @@ import {
   Autocomplete,
   TextField,
   Stack,
+  Card,
+  Grid,
+  Typography,
+  Box,
 } from '@mui/material'
-import { BOOKING_PATH } from '@ku/constants/routes'
+import { BOOKING_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import BookingSort from '@ku/components/Booking/BookingSort'
 import BookingList from '@ku/components/Booking/BookingList'
 import { fetchGetBookingMeRead } from '@ku/services/booking'
-import { isEmpty } from 'lodash'
+import { get, isEmpty } from 'lodash'
+import { format } from 'date-fns'
+import Label from '@sentry/components/label/Label'
+import BookingSummary from '@ku/components/Booking/BookingSummary'
+import { useRouter } from 'next/router'
+import BookingInvoice from '@ku/components/Booking/BookingInvoice'
 const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
   {
     eqId: 1,
@@ -51,14 +60,54 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpChecked: "",
         eqpIsChecked: true,
         eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
+        eqpDescription: "StarndardStarndard optionsStarndard optionsStarndard optionsStarndard options options",
+        eqpQuantity: 3,
+        eqpTotal: 15000,
+        eqpUnitPrice: 5000,
         eqpUnitPer: "hour",
         eqpCreatedAt: 1648753212000,
         eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
+        eqSubPrice: [
+          {
+            eqSubpId: 1,
+            eqSubpChecked: "yes",
+            eqSubpName: "Laptop",
+            eqSubpDescription: "Macbook Pro 13-inch",
+            eqSubpUnitPrice: 1399.99,
+            eqSubpUnitPer: "piece",
+            eqSubpQuantity: 2,
+            eqSubpTotal: 2799.98,
+            eqSubpCreatedAt: 1649126400,
+            eqSubpUpdatedAt: 1649212800
+          }, {
+            eqSubpId: 2,
+            eqSubpChecked: "yes",
+            eqSubpName: "Laptop",
+            eqSubpDescription: "Macbook Pro 13-inch",
+            eqSubpUnitPrice: 1399.99,
+            eqSubpUnitPer: "piece",
+            eqSubpQuantity: 2,
+            eqSubpTotal: 2799.98,
+            eqSubpCreatedAt: 1649126400,
+            eqSubpUpdatedAt: 1649212800
+          }]
+      }, {
+        eqpId: 1,
+        eqpEqId: 1,
+        eqpTypePerson: "operator",
+        eqpSubOption: "",
+        eqpChecked: "",
+        eqpIsChecked: true,
+        eqpName: "Rental fee",
+        eqpDescription: "StarndardStarndard optionsStarndard optionsStarndard optionsStarndard options options",
+        eqpQuantity: 3,
+        eqpTotal: 5000,
+        eqpUnitPrice: 5010,
+        eqpUnitPer: "hour",
+        eqpCreatedAt: 1648753212000,
+        eqpUpdatedAt: 1648753212000,
+        eqSubPrice: [
+        ]
       }
     ],
     eqpriceSubTotal: 500,
@@ -131,7 +180,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     payOt: 0,
     payDiscount: 50,
     payFees: 20,
-    payTotal: 4700,
+    payTotal: 470,
     payId: 1,
     payBookId: 1,
     payQuotationPicture: "https://example.com/quotation.jpg",
@@ -221,56 +270,32 @@ const BOOKING_OPTION = ['Coating Material (CM1)', 'Coating Material (CM2)', 'Coa
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
   const [tableData, setTableData] = useState<Array<IV1RespGetBookingMeRead & IV1TablePayments>>([])
-  const [page, setPage] = useState(1)
-  const [showLoadMore, setShowLoadMore] = useState(true)
-  const [filterSearchEquipment, setFilterSearchEquipment] = useState('')
-  const [filterSort, setFilterSort] = useState('')
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
-
+  const [bookDeatail, setBookDetail] = useState<IV1RespGetBookingMeRead & IV1TablePayments>(null)
+  const { push } = useRouter()
   useEffect(() => {
     GetBookingMeRead()
   }, [])
 
   const GetBookingMeRead = async () => {
     const query: IV1QueyGetBookingMeRead & IV1QueryPagination = {
-      page: page,
-      limit: 12,
+      page: 1,
+      limit: 9999,
       startTime: '',
       endTime: '',
-      search: filterSearchEquipment,
+      search: '',
       eqId: 12345,
-      bookStatus: filterSort,
+      bookStatus: '',
     }
     await fetchGetBookingMeRead(query).then(response => {
       if (response.code === 200) {
-        const nextData = response.data;
-        if (!isEmpty(nextData)) {
-          setShowLoadMore(false)
-        }
-        // โชว์เฉยๆ
-        // if (isEmpty(nextData)) {
-        //   setShowLoadMore(false)
-        // }
+        setBookDetail(mockTableData[0])
         setTableData(mockTableData)
-        setPage(() => page + 1)
       }
     }).catch(err => {
       console.log(err)
     })
   }
-  const handleSearchEquipment = (event, value) => {
-    setFilterSearchEquipment(value)
-    setPage(0)
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetBookingMeRead()
-      }, 1000)
-    )
-  }
-  const handleLoadMore = () => {
-    GetBookingMeRead()
-  }
+
   return (
     <>
       <Head>
@@ -286,25 +311,19 @@ export default function BookingPage() {
             },
             {
               name: 'List',
+              href: BOOKING_PATH,
+            },
+            {
+              name: get(bookDeatail, 'eqName', ''),
+              href: (MERGE_PATH(BOOKING_PATH, '12345/', get(bookDeatail, 'eqId', '').toString()))
+            },
+            {
+              name: 'Estimating',
             },
           ]}
-
         />
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} sx={{ mb: 4 }}>
-          <Autocomplete
-            disablePortal
-            id="search-equipment"
-            onInputChange={handleSearchEquipment}
-            options={BOOKING_OPTION.map(option => option)}
-            renderInput={(params) => <TextField {...params} label="Search equipment" />}
-            sx={{ width: 400 }}
-          />
-          <BookingSort
-            filterSort={filterSort}
-            onFilterSort={setFilterSort}
-          />
-        </Stack>
-        <BookingList data={tableData} loading={!tableData.length} onLoadmore={handleLoadMore} showLoadMore={showLoadMore} />
+        <BookingSummary book={bookDeatail} />
+        <BookingInvoice book={bookDeatail} />
       </Container>
     </>
   )
