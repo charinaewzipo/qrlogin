@@ -9,7 +9,8 @@ import Iconify from '@sentry/components/iconify'
 export default ({ nestIndex, control ,getSubEQU}) => {
     const { fields, remove, append } = useFieldArray({
         control,
-        name: `test[${nestIndex}].nestedArray`,
+        // name: `test[${nestIndex}].nestedArray`,
+        name: 'eqtypeperson[0].eqsches[0].eqsubsches'
     })
 
     const [selectedSubOption, setSelectedSubOption] = useState(null);
@@ -55,7 +56,7 @@ export default ({ nestIndex, control ,getSubEQU}) => {
                                     onClick={() => remove(k)}
                                 ></Button>
                                 <RHFSelect
-                                    name={`1`}
+                                    name={`eqtypeperson[0].eqsches[0].eqsubsches.eqsubpscheChecked`}
                                     size="small"
                                     label="Checked *"
                                     InputLabelProps={{ shrink: true }}
@@ -98,11 +99,12 @@ export default ({ nestIndex, control ,getSubEQU}) => {
                                         </MenuItem>
                                     ))}
                                 </RHFSelect>
-                                <RHFTextField size="small" name={`item[${item.id}].name`} label="Name *" />
-                                <RHFTextField size="small" name={`item[${item.id}].desc`} label="Description" />
-                                <RHFTextField size="small" name={`item[${item.id}].unitPrice`} label="Unit price	 *" />
+                                <RHFTextField size="small" name={`eqtypeperson[0].eqsches[0].eqsubsches[0].eqsubpscheName`} label="Name *" />
+                                <RHFTextField size="small" name={`eqtypeperson[0].eqsches[0].eqsubsches[0].eqsubpscheDescription`} label="Description" />
+                                <RHFTextField size="small" name={`eqtypeperson[0].eqsches[0].eqsubsches[0].eqsubpscheUnitPrice.SCIKU_STUDENT_STAFF`} label="Unit price	 *" />
                                 <RHFSelect
-                                    name={`item[${item.id}].unit`}
+                                    // name={`item[${item.id}].unit`}
+                                    name={'eqtypeperson[0].eqsches[0].eqsubsches.eqsubpscheUnitPer'}
                                     size="small"
                                     label="Unit *"
                                     InputLabelProps={{ shrink: true }}

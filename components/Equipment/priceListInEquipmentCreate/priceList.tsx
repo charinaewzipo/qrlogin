@@ -39,23 +39,24 @@ const UNIT_OPTIONS = [
     { id: 4, name: 'Baht/Times' },
 ]
 const defaultValuesForm = {
-    checked:'Fixed',
-    name:'',
-    description:'',
-    unitPrice:'',
-    unit:'',
-    sub:[]
+    eqpscheChecked: "Fixed",
+    eqpscheDescription: "",
+    eqpscheName: "",
+    eqpscheSubOption: "",
+    eqpscheUnitPer: "",
+    eqpscheUnitPrice: 0,
+    eqsubsches: [],
 }
 
 
 // ----------------------------------------------------------------------
 
 export default function PriceListNewEditDetails() {
-    const defaultValues = useMemo(
-        () => ({
-            eqsches: [defaultValuesForm]
-        }),[]
-      );
+    // const defaultValues = useMemo(
+    //     () => ({
+    //         eqsches: [defaultValuesForm]
+    //     }),[]
+    //   );
 
     const { control, setValue, watch, resetField } = useFormContext()
 

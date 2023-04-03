@@ -63,7 +63,7 @@ export interface IV1EquipmentSubSchemaPrice {
     eqsubpscheChecked: string
     eqsubpscheName: string
     eqsubpscheDescription: string | null
-    eqsubpscheUnitPrice: number
+    eqsubpscheUnitPrice: number | any
     eqsubpscheUnitPer: string
 }
 
@@ -115,7 +115,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
         eqavascheTimes: [],
         eqtypeperson: [
             {
-                eqpscheTypePerson: 'KUStudents',
+                eqpscheTypePerson: 'SCIKU_STUDENT_STAFF',
                 eqsches: [
                     {
                         eqpscheSubOption: '',
@@ -125,17 +125,23 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         eqpscheUnitPrice: 0,
                         eqpscheUnitPer: 'Baht/Hour',
                         eqsubsches: [
-                            // {
-                            //     eqsubpscheChecked: '',
-                            //     eqsubpscheName: '',
-                            //     eqsubpscheDescription: '', 
-                            //     eqsubpscheUnitPrice: 0,
-                            //     eqsubpscheUnitPer: '',
-                            // },
+//                             {eqsubpscheChecked: '',
+//                             eqsubpscheName:'',
+//                             eqsubpscheDescription:'',
+//                             eqsubpscheUnitPrice: {SCIKU_STUDENT_STAFF:100 , KU_STUDENT_STAFF:200 ,OTHER_UNIVERSITY:300,GOVN_OFFICE:400,PRIVATE_COMPANY:500},
+//                             eqsubpscheUnitPer:''}
+// ,
+//                             {eqsubpscheChecked: '',
+//                             eqsubpscheName:'',
+//                             eqsubpscheDescription:'',
+//                             eqsubpscheUnitPrice: {SCIKU_STUDENT_STAFF:1000 , KU_STUDENT_STAFF:2000 ,OTHER_UNIVERSITY:3000,GOVN_OFFICE:4000,PRIVATE_COMPANY:5000},
+//                             eqsubpscheUnitPer:''}
                         ],
                     },
+                    
                 ],
             },
+          
         ],
     }
 
@@ -477,15 +483,15 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             />
                         ))}
                     </Tabs>
-                    <PriceListNewEditDetails />
-                    {/* {get(listPermissionTab, permissionTab(), []).map(
+                   
+                    {get(listPermissionTab, permissionTab(), []).map(
                         (tab) =>
                             tab.value === currentTab && (
                                 <Box key={tab.value} sx={{ mt: 5 }}>
-                                    {tab.component}
+                                     <PriceListNewEditDetails />
                                 </Box>
                             )
-                    )} */}
+                    )}
                 </Paper>
 
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
