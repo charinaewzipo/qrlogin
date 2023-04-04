@@ -110,6 +110,7 @@ export default function ImagesCarousel({ images, width, height }: Props) {
                   {images.map((img) => (
                       <Image
                           key={img}
+                          ratio='3/4'
                           alt="large image"
                           src={img}
                           onClick={() => handleOpenLightbox(img)}

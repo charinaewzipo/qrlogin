@@ -1,4 +1,4 @@
-import { Stack, Paper, Typography, Divider } from '@mui/material'
+import { Stack, Paper, Typography, Divider, Grid } from '@mui/material'
 import { orderBy } from 'lodash'
 import ImagesCarousel from './ImagesCarousel'
 import Label from '@sentry/components/label'
@@ -12,7 +12,11 @@ function EquipmentDetail({ bookingData }: IEquipmentDetailProps) {
         <Stack spacing={5}>
             <Paper elevation={3} sx={{ borderRadius: 2, p: 1 }}>
                 <Stack spacing={8} direction="row">
-                    <ImagesCarousel width={420} height={500} images={imgSet} />
+                    
+              <Grid container gap={8}>
+                <Grid item xs={12} md={5} lg={6}>
+                    <ImagesCarousel images={imgSet} /></Grid>
+                <Grid item xs={12} md={6} lg={5}>
                     <Stack pt={5} pr={8.5}>
                         <Label
                             mr="auto"
@@ -47,7 +51,7 @@ function EquipmentDetail({ bookingData }: IEquipmentDetailProps) {
                             {bookingData.eqDescription}
                         </Typography>
                         <Divider />
-                    </Stack>
+                    </Stack></Grid></Grid>
                 </Stack>
             </Paper>
         </Stack>
