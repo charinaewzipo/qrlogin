@@ -206,8 +206,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                     </TableCell>
                                     <TableCell align="right">
                                         <Typography sx={{ color: 'error.main' }}>
-                                            {bookingData.payDiscount > 0 ? '-' : ''}
-                                            {fCurrencyBaht(bookingData.payDiscount)}
+                                            {`-${fCurrencyBaht(bookingData.payDiscount)}`}
                                         </Typography>
                                     </TableCell>
                                 </RowResultStyle>

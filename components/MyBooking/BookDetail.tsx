@@ -167,7 +167,12 @@ function BookDetail({
                 <Divider sx={{ mx: -3, mt: 3 }} />
                 <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
                     {{
-                        PENDING: <>{renderButtonDownloadQuotation()}</>,
+                        PENDING: (
+                            <>
+                                {renderButtonCancelBooking()}
+                                {renderButtonDownloadQuotation()}
+                            </>
+                        ),
                         CONFIRM: (
                             <>
                                 {renderButtonCancelBooking()}

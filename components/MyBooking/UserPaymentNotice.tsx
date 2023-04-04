@@ -37,6 +37,7 @@ const constant = {
     recheck: 'Recheck',
 }
 const paymentMethod = [
+    //TODO: เชค user type (debit จะขึ้นเฉพาะ sciKu user)
     { value: 'Cash / Bank transfer / QR code', label: 'Cash / Bank transfer / QR code' },
     { value: 'Debit department', label: 'Debit department' },
 ]
@@ -54,6 +55,7 @@ interface IUserPaymentNoticeProps {
     eqName: string
     bookId: number
     onSubmit: (data: PaymentNoticeFormValuesProps) => void
+    onCancel: () => void
     errorMsg: string
 }
 function UserPaymentNotice(props: IUserPaymentNoticeProps) {
@@ -74,7 +76,10 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
         amount: Yup.string().required('Amount is require'),
         payslipImage: Yup.string().min(1, 'Payslip image is require'),
         isSameAccountAddress: Yup.boolean(),
-        billingAddress: Yup.string().required('Billing address is require'),
+        billingAddress: Yup.string().when('isSameAccountAddress', {
+            is: false,
+            then: (schema) => schema.required('Billing address is require'),
+        }),
         remark: Yup.string(),
     })
 
@@ -103,6 +108,7 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
         trigger,
         getValues,
         handleSubmit,
+        watch,
         formState: { errors, isSubmitted, isValid },
     } = methods
 
@@ -154,6 +160,10 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
         setOpenConfirmPayment(true)
     }
     
+    const handleCancel = () => {
+        props.onCancel()
+    }
+
     const handleReset = () => {
         reset({ ...defaultValues })
     }
@@ -268,7 +278,7 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
                         <RHFTextField
                             name="billingAddress"
                             multiline
-                            label={isRequire(constant.billingAddress)}
+                            label={isRequire(constant.billingAddress, (!watch('isSameAccountAddress')))}
                             inputProps={{ maxLength: 200 }}
                             minRows={4}
                         />
@@ -284,7 +294,7 @@ function UserPaymentNotice(props: IUserPaymentNoticeProps) {
                                 type="button"
                                 variant="contained"
                                 size="large"
-                                onClick={handleReset}
+                                onClick={handleCancel}
                                 color="inherit"
                             >
                                 {constant.cancel}

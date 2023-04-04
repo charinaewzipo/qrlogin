@@ -14,6 +14,7 @@ import EquipmentDetail from '@ku/components/MyBooking/EquipmentDetail'
 import TableView from '@ku/components/MyBooking/TableView'
 import numeral from 'numeral'
 import { formatISO } from 'date-fns'
+import { MY_BOOKING_PATH } from '@ku/constants/routes'
 
 MyBookingDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -131,7 +132,7 @@ const mockData: IV1RespGetBookingMeRead = {
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
-    bookStatus: 'CONFIRM',
+    bookStatus: 'WAITING_FOR_PAYMENT',
     payOt: 0,
     payDiscount: 10,
     payFees: 0,
@@ -151,6 +152,7 @@ export function MyBookingDetail() {
 
     const {
         query: { bookingNumber },
+        push,
     } = useRouter()
     
     const handleQrCode = () => {
@@ -170,6 +172,7 @@ export function MyBookingDetail() {
 	}
     const handleCancelBooking = () => {
         //TODO: qr link
+        push(MY_BOOKING_PATH)
     }
     const handlePaymentNotice = (data: PaymentNoticeFormValuesProps) => {
         setpaymentErrorMsg('')
@@ -245,6 +248,7 @@ export function MyBookingDetail() {
                                 {mockData.bookStatus === 'WAITING_FOR_PAYMENT' ? (
                                     <UserPaymentNotice
                                         onSubmit={handlePaymentNotice}
+                                        onCancel={handleCancelBooking}
                                         errorMsg={paymentErrorMsg}
                                         totalAmount={paymentData.payTotal}
                                         eqName={mockData.eqName}
