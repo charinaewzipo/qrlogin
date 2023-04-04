@@ -66,10 +66,11 @@ export default function PriceListNewEditDetails({currentTab}) {
     })
 
     const values = watch()
+    // const [priceWhenEmpty,setPriceWhenEmpty] = useState(0)
 
     useEffect(() => {
         console.log('currentTab',currentTab)
-    }, [])
+    }, [currentTab])
 
     useEffect(() => {
     }, [fields])
@@ -171,6 +172,12 @@ export default function PriceListNewEditDetails({currentTab}) {
                                     size="small"
                                     name={`eqtypeperson.[0].eqsches[${index}].eqpscheUnitPrice.${currentTab}`}
                                     label="Unit price *"
+                                    // onChange={(e) => {
+                                    //     if(e.target.value === ''){
+                                    //         setPriceWhenEmpty(99)
+                                    //     }
+                                    // }}
+                                    // value={get(values,`eqtypeperson.[0].eqsches[${index}].eqpscheUnitPrice.${currentTab}`,'')}
                                 />
                                 
                                 <RHFSelect

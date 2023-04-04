@@ -94,7 +94,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
     const [currentTab, setCurrentTab] = useState('SCIKU_STUDENT_STAFF')
-    const [temps, setTemps] = useState([])
+
 
     const handleChangeTabAndTakeFormValueToTempState =()=>{
         console.log('do Func')
@@ -126,13 +126,14 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         eqpscheChecked: 'Fixed',
                         eqpscheName: '',
                         eqpscheDescription: '',
-                        eqpscheUnitPrice: {SCIKU_STUDENT_STAFF:100 , 
-                                            KU_STUDENT_STAFF:200 ,OTHER_UNIVERSITY:300,
-                                            GOVN_OFFICE:400,PRIVATE_COMPANY:500},
+                        eqpscheUnitPrice: {SCIKU_STUDENT_STAFF: '' , 
+                                            KU_STUDENT_STAFF:'2' ,OTHER_UNIVERSITY:'',
+                                                GOVN_OFFICE:'',PRIVATE_COMPANY:''}, 
                         eqpscheUnitPer: 'Baht/Hour',
                         eqsubsches: [
                         ],
                     },
+                    
                     
                     
                 ],
@@ -140,6 +141,38 @@ function EquipmentCreateForm(props: AccountFormProps) {
           
         ],
     }
+    const [temp,setTemp] = useState([
+            // {
+            //     eqpscheSubOption: '',
+            //     eqpscheChecked: 'Fixed',
+            //     eqpscheName: '',
+            //     eqpscheDescription: '',
+            //     eqpscheUnitPrice: {SCIKU_STUDENT_STAFF: '' , 
+            //                         KU_STUDENT_STAFF:'' ,OTHER_UNIVERSITY:'',
+            //                         GOVN_OFFICE:'',PRIVATE_COMPANY:''},
+            //     eqpscheUnitPer: 'Baht/Hour',
+            //     eqsubsches: [
+            //     ],
+            // },
+        ]
+    )
+
+    const [disableOtherTab,setSisableOtherTab] = useState(false)
+
+
+    // const handleCheckIsEmptyNameAndUnitPrice = ()=>{
+    //     console.log('handleCheckIsEmptyNameAndUnitPrice')
+    //     if(get(values,`eqtypeperson[0].eqsches[0].eqpscheUnitPrice.${currentTab}`, '') === '' && values.eqtypeperson[0].eqsches[0].eqpscheName === ''){
+    //         return true
+    //     }
+    //     else {
+    //         return false
+    //     }
+    // }
+
+    useEffect(() => {
+        console.log('state temp เปลี่ยนนะ',temp)
+    }, [temp])
 
     const onFormSubmit = () => {
         //TODO: api submit
@@ -220,6 +253,8 @@ function EquipmentCreateForm(props: AccountFormProps) {
         if (props.errorMsg !== '') window.scrollTo(0, 0)
     }, [props.errorMsg])
 
+
+   
     const onSubmit = async (data: IEquipmentCreateFormValuesProps) => {
         console.log('กดส่งละได้ค่า', data)
         const submitData = cloneDeep(data)
@@ -227,6 +262,16 @@ function EquipmentCreateForm(props: AccountFormProps) {
         props.onSubmit(submitData)
     }
     const values = watch()
+
+
+    useEffect(()=>{
+        if(values.eqtypeperson[0].eqsches[0].eqpscheName === ''){
+            setSisableOtherTab(true)
+        }
+        else{
+            setSisableOtherTab(false)
+        }
+    },[values])
 
     const handleDrop = useCallback(
         (acceptedFiles: File[]) => {
@@ -471,11 +516,18 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         onChange={(event, newValue) => {
                             console.log('event',event)
                             console.log('newValue',newValue)
+                            console.log('values',values)
+                            setTemp(values.eqtypeperson[0].eqsches)
+                            // if(values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF === ''){
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.SCIKU_STUDENT_STAFF`, '500');
+                            // }
+                            console.log('temp',temp)
                             setCurrentTab(newValue)
                         }}
                     >
                         {get(listPermissionTab, permissionTab(), []).map((tab) => (
                             <Tab
+                                disabled={disableOtherTab ? tab.value !== currentTab ? true : false : false}
                                 key={tab.value}
                                 label={tab.label}
                                 icon={tab.icon}
