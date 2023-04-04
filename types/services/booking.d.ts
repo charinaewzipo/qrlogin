@@ -101,3 +101,10 @@ interface IV1PostBookingPayments {
     payDateTime: string
     payAmount: number
 }
+interface IV1QueyGetBookingMeRead {
+    startTime?: timestamp
+    endTime?: timestamp
+    search?: string
+    eqId?: number
+    bookStatus: string
+}

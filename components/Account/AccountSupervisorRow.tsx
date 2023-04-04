@@ -3,13 +3,13 @@ import { fDate } from '@sentry/utils/formatTime'
 import Label from '@sentry/components/label'
 import { Typography } from '@mui/material'
 import { format } from 'date-fns'
-import { isEmpty, noop } from 'lodash'
+import { get, isEmpty, noop } from 'lodash'
 import { useTheme } from '@mui/material'
 import { formatPhoneNumber } from '@ku/utils/formatNumber'
 import Iconify from '@sentry/components/iconify/Iconify'
 
 type Props = {
-    row: IAccountUser
+    row: IV1RespGetMemberRead
     onViewRow: VoidFunction
     onRemove?: VoidFunction
     // onCopyLink: VoidFunction
@@ -19,7 +19,7 @@ const styledTextOverFlow = {
     whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis"
 }
 export default function AccountSupervisorRow({ row, onViewRow, onRemove }: Props) {
-    const { name, email, department, major, studentID, supervisorName, creditLimit, bookLimit, phone, expiredate, status } = row
+    const name = `${get(row, 'uFirstName', '')} ${get(row, 'uSurname', '')}`
     const theme = useTheme()
     return (
         <>
@@ -33,22 +33,22 @@ export default function AccountSupervisorRow({ row, onViewRow, onRemove }: Props
                 <TableCell align="left">
                     <Box>
                         <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 115 }}>{name}</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 115 }}> {email}</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 115 }}> {get(row, 'authEmail', '')}</Typography>
                     </Box>
                 </TableCell>
                 <TableCell align="left">
                     <Box>
-                        <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 110 }}>{department}</Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 110 }}> {major}</Typography>
+                        <Typography variant="subtitle2" sx={{ ...styledTextOverFlow, maxWidth: 110 }}>{get(row, 'uiDepartment', '')}</Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', ...styledTextOverFlow, maxWidth: 110 }}> {get(row, 'uiPosition', '')}</Typography>
                     </Box>
                 </TableCell>
-                <TableCell align="left"> <Typography variant="body2" sx={{ color: 'text.disabled' }} >{studentID}</Typography></TableCell>
+                <TableCell align="left"> <Typography variant="body2" sx={{ color: 'text.disabled' }} >{get(row, 'uiStudentId', '')}</Typography></TableCell>
 
 
                 <TableCell align="right">
                     <Box>
-                        <Typography variant="body2" sx={{ color: creditLimit > 15000 ? theme.palette.error.dark : 'text.disabled' }}>{creditLimit.toLocaleString()} B</Typography>
-                        <Typography variant="body2">/ 15,000 B </Typography>
+                        <Typography variant="body2" sx={{ color: get(row, 'uiCreditUsed', 0) >= get(row, 'uiCreditLimit', 0) ? theme.palette.error.dark : 'text.disabled' }}>{get(row, 'uiCreditUsed', 0).toLocaleString()} B</Typography>
+                        <Typography variant="body2">{`/ ${get(row, 'uiCreditLimit', 0)} B`} </Typography>
                     </Box>
                 </TableCell>
                 <TableCell align="left">
@@ -56,19 +56,20 @@ export default function AccountSupervisorRow({ row, onViewRow, onRemove }: Props
                         sx={{ display: 'flex' }}
                     >
 
-                        <Typography variant="body2" sx={{ color: bookLimit === 10 ? theme.palette.error.dark : 'text.primary' }} >{`${bookLimit}`}<br /> </Typography>
-                        <Typography variant="body2" sx={{ color: 'text.disabled', pl: 0.5 }}> / 10 Time </Typography>
+                        <Typography variant="body2" sx={{ color: get(row, 'uiBookingUsed', 0) >= get(row, 'uiBookingLimit', 0) ? theme.palette.error.dark : 'text.primary' }} >{`${get(row, 'uiBookingUsed', 0)} `} </Typography>
+                        <Typography variant="body2" sx={{ color: 'text.disabled', pl: 0.5 }}> {`/ ${get(row, 'uiBookingLimit', 0)} Time `}</Typography>
                     </Box>
 
                 </TableCell>
 
-                <TableCell align="left">{formatPhoneNumber(phone)}</TableCell>
+                <TableCell align="left">{formatPhoneNumber(get(row, 'uPhoneNumber', ''))}</TableCell>
                 <TableCell align="left">
-                    {!isEmpty(expiredate) && format(new Date(expiredate), 'dd MMM yyyy')}
+                    {format((get(row, 'uiCardExpireDate', new Date())), 'dd MMM yyyy')}
                 </TableCell>
 
                 <TableCell align="left">
-                    <Label color={status === 'Active' ? 'success' : status === 'Pending' ? 'info' : 'error'}>{status}</Label>
+                    <Label color={row.authAccountStatus === 'Active' ? 'success' : row.authAccountStatus === 'Inactive' ? 'warning' : 'error'}>{get(row, 'authAccountStatus', '')}</Label>
+
                 </TableCell>
 
                 <TableCell align="left">

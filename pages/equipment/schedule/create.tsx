@@ -44,49 +44,165 @@ import { Controller, useForm, ErrorOption } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
+import { fetchGetEquipmentRead, fetchGetEquipmentUnavailable, fetchGetUnAvailableSchedule, fetchPostEquipmentCreate, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import { get, isEmpty } from 'lodash'
 
 
-const mockDataTable: IEquipmentSchedule[] = [{
-  id: "27658a79-ac6c-4003-b927-23b260840201",
-  name: "Brycen Jimenez",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg',
-  createBy: 'Simsimi ok',
-  activeDate: new Date().toString(),
-  time: 'Full Day',
-  createAt: new Date().toString(),
-  status: "Finish"
-},
-{
-  id: "27658a79-ac6c-4003-b927-23b260840202",
-  name: "Coating Material (CM1)",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg',
-  createBy: 'Simsimi ok',
-  activeDate: new Date().toString(),
-  time: 'Full Day',
-  createAt: new Date().toString(),
-  status: "Finish"
-},
-
-{
-  id: "27658a79-ac6c-4003-b927-23b260840203",
-  name: "Material coating descriptions",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createBy: 'Simsimi ok',
-  activeDate: new Date().toString(),
-  time: 'Full Day',
-  createAt: new Date().toString(),
-  status: "Finish"
-}, {
-  id: "27658a79-ac6c-4003-b927-23b260840204",
-  name: "Aaterial coating descriptions",
-  cover: 'https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg',
-  createBy: 'Simsimi ok',
-  activeDate: new Date().toString(),
-  time: 'Full Day',
-  createAt: new Date().toString(),
-  status: "Finish"
-}
-]
+const mockTableData: IV1PostEquipmentRead[] =
+  [{
+    eqId: "ABC123",
+    eqStatus: "available",
+    eqCode: "EQ001",
+    eqName: "Power Drill",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1548435200, // April 26, 2022
+    eqUpdatedAt: 1949577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }, {
+    eqId: "ABC124",
+    eqStatus: "Unavailable",
+    eqCode: "EQ001",
+    eqName: "DeWalt",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1448435200, // April 26, 2022
+    eqUpdatedAt: 1649577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }, {
+    eqId: "ABC125",
+    eqStatus: "Temporary Unavailable",
+    eqCode: "EQ001",
+    eqName: "ABC124 Drill",
+    eqBrand: "DeWalt",
+    eqModel: "DCD771C2",
+    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.Temporary UnavailableTemporary Unavailable",
+    eqPicture: [
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicSort: 2
+      }
+    ],
+    eqCreatedAt: 1648435200, // April 26, 2022
+    eqUpdatedAt: 1649577600, // April 9, 2022
+    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
+    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
+    eqTypePerson: [
+      {
+        eqpscheTypePerson: "Residential",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 50,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          }
+        ]
+      },
+      {
+        eqpscheTypePerson: "Commercial",
+        eqsches: [
+          {
+            eqpscheSubOption: null,
+            eqpscheChecked: "Yes",
+            eqpscheName: "Hourly rate",
+            eqpscheDescription: null,
+            eqpscheUnitPrice: 100,
+            eqpscheUnitPer: "hour",
+            eqsubsches: null
+          },
+        ]
+      }]
+  }]
 
 const TABLE_HEAD = [
   { id: 'name', label: 'Equipment', align: 'left' },
@@ -117,7 +233,7 @@ export default function EquipmentScheduleCreatePage() {
     onChangeRowsPerPage,
   } = useTable();
 
-  const [tableData, setTableData] = useState<IEquipmentSchedule[]>([])
+  const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
@@ -157,22 +273,57 @@ export default function EquipmentScheduleCreatePage() {
     formState: { isSubmitting, errors },
   } = methods
 
-  useEffect(() => {
-    getEquipmentList()
-  }, [])
+
 
   const TIME_OPTIONS = [
     'Ealry morning (7:00 - 12:59)',
     'Afternoon (13:00 - 22:00)',
     'Full day (7:00 - 22:00)',
   ];
-  const getEquipmentList = async () => {
-    // TODO: Add filter parameter
-    const response = await fetchGetAssessments()
-    if (response.data) {
-      setTableData(mockDataTable)
-      // setTableData(response.data)
+
+  useEffect(() => {
+    GetEquipmentRead()
+  }, [])
+
+  const GetEquipmentRead = async () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: page,
+      limit: rowsPerPage,
+      eqId: '',
+      eqStatus: '',
+      eqSearch: filterSearchEquipment,
+      eqSortName: false,
+      eqSortCode: false,
     }
+    await fetchGetEquipmentRead(query).then(response => {
+      if (response.code === 200) {
+        setTableData(mockTableData)
+        // setStatusStat(response.data)
+      }
+    }).catch(err => {
+      console.log(err)
+    })
+  }
+  const PostEquipmentCreate = async () => {
+    const ArrayNumber = selected.map(numString => parseInt(numString))
+    const query: IV1PostEquipmentUnavailableCreate = {
+      date: Date.now(),
+      times: [],
+      eqId: ArrayNumber,
+      status: ''
+    }
+    console.log("selected", selected)
+    console.log("query", query)
+    await fetchPostEquipmentUnavailableCreate(query).then(response => {
+      if (response.code === 200) {
+        reset()
+        setSelected([])
+        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
+        enqueueSnackbar('Create schedule success.')
+      }
+    }).catch(err => {
+      console.log(err)
+    })
   }
   const handleViewRow = (id: string) => {
     push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
@@ -182,7 +333,7 @@ export default function EquipmentScheduleCreatePage() {
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
-        console.log("hello count down")
+        GetEquipmentRead()
       }, 1000)
     );
   }
@@ -194,11 +345,8 @@ export default function EquipmentScheduleCreatePage() {
     if (!isErrorSelectEquipment) {
       console.log("onSubmit", data)
       try {
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        reset()
-        setSelected([])
-        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
-        enqueueSnackbar('Create schedule success.')
+        PostEquipmentCreate()
+
       } catch (error) {
         // console.error(error)
         const errorOptions: ErrorOption = {
@@ -216,17 +364,22 @@ export default function EquipmentScheduleCreatePage() {
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
         {selected.map((id) => {
-          const findData = tableData.find(i => i.id === id)
+          const findData = tableData.find(i => i.eqId === id)
           return (
-            <Chip
-              size='small'
-              avatar={<Avatar alt={findData.name} src={findData.cover} />}
-              label={findData.name}
-              key={id}
-              sx={{ m: 0.5 }}
-              color='primary'
-              onDelete={() => onSelectRow(id)}
-            />)
+            <>
+              {!isEmpty(findData) &&
+                <Chip
+                  size='small'
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={get(findData, 'eqPicture[0].eqpicLink', '')} />}
+                  label={get(findData, 'eqName', '')}
+                  key={id}
+                  sx={{ m: 0.5 }}
+                  color='primary'
+                  onDelete={() => onSelectRow(id)}
+                />
+              }
+            </>
+          )
         })}
       </Box>
     )
@@ -337,7 +490,7 @@ export default function EquipmentScheduleCreatePage() {
                 onSelectAllRows={(checked) =>
                   onSelectAllRows(
                     checked,
-                    tableData.map((row) => row.id)
+                    tableData.map((row) => get(row, 'eqId', ''))
                   )
                 }
               />
@@ -348,11 +501,11 @@ export default function EquipmentScheduleCreatePage() {
                   .map((row, index) =>
                     row ? (
                       <EquipmentScheduleCreateRow
-                        key={row.id}
+                        key={get(row, 'eqId', '')}
                         row={row}
-                        selected={selected.includes(row.id)}
-                        onSelectRow={() => onSelectRow(row.id)}
-                        onViewRow={() => handleViewRow(row.id)}
+                        selected={selected.includes(get(row, 'eqId', ''))}
+                        onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
+                        onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
                       />
                     ) : (
                       !isNotFound && <TableSkeleton key={index} />
