@@ -141,3 +141,15 @@ interface IV1GetEquipmentMaintenanceRead {
     eqmtnPicCreatedAt: string
     eqmtnPicUpdatedAt: string
 }
+
+interface IV1PostEquipmentMaintenanceCreate {
+    eqId: number
+    eqmtnDescription: string
+    eqmtnCost: number
+    eqmtnDate: string
+    eqmtnFileLink: string
+}
+interface IV1RespPostEquipmentMaintenanceCreate {
+    eqId: number
+    eqmtnId: number
+}
