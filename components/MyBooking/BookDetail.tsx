@@ -92,8 +92,6 @@ function BookDetail({
             {constant.paymentQRCode}
         </LoadingButton>
     )
-    const renderBookingTime = (times: number[]) =>
-        times.map((time, i) => `${time}:00-${time}:59${i < times.length - 1 ? ', ' : ''}`)
     
     return (
         <Stack spacing={5}>

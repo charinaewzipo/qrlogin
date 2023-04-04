@@ -21,25 +21,28 @@ const styledTextOverFlow = {
 export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
     const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
     const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
-        setOpenPopover(event.currentTarget);
+        setOpenPopover(event.currentTarget)
     };
 
     const handleClosePopover = () => {
         setOpenPopover(null);
     };
 
+    const handleOnClickRow = (event: React.MouseEvent<HTMLElement>) => {
+        onViewRow()
+    }
     const listMenuPopover = {
         quotation:{
             action: ()=>{console.log("Download Quotation");},
-            label: <><Iconify icon="ic:round-insert-drive-file" /> Download Quotation</>,
+            label: <><Iconify icon="ic:round-insert-drive-file" />Download Quotation</>,
         },
         cancelBooking:{
             action: ()=>{console.log("Cancel Booking");onRemove()},
-            label: <><Iconify icon="eva:trash-2-outline" /> Cancel Booking</>,
+            label: <><Iconify icon="eva:trash-2-outline" />Cancel Booking</>,
         },
         invoice:{
             action: ()=>{console.log("Download Invoice");},
-            label: <><Iconify icon="ic:baseline-verified" /> Download Invoice</>,
+            label: <><Iconify icon="ic:baseline-verified" />Download Invoice</>,
         },
         receipt:{
             action: ()=>{console.log("Download Receipt");},
@@ -89,7 +92,7 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                 hover
                 tabIndex={-1}
                 role="none"
-                onClick={onViewRow}
+                onClick={handleOnClickRow}
                 sx={{ cursor: 'pointer' }}
             >
                 <TableCell align="left">
@@ -107,16 +110,25 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                         </Stack>
                     </Stack>
                 </TableCell>
-                <TableCell align="left">
-                    {fDate(row.bookCreatedAt)}
-                </TableCell>
+                <TableCell align="left">{fDate(row.bookCreatedAt)}</TableCell>
                 <TableCell align="left">{renderBookingTime(row.eqRtimTimes)}</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.eqPriceSubTotal)}</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.payTotal)}</TableCell>
                 <TableCell align="left">
-                    <Label color={getBookingStatusLabelColor()}>{upperFirst(lowerCase(row.bookStatus))}</Label>
+                    <Label color={getBookingStatusLabelColor()}>
+                        {upperFirst(lowerCase(row.bookStatus))}
+                    </Label>
                 </TableCell>
-                <TableCell align="right">
+                <TableCell
+                    align="right"
+                    onClick={(e) => {
+                        if (get(e.target, 'tagName', 'TD') !== 'TD') {
+                            e.preventDefault()
+                            e.stopPropagation()
+                            e.nativeEvent.stopImmediatePropagation()
+                        }
+                    }}
+                >
                     <IconButton
                         size="large"
                         color={openPopover ? 'inherit' : 'default'}

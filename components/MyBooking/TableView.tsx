@@ -17,7 +17,7 @@ import {
 import Logo from '../Logo'
 import Iconify from '@sentry/components/iconify'
 import Label from '@sentry/components/label'
-import { fCurrency, fCurrencyBaht, fNumber } from '@ku/utils/formatNumber'
+import { fCurrencyBaht, fNumber } from '@ku/utils/formatNumber'
 import React from 'react'
 
 const constant = {

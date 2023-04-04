@@ -4,15 +4,18 @@ import AuthorizedLayout from '@ku/layouts/authorized'
 import { Box, Card, Container, Divider, Tab, Table, TableBody, TableContainer, Tabs, Typography, useTheme } from '@mui/material'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import { useEffect, useState } from 'react'
-import { emptyRows, TableEmptyRows, TableHeadCustom, TableNoData, TablePaginationCustom, useTable } from '@sentry/components/table'
+import { emptyRows, getComparator, TableEmptyRows, TableHeadCustom, TableNoData, TablePaginationCustom, useTable } from '@sentry/components/table'
 import Label from '@sentry/components/label'
-import BookingToolsbar from '@ku/components/Account/TableAccountDetail/BookingToolsbar'
 import Scrollbar from '@sentry/components/scrollbar'
 import ConfirmDialog from '@ku/components/ConfirmDialog'
-import { get, isEmpty } from 'lodash'
+import { get, isEmpty, lowerCase } from 'lodash'
 import palette from '@sentry/theme/palette'
 import { LoadingButton } from '@mui/lab'
 import MyBookingRow from '@ku/components/MyBooking/MyBookingRow'
+import BookingToolsbar from '@ku/components/MyBooking/Table/BookingToolsbar'
+import { fTimestamp } from '@sentry/utils/formatTime'
+import { useRouter } from 'next/router'
+import { MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
   
 const mockData: IV1RespGetBookingMeRead = {
     eqId: 1,
@@ -113,28 +116,130 @@ const mockData: IV1RespGetBookingMeRead = {
     eqRtimDays: '2023-03-13T16:21:30.894Z',
     eqRtimTimes: [8, 10, 14],
 };
+const mockData2: IV1RespGetBookingMeRead = {
+    eqId: 1,
+    eqCreateBy: 1,
+    eqStatus: "Available",
+    eqCode: "EQ001",
+    eqName: "Laptop",
+    eqBrand: "Apple",
+    eqModel: "MacBook Pro",
+    eqDescription: "Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals Powerful laptop for professionals",
+    eqPictures: [
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 2,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 1,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 3,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 4,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209499/MacBook_Pro_13-inch_Space_Gray_1-square_medium.jpg",
+            eqpicSort: 5,
+        },
+        {
+            eqpicLink: "https://media-cdn.bnn.in.th/209500/MacBook_Pro_13-inch_Space_Gray_2-square_medium.jpg",
+            eqpicSort: 6,
+        },
+    ],
+    eqCreatedAt: '2023-03-13T16:21:30.894Z',
+    eqUpdatedAt: '2023-03-16T16:21:30.894Z',
+    eqPrices: [
+        {
+            eqpId: 1,
+            eqpEqId: 1,
+            eqpTypePerson: "member",
+            eqpSubOption: "basic",
+            eqpChecked: "yes",
+            eqpIsChecked: true,
+            eqpName: "Basic membership",
+            eqpDescription: "Access to basic features",
+            eqpQuantity: 1,
+            eqpTotal: 100,
+            eqpUnitPrice: 100,
+            eqpUnitPer: "month",
+            eqpCreatedAt: '2023-03-13T16:21:30.894Z',
+            eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
+            eqSubPrice: [
+                {
+                    eqsubpId: 1,
+                    eqsubpChecked: "no",
+                    eqsubpName: "Premium membership",
+                    eqsubpDescription: "Access to premium features",
+                    eqsubpUnitPrice: 200,
+                    eqsubpUnitPer: "month",
+                    eqsubpQuantity: 1,
+                    eqsubpTotal: 200,
+                    eqsubpCreatedAt: '2023-03-13T16:21:30.894Z',
+                    eqsubpUpdatedAt: '2023-03-13T16:21:30.894Z',
+                },
+            ],
+        },
+        {
+            eqpId: 2,
+            eqpEqId: 2,
+            eqpTypePerson: "member",
+            eqpSubOption: "basic",
+            eqpChecked: "yes",
+            eqpIsChecked: true,
+            eqpName: "Basic membership",
+            eqpDescription: "Access to basic features",
+            eqpQuantity: 1,
+            eqpTotal: 100,
+            eqpUnitPrice: 100,
+            eqpUnitPer: "month",
+            eqpCreatedAt: '2023-03-13T16:21:30.894Z',
+            eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
+            eqSubPrice: [],
+        },
+    ],
+    eqPriceSubTotal: 100,
+    bookId: 123,
+    bookOwner: 1,
+    bookAdvisor: 2,
+    bookStatus: 'WAITING_FOR_PAYMENT_CONFIRM',
+    payOt: 0,
+    payDiscount: 10,
+    payFees: 0,
+    payTotal: 100,
+    bookCreatedAt: '2023-03-13T16:21:30.894Z',
+    eqRtimDays: '2023-03-13T16:21:30.894Z',
+    eqRtimTimes: [8, 10, 14],
+};
 const TABLE_HEAD = [
     { id: 'booking', label: 'Booking', align: 'left', width: 200 },
     { id: 'bookingDate', label: 'Booking Date', align: 'left', width: 150 },
     { id: 'bookingTime', label: 'Booking Time', align: 'left' },
-    { id: 'estimatedCost', label: 'Estimated Cost', align: 'left' },
+    { id: 'estimatedCost', label: 'Estimated Cost', align: 'right' },
     { id: 'totalPaid', label: 'Total Paid', align: 'right', width: 100 },
     { id: 'status', label: 'Status', align: 'left' },
     { id: 'menu', label: '', align: 'left', width: 80 },
 ]
 
-BookingReportPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+MyBookingList.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
-export default function BookingReportPage() {
+export default function MyBookingList() {
     const theme = useTheme()
+    const router = useRouter()
     const [filterStatus, setFilterStatus] = useState('all')
     const [tableData, setTableData] = useState<IV1RespGetBookingMeRead[]>([])
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
 
+    const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);  
     const [filterName, setFilterName] = useState('')
     const [detailUser, setDetailUser] = useState(null)
 
-    const permissionMe : IAccountUserPermission = 'Finance'
+    const permissionMe: IAccountUserPermission = 'Finance'
 
     const {
         order,
@@ -146,10 +251,20 @@ export default function BookingReportPage() {
         onSort,
         setPage,
         onChangePage,
-        onChangeRowsPerPage
+        onChangeRowsPerPage,
     } = useTable({
-        defaultOrderBy: 'no',
+        defaultOrderBy: 'bookCreatedAt',
     }) // TODO: please change createDate
+
+    const dataFiltered = applyFilter({
+        inputData: tableData,
+        comparator: getComparator(order, orderBy),
+        permission: permissionMe,
+        filterName,
+        filterStatus,
+        filterStartDate,
+        filterEndDate,
+    })
 
     const denseHeight = dense ? 56 : 76
 
@@ -157,7 +272,7 @@ export default function BookingReportPage() {
 
     useEffect(() => {
         // setTimeout(()=>{ getAssessmentList('Done') },2000)
-        setTableData([mockData, mockData, mockData, mockData, mockData, mockData])
+        setTableData([mockData, mockData2, mockData, mockData, mockData, mockData, mockData])
     }, [])
 
     const getLengthByStatus = (status: TBookStatus) =>
@@ -172,31 +287,29 @@ export default function BookingReportPage() {
         setPage(0)
         setFilterName(event.target.value)
     }
+
     const handleResetFilter = () => {
         setFilterName('')
+        setFilterEndDate(null)
+        setFilterStartDate(null)
     }
 
     const handleRemove = (data: IV1RespGetBookingMeRead) => {
         setDetailUser(data)
         setOpenPleaseContact(true)
     }
+    const handleViewRow = (bookId: string) => {
+        router.push({ pathname: MERGE_PATH(MY_BOOKING_PATH, bookId)})
+    }
 
-    const TabsAdmin = [
+    const TABS = [
         { value: 'all', label: 'All', color: 'default', count: tableData.length },
         { value: 'pending', label: 'Pending', color: 'warning', count: getLengthByStatus('PENDING') },
         { value: 'confirm', label: 'Confirm', color: 'success', count: getLengthByStatus('CONFIRM')},
-        { value: 'waiting', label: 'Waiting for Payment', color: 'secondary', count: getLengthByStatus('WAITING_FOR_PAYMENT')},
+        { value: 'waiting', label: 'Waiting for Payment', color: 'secondary', count: getLengthByStatus('WAITING_FOR_PAYMENT') + getLengthByStatus('WAITING_FOR_PAYMENT_CONFIRM')},
         { value: 'cancelled', label: 'Cancelled', color: 'default', count: getLengthByStatus('CANCELED')},
         { value: 'finish', label: 'Finish', color: 'default', count: getLengthByStatus('FINISH')},
     ] as const
-
-    const TabsFinance = [
-        { value: 'all', label: 'All', color: 'default', count: tableData.length },
-        { value: 'waiting', label: 'Waiting for Payment', color: 'secondary', count: getLengthByStatus('WAITING_FOR_PAYMENT')},
-        { value: 'finish', label: 'Finish', color: 'default', count: getLengthByStatus('FINISH')},
-    ] as const
-
-    const TABS = permissionMe==='Finance'?TabsFinance:TabsAdmin
     
     return (
         <>
@@ -243,8 +356,16 @@ export default function BookingReportPage() {
                         <BookingToolsbar
                             isFiltered={isFiltered}
                             filterName={filterName}
+                            filterStartDate={filterStartDate}
+                            filterEndDate={filterEndDate}
                             onFilterName={handleFilterName}
                             onResetFilter={handleResetFilter}
+                            onFilterStartDate={(newValue) => {
+                              setFilterStartDate(newValue);
+                            }}
+                            onFilterEndDate={(newValue) => {
+                              setFilterEndDate(newValue);
+                            }}
                         />
 
                         <TableContainer sx={{ position: 'relative', overflow: 'unset', p: 1 }}>
@@ -273,7 +394,7 @@ export default function BookingReportPage() {
                                     />
 
                                     <TableBody>
-                                        {tableData
+                                        {dataFiltered
                                             .slice(
                                                 page * rowsPerPage,
                                                 page * rowsPerPage + rowsPerPage
@@ -283,7 +404,7 @@ export default function BookingReportPage() {
                                                     key={row.bookId}
                                                     row={row}
                                                     onViewRow={() => {
-                                                        // handleViewRow(row.id)
+                                                        handleViewRow(String(row.bookId))
                                                     }}
                                                     onRemove={() => handleRemove(row)}
                                                 />
@@ -298,14 +419,14 @@ export default function BookingReportPage() {
                                             )}
                                         />
 
-                                        <TableNoData isNotFound={isEmpty(tableData)} />
+                                        <TableNoData isNotFound={isEmpty(dataFiltered)} />
                                     </TableBody>
                                 </Table>
                             </Scrollbar>
                         </TableContainer>
 
                         <TablePaginationCustom
-                            count={tableData.length}
+                            count={dataFiltered.length}
                             page={page}
                             rowsPerPage={rowsPerPage}
                             onPageChange={onChangePage}
@@ -385,3 +506,70 @@ export default function BookingReportPage() {
         </>
     )
 }
+
+// ----------------------------------------------------------------------
+
+function applyFilter({
+    inputData,
+    comparator,
+    permission,
+    filterName,
+    filterStatus,
+    filterStartDate,
+    filterEndDate,
+}: {
+    inputData: IV1RespGetBookingMeRead[]
+    comparator: (a: any, b: any) => number
+    permission: IAccountUserPermission
+    filterName: string
+    filterStatus: string
+    filterStartDate: Date | null
+    filterEndDate: Date | null
+}) {
+    const stabilizedThis = inputData.map((el, index) => [el, index] as const)
+
+    stabilizedThis.sort((a, b) => {
+        const order = comparator(a[0], b[0])
+        if (order !== 0) return order
+        return a[1] - b[1]
+    })
+
+    inputData = stabilizedThis.map((el) => el[0])
+
+    if (filterName) {
+        inputData = inputData.filter(
+            (booking) =>
+                booking.eqName.toLowerCase().indexOf(filterName.toLowerCase()) !== -1 ||
+                String(booking.bookId).toLowerCase().indexOf(filterName.toLowerCase()) !== -1
+        )
+    }
+
+    if (filterStatus !== 'all') {
+        //   inputData = inputData.filter((booking) => booking.bookStatus.toLowerCase().includes(filterStatus.toLowerCase()))
+        if (filterStatus === 'waiting')
+            inputData = inputData.filter(
+                (booking) =>
+                    booking.bookStatus === 'WAITING_FOR_PAYMENT' ||
+                    booking.bookStatus === 'WAITING_FOR_PAYMENT_CONFIRM'
+            )
+        else
+            inputData = inputData.filter(
+                (booking) => lowerCase(booking.bookStatus) === filterStatus.toLowerCase()
+            )
+    }
+
+    if (filterStartDate) {
+        inputData = inputData.filter(
+            (booking) => fTimestamp(booking.bookCreatedAt) >= fTimestamp(filterStartDate)
+        )
+    }
+
+    if (filterEndDate) {
+        inputData = inputData.filter(
+            (booking) => fTimestamp(booking.bookCreatedAt) <= fTimestamp(filterEndDate)
+        )
+    }
+
+    return inputData
+}
+  
