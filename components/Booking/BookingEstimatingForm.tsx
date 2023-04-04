@@ -72,6 +72,8 @@ function BookingEstimatingForm() {
     }
     // setOpenPleaseContact(true)
     setError('afterSubmit', errorOptions)
+
+    push(MERGE_PATH(BOOKING_PATH, '12345/12345', 'success'))
   }
   const handleClickEditBooking = () => {
     push(MERGE_PATH(BOOKING_PATH, '12345'))
@@ -129,7 +131,6 @@ function BookingEstimatingForm() {
             size="medium"
             type="submit"
             variant="contained"
-
           >
             Confirm Booking
           </LoadingButton>
