@@ -1,36 +1,14 @@
-import { ChangeEvent, useEffect, useState, useCallback } from 'react'
-import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
-import Iconify from '@sentry/components/iconify'
-import { yupResolver } from '@hookform/resolvers/yup'
-import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { get } from 'lodash'
 import {
-    Alert,
-    IconButton,
-    InputAdornment,
     Stack,
     Typography,
-    TextField,
-    CircularProgress,
-    FormHelperText,
-    Autocomplete,
-    Box,
     Paper,
-    Tab,
-    Tabs,
-    Card,
     Table,
-    Button,
-    Divider,
     TableBody,
-    Container,
     TableContainer,
-    Tooltip,
     TablePagination,
     useTheme,
-    Drawer,
 } from '@mui/material'
 import { useRouter } from 'next/router'
 import {
@@ -39,53 +17,22 @@ import {
     TableNoData,
     TableEmptyRows,
     TableHeadCustom,
-    TableSelectedAction,
-    TableSkeleton,
-    getComparator,
 } from '@sentry/components/table'
 import Scrollbar from '@sentry/components/scrollbar'
-import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
-import { useSnackbar } from 'notistack'
-function MaintenanceLogTable() {
-    const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
-        {
-            equnavascheId: 123,
-            equnavascheCreatedByName: 'Simsimi ok',
-            equnavascheDays: 'Full Day',
-            equnavascheTimes: [0, 1],
-            equnavascheStatus: 'PENDING',
-            equnavascheCreatedAt: 1648435200,
-            equnavascheUpdatedAt: 1648435200,
-        },
-        {
-            equnavascheId: 1234,
-            equnavascheCreatedByName: 'Simsimi ok',
-            equnavascheDays: 'Early morning',
-            equnavascheTimes: [0, 1],
-            equnavascheStatus: 'PENDING',
-            equnavascheCreatedAt: 1648435200,
-            equnavascheUpdatedAt: 1648435200,
-        },
-        {
-            equnavascheId: 1235,
-            equnavascheCreatedByName: 'Simsimi ok',
-            equnavascheDays: 'Early morning',
-            equnavascheTimes: [0, 1],
-            equnavascheStatus: 'PENDING',
-            equnavascheCreatedAt: 1648435200,
-            equnavascheUpdatedAt: 1648435200,
-        },
-    ]
-    const mockStats = {
-        upcomingCount: 2,
-        finishCount: 2,
-    }
+import MaintenanceLogRow from './MaintenanceLogRow'
+import { fetchPostEquipmentMaintenanceRead } from '@ku/services/equipment'
+import { useEffect, useState } from 'react'
+
+interface Props {
+    onClickAddLogs: () => void
+}
+function MaintenanceLogTable({ onClickAddLogs }: Props) {
     const TABLE_HEAD = [
-        { id: 'Date', label: 'Date', align: 'left', width: 150 },
+        { id: 'Date', label: 'Date', align: 'left' },
         { id: 'Cost', label: 'Cost', align: 'right' },
-        { id: 'File', label: 'File', align: 'center', width: 250 },
-        { id: 'Descriptions', label: 'Descriptions', align: 'left' , width: 250 },
-        { id: 'Create date', label: 'Create date', align: 'left', width: 120 },
+        { id: 'File', label: 'File', align: 'center' },
+        { id: 'Descriptions', label: 'Descriptions', align: 'left' },
+        { id: 'Create date', label: 'Create date', align: 'left', },
     ]
     const {
         page,
@@ -104,87 +51,81 @@ function MaintenanceLogTable() {
         onChangeRowsPerPage,
     } = useTable()
 
-    const [tableData, setTableData] = useState<IV1RespGetEquipmentUnavailableSchedule[]>([])
-    const [scheduleStats, setScheduleStats] =
-        useState<IV1RespGetEquipmentUnavailableStatsSchedule>()
-    const [openConfirmModal, setOpenConfirmModal] = useState(false)
-    const [filterStatus, setFilterStatus] = useState('upcoming')
-    const [filterStartDate, setFilterStartDate] = useState<Date | null>(null)
-    const [filterEndDate, setFilterEndDate] = useState<Date | null>(null)
-    const [countDown, setCountDown] = useState<NodeJS.Timeout>()
-    const [detailSchedule, setDetailSchedule] =
-        useState<IV1RespGetEquipmentUnavailableSchedule>(null)
+    const [tableData, setTableData] = useState<IV1GetEquipmentMaintenanceRead[]>([])
     const theme = useTheme()
-    const { enqueueSnackbar } = useSnackbar()
-    const { push } = useRouter()
+    const { query: { id } } = useRouter()
 
-    const handleViewRow = (id: number) => {
-        push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id.toString()))
-    }
+    useEffect(() => {
+        fetchPostEquipmentMaintenanceRead({ eqId: Number(id) }).then(res => {
+            setTableData(res.data.dataList)
+        })
+    }, [])
 
-    const handleOnCancel = (item: IV1RespGetEquipmentUnavailableSchedule) => {
-        setDetailSchedule(item)
-        setOpenConfirmModal(true)
-    }
     const isNotFound = !tableData.length
     return (
-        <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
-            <Stack>
-                <Stack sx={{ mt: 5 }} flexDirection="row" justifyContent="space-between">
-                    <Typography>Maintenance Logs</Typography>
-                    <Stack flexDirection="row" gap={2}>
-                        <LoadingButton type="submit" variant="contained" size="small">
-                            Add Maintenance Logs
-                        </LoadingButton>
-                    </Stack>
-                </Stack>
-
-                <Stack sx={{ mt: 5 }}>
-                    <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
-                        <Scrollbar>
-                            <Table sx={{ minWidth: 800 }}>
-                                <TableHeadCustom
-                                    headLabel={TABLE_HEAD}
-                                    rowCount={tableData.length}
-                                />
-
-                                <TableBody>
-                                    {tableData
-                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => {
-                                            return (
-                                                <EquipmentScheduleRow
-                                                    key={get(row, 'equnavascheId', -1)}
-                                                    row={row}
-                                                    onViewRow={() =>
-                                                        handleViewRow(get(row, 'equnavascheId', -1))
-                                                    }
-                                                    onRemove={() => handleOnCancel(row)}
-                                                />
-                                            )
-                                        })}
-
-                                    <TableEmptyRows
-                                        emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                                    />
-
-                                    <TableNoData isNotFound={isNotFound} />
-                                </TableBody>
-                            </Table>
-                        </Scrollbar>
-                    </TableContainer>
-                    <TablePagination
-                        rowsPerPageOptions={[5, 10, 25]}
-                        component="div"
-                        count={tableData.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
-                        onPageChange={onChangePage}
-                        onRowsPerPageChange={onChangeRowsPerPage}
-                    />
+        <Stack gap={8}>
+            <Stack sx={{ mt: 12 }} flexDirection="row" justifyContent="space-between">
+                <Typography variant='h5'>Maintenance Logs</Typography>
+                <Stack flexDirection="row" gap={2}>
+                    <LoadingButton type="submit" variant="contained" color="info" onClick={onClickAddLogs}>
+                        Add Maintenance Logs
+                    </LoadingButton>
                 </Stack>
             </Stack>
-        </Paper>
+
+            <Paper elevation={8} sx={{ borderRadius: 2 }}>
+                <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
+                    <Scrollbar>
+                        <Table
+                            sx={{
+                                minWidth: 650,
+                                'thead > tr > th': {
+                                    color: theme.palette.text.primary
+                                },
+                                th: {
+                                    backgroundColor: 'transparent',
+                                },
+                                tr: {
+                                    boxShadow: `0px 1px 0px 0px ${theme.palette.divider}`,
+                                    'th:first-child, td:first-child': { pl: 3 },
+                                },
+                            }}
+                        >
+                            <TableHeadCustom headLabel={TABLE_HEAD} rowCount={tableData.length} />
+
+                            <TableBody>
+                                {tableData
+                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                    .map((row) => {
+                                        return (
+                                            <MaintenanceLogRow
+                                                key={get(row, 'equnavascheId', -1)}
+                                                row={row}
+                                            />
+                                        )
+                                    })}
+
+                                <TableEmptyRows
+                                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
+                                />
+
+                                <TableNoData isNotFound={isNotFound} />
+                            </TableBody>
+                        </Table>
+                    </Scrollbar>
+                </TableContainer>
+                <TablePagination
+                    sx={{ borderTop: `2px solid ${theme.palette.divider}` }}
+                    rowsPerPageOptions={[5, 10, 25]}
+                    component="div"
+                    count={tableData.length}
+                    rowsPerPage={rowsPerPage}
+                    page={page}
+                    onPageChange={onChangePage}
+                    onRowsPerPageChange={onChangeRowsPerPage}
+                />
+            </Paper>
+        </Stack>
     )
 }
 

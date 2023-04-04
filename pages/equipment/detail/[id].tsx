@@ -9,7 +9,7 @@ import EquipmentCreateForm  from '@ku/components/Equipment/EquipmentCreateForm'
 import MaintenanceLogTable  from '@ku/components/Equipment/MaintenanceLogTable'
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { ACCOUNT_PATH } from '@ku/constants/routes'
+import { ACCOUNT_PATH, EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
 
 EquipmentDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
@@ -19,7 +19,7 @@ export function EquipmentDetail() {
     // const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
     const { enqueueSnackbar } = useSnackbar();
-    const router = useRouter()
+    const { push, query: { id }} = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
 
     const onFormSubmit = (data: IAccountFormValuesProps) => {
@@ -30,7 +30,11 @@ export function EquipmentDetail() {
     }
 
     const onFormCancel = () => {
-        router.push(ACCOUNT_PATH)
+        push(ACCOUNT_PATH)
+    }
+
+    const onClickAddLogs = () => {
+        push(MERGE_PATH(EQUIPMENT_PATH, 'detail', String(id), 'maintenance-log'))
     }
 
     return (
@@ -59,7 +63,7 @@ export function EquipmentDetail() {
                             />
                               <EquipmentCreateForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} />
                               <Stack sx={{mt:3}}>
-                              <MaintenanceLogTable />
+                              <MaintenanceLogTable onClickAddLogs={onClickAddLogs} />
                               </Stack>
                              
                         </div>
