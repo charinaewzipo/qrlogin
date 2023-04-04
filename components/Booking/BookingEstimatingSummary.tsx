@@ -12,10 +12,10 @@ type Props = {
   // onLoadmore: () => void;
 };
 
-export default function BookingSummary({ book }: Props) {
+export default function BookingEstimatingSummary({ book }: Props) {
   return (
     <>
-      <Card sx={{ pt: 5, px: 5 }}>
+      <Card sx={{ pt: 3, px: 3 }}>
         <Typography variant="h6" sx={{ color: 'text.primary', pb: 5 }}>
           Book summary
         </Typography>

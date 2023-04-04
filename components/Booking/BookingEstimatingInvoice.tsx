@@ -1,6 +1,6 @@
 // @mui
 
-import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
+import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
 import { get, isEmpty } from "lodash";
 import Label from "@sentry/components/label/Label";
 import { format } from "date-fns";
@@ -22,7 +22,8 @@ const StyledRowResult = styled(TableRow)(({ theme }) => ({
     paddingBottom: theme.spacing(1),
   },
 }));
-export default function BookingInvoice({ book }: Props) {
+export default function BookingEstimatingInvoice({ book }: Props) {
+  const theme = useTheme()
   return (
     <>
       <Card sx={{ pt: 5, px: 5, mt: 5 }}>
@@ -63,10 +64,10 @@ export default function BookingInvoice({ book }: Props) {
               </TableHead>
 
               <TableBody>
-                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row, index) => (
+                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row) => (
                   <>
                     <TableRow
-                      key={index}
+                      key={get(row, 'eqpId', -1)}
                       sx={{
                         borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
                       }}
@@ -84,10 +85,10 @@ export default function BookingInvoice({ book }: Props) {
                       <TableCell align="right">{`${(get(row, 'eqpTotal', 0)).toLocaleString()} B`}</TableCell>
                     </TableRow>
 
-                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row, index) => (
+                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row) => (
                       <>
                         <TableRow
-                          key={index}
+                          key={get(row, 'eqSubpId', -1)}
                           sx={{
                             borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 
@@ -119,7 +120,7 @@ export default function BookingInvoice({ book }: Props) {
                   </TableCell>
                   <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
                     <Box sx={{ mt: 1 }} />
-                    {get(book, 'eqpriceSubTotal', 0).toLocaleString()}
+                    {`${get(book, 'eqpriceSubTotal', 0).toLocaleString()} B`}
                   </TableCell>
                 </StyledRowResult>
                 <StyledRowResult>
@@ -130,7 +131,7 @@ export default function BookingInvoice({ book }: Props) {
                   </TableCell>
                   <TableCell align="right" width={120} sx={{ typography: 'body2', color: get(book, 'payOt', 0) === 0 ? 'text.secondary' : 'text.primary' }}>
                     <Box sx={{ mt: 1 }} />
-                    {get(book, 'payOt', 0) === 0 ? 'Not including' : get(book, 'payOt', 0).toLocaleString()}
+                    {get(book, 'payOt', 0) === 0 ? 'Not including' : `${get(book, 'payOt', 0).toLocaleString()} B`}
                   </TableCell>
                 </StyledRowResult>
                 <StyledRowResult>
@@ -140,9 +141,9 @@ export default function BookingInvoice({ book }: Props) {
                     Discount
                   </TableCell>
 
-                  <TableCell align="right" width={120} sx={{ typography: 'body2', color: get(book, 'payDiscount', 0) === 0 ? 'text.secondary' : 'text.primary' }}>
+                  <TableCell align="right" width={120} sx={{ typography: 'body2', color: get(book, 'payDiscount', 0) === 0 ? 'text.secondary' : theme.palette.error.main }}>
                     <Box sx={{ mt: 1 }} />
-                    {get(book, 'payDiscount', 0) === 0 ? 'Not including' : get(book, 'payDiscount', 0).toLocaleString()}
+                    {get(book, 'payDiscount', 0) === 0 ? 'Not including' : `-${get(book, 'payDiscount', 0).toLocaleString()} B`}
                   </TableCell>
                 </StyledRowResult>
 
@@ -155,7 +156,7 @@ export default function BookingInvoice({ book }: Props) {
 
                   <TableCell align="right" width={120} sx={{ typography: 'body2', color: get(book, 'payFees', 0) === 0 ? 'text.secondary' : 'text.primary' }}>
                     <Box sx={{ mt: 1 }} />
-                    {get(book, 'payFees', 0) === 0 ? 'Not including' : get(book, 'payFees', 0).toLocaleString()}
+                    {get(book, 'payFees', 0) === 0 ? 'Not including' : `${get(book, 'payFees', 0).toLocaleString()} B`}
                   </TableCell>
                 </StyledRowResult>
 

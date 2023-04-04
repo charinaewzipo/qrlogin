@@ -529,7 +529,7 @@ export default function EquipmentScheduleCreatePage() {
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
             <LoadingButton
-              size="large"
+              size="medium"
               variant="contained"
               color='inherit'
               onClick={handleOnclickCancel}
@@ -537,7 +537,7 @@ export default function EquipmentScheduleCreatePage() {
               Cancel
             </LoadingButton>
             <LoadingButton
-              size="large"
+              size="medium"
               type="submit"
               variant="contained"
               onClick={() => {

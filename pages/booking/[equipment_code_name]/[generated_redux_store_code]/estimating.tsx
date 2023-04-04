@@ -22,9 +22,12 @@ import { fetchGetBookingMeRead } from '@ku/services/booking'
 import { get, isEmpty } from 'lodash'
 import { format } from 'date-fns'
 import Label from '@sentry/components/label/Label'
-import BookingSummary from '@ku/components/Booking/BookingSummary'
+import BookingSummary from '@ku/components/Booking/BookingEstimatingSummary'
 import { useRouter } from 'next/router'
-import BookingInvoice from '@ku/components/Booking/BookingInvoice'
+import BookingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
+import BookingEstimatingForm from '@ku/components/Booking/BookingEstimatingForm'
+import BookingEstimatingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
+import BookingEstimatingSummary from '@ku/components/Booking/BookingEstimatingSummary'
 const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
   {
     eqId: 1,
@@ -266,7 +269,6 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     payUpdatedAt: 1648753212000
   }]
 
-const BOOKING_OPTION = ['Coating Material (CM1)', 'Coating Material (CM2)', 'Coating Material (CM3)']
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
   const [tableData, setTableData] = useState<Array<IV1RespGetBookingMeRead & IV1TablePayments>>([])
@@ -315,15 +317,16 @@ export default function BookingPage() {
             },
             {
               name: get(bookDeatail, 'eqName', ''),
-              href: (MERGE_PATH(BOOKING_PATH, '12345/', get(bookDeatail, 'eqId', '').toString()))
+              href: (MERGE_PATH(BOOKING_PATH, '12345', get(bookDeatail, 'eqId', '').toString()))
             },
             {
               name: 'Estimating',
             },
           ]}
         />
-        <BookingSummary book={bookDeatail} />
-        <BookingInvoice book={bookDeatail} />
+        <BookingEstimatingSummary book={bookDeatail} />
+        <BookingEstimatingInvoice book={bookDeatail} />
+        <BookingEstimatingForm />
       </Container>
     </>
   )
