@@ -119,14 +119,16 @@ function EquipmentCreateForm(props: AccountFormProps) {
         eqavascheTimes: [],
         eqtypeperson: [
             {
-                eqpscheTypePerson: 'SCIKU_STUDENT_STAFF',
+                eqpscheTypePerson: 'KEY',
                 eqsches: [
                     {
                         eqpscheSubOption: '',
                         eqpscheChecked: 'Fixed',
                         eqpscheName: '',
                         eqpscheDescription: '',
-                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPrice: {SCIKU_STUDENT_STAFF:100 , 
+                                            KU_STUDENT_STAFF:200 ,OTHER_UNIVERSITY:300,
+                                            GOVN_OFFICE:400,PRIVATE_COMPANY:500},
                         eqpscheUnitPer: 'Baht/Hour',
                         eqsubsches: [
                         ],
@@ -135,75 +137,6 @@ function EquipmentCreateForm(props: AccountFormProps) {
                     
                 ],
             },
-            {
-                eqpscheTypePerson: 'KU_STUDENT_STAFF',
-                eqsches: [
-                    {
-                        eqpscheSubOption: '',
-                        eqpscheChecked: 'Fixed',
-                        eqpscheName: '',
-                        eqpscheDescription: '',
-                        eqpscheUnitPrice: 0,
-                        eqpscheUnitPer: 'Baht/Hour',
-                        eqsubsches: [
-                        ],
-                    },
-                    
-                    
-                ],
-            },
-            {
-                eqpscheTypePerson: 'OTHER_UNIVERSITY',
-                eqsches: [
-                    {
-                        eqpscheSubOption: '',
-                        eqpscheChecked: 'Fixed',
-                        eqpscheName: '',
-                        eqpscheDescription: '',
-                        eqpscheUnitPrice: 0,
-                        eqpscheUnitPer: 'Baht/Hour',
-                        eqsubsches: [
-                        ],
-                    },
-                    
-                    
-                ],
-            },
-            {
-                eqpscheTypePerson: 'GOVN_OFFICE',
-                eqsches: [
-                    {
-                        eqpscheSubOption: '',
-                        eqpscheChecked: 'Fixed',
-                        eqpscheName: '',
-                        eqpscheDescription: '',
-                        eqpscheUnitPrice: 0,
-                        eqpscheUnitPer: 'Baht/Hour',
-                        eqsubsches: [
-                        ],
-                    },
-                    
-                    
-                ],
-            },
-            {
-                eqpscheTypePerson: 'PRIVATE_COMPANY',
-                eqsches: [
-                    {
-                        eqpscheSubOption: '',
-                        eqpscheChecked: 'Fixed',
-                        eqpscheName: '',
-                        eqpscheDescription: '',
-                        eqpscheUnitPrice: 0,
-                        eqpscheUnitPer: 'Baht/Hour',
-                        eqsubsches: [
-                        ],
-                    },
-                    
-                    
-                ],
-            },
-            
           
         ],
     }
@@ -555,9 +488,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         (tab) =>
                             tab.value === currentTab && (
                                 <Box key={tab.value} sx={{ mt: 5 }}>
-                                     <PriceListNewEditDetails currentTab={currentTab === 'SCIKU_STUDENT_STAFF' ? 0 : 
-                                     currentTab === 'KU_STUDENT_STAFF' ? 1 : currentTab === 'OTHER_UNIVERSITY' ? 2 
-                                     : currentTab === 'GOVN_OFFICE' ? 3 : currentTab === 'PRIVATE_COMPANY' ? 4 : 0} />
+                                     <PriceListNewEditDetails currentTab={currentTab} />
                                 </Box>
                             )
                     )}
