@@ -54,7 +54,7 @@ export interface IV1EquipmentSchemaPrice {
     eqpscheChecked: string
     eqpscheName: string
     eqpscheDescription: string | null
-    eqpscheUnitPrice: number
+    eqpscheUnitPrice: number| any
     eqpscheUnitPer: string | null
     eqsubsches: Array<IV1EquipmentSubSchemaPrice> | null
 }
@@ -91,10 +91,14 @@ interface AccountFormProps {
 }
 
 function EquipmentCreateForm(props: AccountFormProps) {
-    // const { currentTab, setCurrentTab } = useState('general');
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
-    const [currentTab, setCurrentTab] = useState('SciKUStudentAndStaff')
+    const [currentTab, setCurrentTab] = useState('SCIKU_STUDENT_STAFF')
+    const [temps, setTemps] = useState([])
+
+    const handleChangeTabAndTakeFormValueToTempState =()=>{
+        console.log('do Func')
+    }
 
     const RegisterSchema = Yup.object().shape({
         // equipmentStatus: Yup.string().required('Equipment status is require'),
@@ -125,22 +129,81 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         eqpscheUnitPrice: 0,
                         eqpscheUnitPer: 'Baht/Hour',
                         eqsubsches: [
-//                             {eqsubpscheChecked: '',
-//                             eqsubpscheName:'',
-//                             eqsubpscheDescription:'',
-//                             eqsubpscheUnitPrice: {SCIKU_STUDENT_STAFF:100 , KU_STUDENT_STAFF:200 ,OTHER_UNIVERSITY:300,GOVN_OFFICE:400,PRIVATE_COMPANY:500},
-//                             eqsubpscheUnitPer:''}
-// ,
-//                             {eqsubpscheChecked: '',
-//                             eqsubpscheName:'',
-//                             eqsubpscheDescription:'',
-//                             eqsubpscheUnitPrice: {SCIKU_STUDENT_STAFF:1000 , KU_STUDENT_STAFF:2000 ,OTHER_UNIVERSITY:3000,GOVN_OFFICE:4000,PRIVATE_COMPANY:5000},
-//                             eqsubpscheUnitPer:''}
                         ],
                     },
                     
+                    
                 ],
             },
+            {
+                eqpscheTypePerson: 'KU_STUDENT_STAFF',
+                eqsches: [
+                    {
+                        eqpscheSubOption: '',
+                        eqpscheChecked: 'Fixed',
+                        eqpscheName: '',
+                        eqpscheDescription: '',
+                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPer: 'Baht/Hour',
+                        eqsubsches: [
+                        ],
+                    },
+                    
+                    
+                ],
+            },
+            {
+                eqpscheTypePerson: 'OTHER_UNIVERSITY',
+                eqsches: [
+                    {
+                        eqpscheSubOption: '',
+                        eqpscheChecked: 'Fixed',
+                        eqpscheName: '',
+                        eqpscheDescription: '',
+                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPer: 'Baht/Hour',
+                        eqsubsches: [
+                        ],
+                    },
+                    
+                    
+                ],
+            },
+            {
+                eqpscheTypePerson: 'GOVN_OFFICE',
+                eqsches: [
+                    {
+                        eqpscheSubOption: '',
+                        eqpscheChecked: 'Fixed',
+                        eqpscheName: '',
+                        eqpscheDescription: '',
+                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPer: 'Baht/Hour',
+                        eqsubsches: [
+                        ],
+                    },
+                    
+                    
+                ],
+            },
+            {
+                eqpscheTypePerson: 'PRIVATE_COMPANY',
+                eqsches: [
+                    {
+                        eqpscheSubOption: '',
+                        eqpscheChecked: 'Fixed',
+                        eqpscheName: '',
+                        eqpscheDescription: '',
+                        eqpscheUnitPrice: 0,
+                        eqpscheUnitPer: 'Baht/Hour',
+                        eqsubsches: [
+                        ],
+                    },
+                    
+                    
+                ],
+            },
+            
           
         ],
     }
@@ -160,27 +223,27 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
     const listAllTab = {
         SciKUStudentAndStaff: {
-            value: 'SciKUStudentAndStaff',
+            value: 'SCIKU_STUDENT_STAFF',
             label: 'SciKU Student & Staff',
             // component: <PriceListNewEditDetails />,
         },
         KUStudentAndStaff: {
-            value: 'KUStudentAndStaff',
+            value: 'KU_STUDENT_STAFF',
             label: 'KUStudent & Staff',
             // component: <PriceListNewEditDetails />,
         },
         OtherUniversity: {
-            value: 'Other University',
+            value: 'OTHER_UNIVERSITY',
             label: 'Other University',
             // component: <PriceListNewEditDetails />,
         },
         GovernmentOffice: {
-            value: 'Government Office',
+            value: 'GOVN_OFFICE',
             label: 'Government Office',
             // component: <PriceListNewEditDetails />,
         },
         privateCompany: {
-            value: 'Private-Company',
+            value: 'PRIVATE_COMPANY',
             label: 'Private Company',
             // component: <PriceListNewEditDetails />,
         },
@@ -472,7 +535,11 @@ function EquipmentCreateForm(props: AccountFormProps) {
                     <Tabs
                         sx={{ padding: '12px' }}
                         value={currentTab}
-                        onChange={(event, newValue) => setCurrentTab(newValue)}
+                        onChange={(event, newValue) => {
+                            console.log('event',event)
+                            console.log('newValue',newValue)
+                            setCurrentTab(newValue)
+                        }}
                     >
                         {get(listPermissionTab, permissionTab(), []).map((tab) => (
                             <Tab
@@ -488,7 +555,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         (tab) =>
                             tab.value === currentTab && (
                                 <Box key={tab.value} sx={{ mt: 5 }}>
-                                     <PriceListNewEditDetails />
+                                     <PriceListNewEditDetails currentTab={currentTab === 'SCIKU_STUDENT_STAFF' ? 0 : 
+                                     currentTab === 'KU_STUDENT_STAFF' ? 1 : currentTab === 'OTHER_UNIVERSITY' ? 2 
+                                     : currentTab === 'GOVN_OFFICE' ? 3 : currentTab === 'PRIVATE_COMPANY' ? 4 : 0} />
                                 </Box>
                             )
                     )}
