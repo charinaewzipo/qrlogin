@@ -94,17 +94,25 @@ function EquipmentCreateForm(props: AccountFormProps) {
     const numberOnlyRegex = /^[0-9\b]+$/
     const permissionUser = 'Supervisor'
     const [currentTab, setCurrentTab] = useState('SCIKU_STUDENT_STAFF')
-
-
-    const handleChangeTabAndTakeFormValueToTempState =()=>{
-        console.log('do Func')
-    }
+    const [checkFirstVal,setCheckFirstVal] = useState('')
 
     const RegisterSchema = Yup.object().shape({
+         
+        // equipmentImage: Yup.string().required('Equipment image is require at least 1 image'),
         // equipmentStatus: Yup.string().required('Equipment status is require'),
         eqName: Yup.string().required('Equipment name is require'),
         eqCode: Yup.string().required('Equipment code name is require'),
-        // equipmentImage: Yup.string().required('Equipment image is require at least 1 image'),
+        // eqtypeperson: Yup.array().of((Yup.object().shape({
+        //     eqsches : Yup.array().of(Yup.object().shape({
+        //          eqpscheUnitName: Yup.string().required('Equipment name is require'),
+        //          eqpscheUnitPrice: Yup.string().required('Equipment code name is require'),
+        //     }))
+            
+           
+        // })))
+           
+               
+       
     })
 
     const defaultValues = {
@@ -173,6 +181,9 @@ function EquipmentCreateForm(props: AccountFormProps) {
     useEffect(() => {
         console.log('state temp เปลี่ยนนะ',temp)
     }, [temp])
+    useEffect(() => {
+        console.log('state checkFirstVal เปลี่ยนนะ',checkFirstVal)
+    }, [checkFirstVal])
 
     const onFormSubmit = () => {
         //TODO: api submit
@@ -262,16 +273,17 @@ function EquipmentCreateForm(props: AccountFormProps) {
         props.onSubmit(submitData)
     }
     const values = watch()
+    // const watchDetails = watch(values.eqtypeperson[0].eqsches)
 
-    const everyArr =  values.eqtypeperson[0].eqsches
     useEffect(()=>{
-        // for(var x =0, x < 5 , x++){
-            
-        // }
+        console.log('errors',errors)
+        console.log('values',values)
         const checkName = values.eqtypeperson[0].eqsches.map(a =>a.eqpscheName)
-        console.log('checkName',checkName)
         const hasEmptyStrings = checkName.includes("");
-        // console.log('allEmptyStrings',allEmptyStrings)
+
+        const checkPrice = values.eqtypeperson[0].eqsches.map(a =>a.eqpscheUnitPrice)
+        // const hasEmptyStrings = checkName.includes("");
+        console.log('checkPrice',checkPrice)
         if((hasEmptyStrings)
         //  || (get(values,`eqtypeperson[0].eqsches[0].eqpscheUnitPrice.${currentTab}`,'') === '' )
          )
@@ -281,6 +293,8 @@ function EquipmentCreateForm(props: AccountFormProps) {
         else{
             setSisableOtherTab(false)
         }
+
+      
     },[values])
 
     const handleDrop = useCallback(
@@ -524,27 +538,66 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         sx={{ padding: '12px' }}
                         value={currentTab}
                         onChange={(event, newValue) => {
-                            console.log('event',event)
-                            console.log('newValue',newValue)
-                            console.log('values',values)
+                            // trigger()
                             setTemp(values.eqtypeperson[0].eqsches)
-                            if(values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.KU_STUDENT_STAFF === '' 
-                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.OTHER_UNIVERSITY === ''
-                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.GOVN_OFFICE === ''
-                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.PRIVATE_COMPANY === ''
-                            ){
-                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.KU_STUDENT_STAFF`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
-                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.OTHER_UNIVERSITY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
-                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.GOVN_OFFICE`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
-                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.PRIVATE_COMPANY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
+                            
+                            for(let i =0 ; i<values.eqtypeperson[0].eqsches.length ; i++){
+                                
+                                for (let key in values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice) {
+                                    let valueToCopy = "";
+                                    for (let key in values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice) {
+                                    if (values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] !== "") {
+                                        valueToCopy = values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key];
+                                        break;
+                                    }
+                                    }
+
+                                    for (let key in values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice) {
+                                    if (values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] === "") {
+                                        values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] = valueToCopy;
+                                    }
+                                    }
+
+                                    // if (values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] !== "") {
+                                    //     console.log('มีตัวที่ไม่ว่าง')
+                                    //     let keepval = (values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key])
+                                    //     for (let key in values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice) {
+                                    //         if (values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] == "") {
+                                    //             values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice[key] == keepval
+                                    //         }
+
+                                    //     }
+
+                                    // }
+     
+                                  }
+                                //   setCheckFirstVal('')
+                                //   setCheckFirstVal('')
+                                // for(let ii= 0 ; ii < 5 ; i++){
+                                //     // if(values.eqtypeperson[0].eqsches[i].eqpscheUnitPrice.SCIKU_STUDENT_STAFF !== ''){
+                                //     //     let 
+                                //     // }
+                                // }
                             }
+
+                            // if(values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.KU_STUDENT_STAFF === '' 
+                            // && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.OTHER_UNIVERSITY === ''
+                            // && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.GOVN_OFFICE === ''
+                            // && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.PRIVATE_COMPANY === ''
+                            // ){
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.KU_STUDENT_STAFF`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.currentTab );
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.KU_STUDENT_STAFF`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.currentTab );
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.OTHER_UNIVERSITY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.currentTab );
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.GOVN_OFFICE`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.currentTab );
+                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.PRIVATE_COMPANY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.currentTab );
+                            // }
                             console.log('temp',temp)
                             setCurrentTab(newValue)
                         }}
                     >
                         {get(listPermissionTab, permissionTab(), []).map((tab) => (
                             <Tab
-                                disabled={disableOtherTab ? tab.value !== currentTab ? true : false : false}
+                                // disabled={disableOtherTab ? tab.value !== currentTab ? true : false : false}
                                 key={tab.value}
                                 label={tab.label}
                                 icon={tab.icon}

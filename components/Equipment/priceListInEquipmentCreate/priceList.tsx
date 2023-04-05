@@ -44,7 +44,9 @@ const defaultValuesForm = {
     eqpscheName: "",
     eqpscheSubOption: "",
     eqpscheUnitPer: "",
-    eqpscheUnitPrice: 0,
+    eqpscheUnitPrice: {SCIKU_STUDENT_STAFF: '' , 
+    KU_STUDENT_STAFF:'' ,OTHER_UNIVERSITY:'',
+        GOVN_OFFICE:'',PRIVATE_COMPANY:''}, 
     eqsubsches: [],
 }
 
