@@ -1,5 +1,5 @@
 // @mui
-
+import React from 'react'
 import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
 import { get, isEmpty } from "lodash";
 import Label from "@sentry/components/label/Label";
@@ -15,6 +15,7 @@ type Props = {
   // loading: boolean;
   // showLoadMore: boolean;
   // onLoadmore: () => void;
+  onDownloadPDF: () => void;
 };
 const StyledRowResult = styled(TableRow)(({ theme }) => ({
   '& td': {
@@ -22,7 +23,7 @@ const StyledRowResult = styled(TableRow)(({ theme }) => ({
     paddingBottom: theme.spacing(1),
   },
 }));
-export default function BookingEstimatingInvoice({ book }: Props) {
+export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props) {
   const theme = useTheme()
   return (
     <>
@@ -37,7 +38,7 @@ export default function BookingEstimatingInvoice({ book }: Props) {
               size="small"
               variant='text'
               startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
-            // onClick={onDownloadPDF}
+              onClick={onDownloadPDF}
             >
               Download as PDF
             </Button>
@@ -64,10 +65,10 @@ export default function BookingEstimatingInvoice({ book }: Props) {
               </TableHead>
 
               <TableBody>
-                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row) => (
-                  <>
+                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row, index) => (
+                  <React.Fragment key={`key-row-${index}`}>
                     <TableRow
-                      key={get(row, 'eqpId', -1)}
+                      key={`rowPrice-${index}`}
                       sx={{
                         borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
                       }}
@@ -85,30 +86,29 @@ export default function BookingEstimatingInvoice({ book }: Props) {
                       <TableCell align="right">{`${(get(row, 'eqpTotal', 0)).toLocaleString()} B`}</TableCell>
                     </TableRow>
 
-                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row) => (
-                      <>
-                        <TableRow
-                          key={get(row, 'eqSubpId', -1)}
-                          sx={{
-                            borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
+                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row, index) => (
+                      <TableRow
+                        key={`rowSubPrice-${index}`}
+                        sx={{
+                          borderBottom: (theme) => `solid 1px ${theme.palette.divider}`,
 
-                          }}
-                        >
-                          <TableCell align="left" sx={{ pl: 5 }}>
-                            <Box sx={{ width: 460 }}>
-                              <Typography variant="subtitle2">{get(row, 'eqSubpName', '')}</Typography>
-                              <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                                {get(row, 'eqSubpDescription', '')}
-                              </Typography>
-                            </Box>
-                          </TableCell>
-                          <TableCell align="left">{get(row, 'eqSubpQuantity', 0).toLocaleString()}</TableCell>
-                          <TableCell align="right">{`${get(row, 'eqSubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqSubpUnitPer', '')}`}</TableCell>
-                          <TableCell align="right">{`${(get(row, 'eqSubpTotal', 0)).toLocaleString()} B`}</TableCell>
-                        </TableRow>
-                      </>
+                        }}
+                      >
+                        <TableCell align="left" sx={{ pl: 5 }}>
+                          <Box sx={{ width: 460 }}>
+                            <Typography variant="subtitle2">{get(row, 'eqSubpName', '')}</Typography>
+                            <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
+                              {get(row, 'eqSubpDescription', '')}
+                            </Typography>
+                          </Box>
+                        </TableCell>
+                        <TableCell align="left">{get(row, 'eqSubpQuantity', 0).toLocaleString()}</TableCell>
+                        <TableCell align="right">{`${get(row, 'eqSubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqSubpUnitPer', '')}`}</TableCell>
+                        <TableCell align="right">{`${(get(row, 'eqSubpTotal', 0)).toLocaleString()} B`}</TableCell>
+                      </TableRow>
+
                     ))}
-                  </>
+                  </React.Fragment>
 
                 ))}
 

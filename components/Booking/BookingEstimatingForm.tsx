@@ -9,7 +9,11 @@ import { useRouter } from 'next/router'
 import { useContext, useEffect, useMemo } from 'react'
 import { BOOKING_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useAuthContext } from '@ku/contexts/useAuthContext'
-
+import { get } from 'lodash'
+type Props = {
+  reduxCode: number
+  book: IV1RespGetBookingMeRead & IV1TablePayments;
+}
 type FormValuesProps = {
   billingAdress: string,
   afterSubmit?: string,
@@ -25,7 +29,7 @@ const PAYMENT_OPTION = [
 ];
 
 
-function BookingEstimatingForm() {
+function BookingEstimatingForm({ reduxCode, book }: Props) {
   const { push } = useRouter()
   const { user } = useAuthContext()
   console.log(user)
@@ -70,13 +74,13 @@ function BookingEstimatingForm() {
     const errorOptions: ErrorOption = {
       message: "3 Attempt forgot password request"
     }
-    // setOpenPleaseContact(true)
     setError('afterSubmit', errorOptions)
 
-    push(MERGE_PATH(BOOKING_PATH, '12345/12345', 'success'))
+    push(MERGE_PATH(BOOKING_PATH, `${get(book, 'eqName', '')}/${reduxCode.toString()}`, 'success'))
+    // push(MERGE_PATH(BOOKING_PATH, `${get(book, 'eqName', '')}/${reduxCode.toString()}`, 'unsuccess'))
   }
   const handleClickEditBooking = () => {
-    push(MERGE_PATH(BOOKING_PATH, '12345'))
+    push(MERGE_PATH(BOOKING_PATH, get(book, 'eqName', '')))
   }
 
   const OPTION_RADIO = user.uiTypePerson === 'SCIKU_STUDENT_STAFF' ? PAYMENT_OPTION : PAYMENT_OPTION.filter(i => i.value !== 'Debit department')

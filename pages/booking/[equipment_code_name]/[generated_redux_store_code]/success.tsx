@@ -2,14 +2,14 @@ import { Box, Divider, Stack, styled, Typography, useTheme } from '@mui/material
 import Head from 'next/head'
 import React, { useEffect } from 'react'
 import Image from '@sentry/components/image'
-import { LOGIN_PATH } from '@ku/constants/routes'
+import { BOOKING_PATH, LOGIN_PATH, MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
 import { useRouter } from 'next/router'
 import { get, isEmpty } from 'lodash'
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 import { LoadingButton } from '@mui/lab'
 import Iconify from '@sentry/components/iconify/Iconify'
 
-const ResetPassword = () => {
+const BookingEstimatingSuccess = () => {
   const theme = useTheme()
   const router = useRouter()
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -84,7 +84,7 @@ const ResetPassword = () => {
               type="submit"
               variant="outlined"
               color='inherit'
-              onClick={() => router.push(LOGIN_PATH)}
+              onClick={() => router.push(BOOKING_PATH)}
             >
               <Image
                 alt="Icon Base"
@@ -97,6 +97,8 @@ const ResetPassword = () => {
               size="medium"
               variant="contained"
               color='success'
+              onClick={() => router.push(MY_BOOKING_PATH)}
+
             >
               <Image
                 alt="Icon booking"
@@ -113,4 +115,4 @@ const ResetPassword = () => {
   )
 }
 
-export default ResetPassword
+export default BookingEstimatingSuccess

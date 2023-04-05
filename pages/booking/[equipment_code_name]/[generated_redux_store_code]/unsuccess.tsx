@@ -2,14 +2,14 @@ import { Box, Divider, Stack, styled, Typography, useTheme } from '@mui/material
 import Head from 'next/head'
 import React, { useEffect } from 'react'
 import Image from '@sentry/components/image'
-import { LOGIN_PATH } from '@ku/constants/routes'
+import { BOOKING_PATH, EQUIPMENT_PATH, LOGIN_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useRouter } from 'next/router'
 import { get, isEmpty } from 'lodash'
 import LogoOnlyLayout from '@ku/layouts/LogoOnlyLayout'
 import { LoadingButton } from '@mui/lab'
 import Iconify from '@sentry/components/iconify/Iconify'
 
-const ResetPassword = () => {
+const BookingEstimatingUnSuccess = () => {
   const theme = useTheme()
   const router = useRouter()
   const ContentStyle = styled('div')(({ theme }) => ({
@@ -22,6 +22,9 @@ const ResetPassword = () => {
     padding: theme.spacing(12, 0),
   }))
 
+
+  const generated_redux_store_code = 123456
+  const eq_name = 'excaliber'
   useEffect(() => {
     console.log('router', router.query)
   }, [])
@@ -98,7 +101,7 @@ const ResetPassword = () => {
               type="submit"
               variant="outlined"
               color='inherit'
-              onClick={() => router.push(LOGIN_PATH)}
+              onClick={() => router.push(EQUIPMENT_PATH)}
             >
               <Image
                 alt="Icon Base"
@@ -112,6 +115,7 @@ const ResetPassword = () => {
               variant="contained"
               color='warning'
               startIcon={<Iconify icon="eva:edit-fill" />}
+              onClick={() => router.push(MERGE_PATH(BOOKING_PATH, eq_name, generated_redux_store_code.toString()))}
             >
               Edit Booking
             </LoadingButton>
@@ -123,4 +127,4 @@ const ResetPassword = () => {
   )
 }
 
-export default ResetPassword
+export default BookingEstimatingUnSuccess

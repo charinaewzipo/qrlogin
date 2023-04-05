@@ -271,9 +271,11 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
 
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
-  const [tableData, setTableData] = useState<Array<IV1RespGetBookingMeRead & IV1TablePayments>>([])
   const [bookDeatail, setBookDetail] = useState<IV1RespGetBookingMeRead & IV1TablePayments>(null)
-  const { push } = useRouter()
+
+  //receive from prev page
+  const generated_redux_store_code = 123456
+
   useEffect(() => {
     GetBookingMeRead()
   }, [])
@@ -285,19 +287,20 @@ export default function BookingPage() {
       startTime: '',
       endTime: '',
       search: '',
-      eqId: 12345,
+      eqId: generated_redux_store_code,
       bookStatus: '',
     }
     await fetchGetBookingMeRead(query).then(response => {
       if (response.code === 200) {
         setBookDetail(mockTableData[0])
-        setTableData(mockTableData)
       }
     }).catch(err => {
       console.log(err)
     })
   }
-
+  const handleDownloadPDF = () => {
+    //handleDownloadPDF
+  }
   return (
     <>
       <Head>
@@ -317,7 +320,7 @@ export default function BookingPage() {
             },
             {
               name: get(bookDeatail, 'eqName', ''),
-              href: (MERGE_PATH(BOOKING_PATH, '12345', get(bookDeatail, 'eqId', '').toString()))
+              href: (MERGE_PATH(BOOKING_PATH, get(bookDeatail, 'eqName', '').toString(), generated_redux_store_code.toString()))
             },
             {
               name: 'Estimating',
@@ -325,8 +328,8 @@ export default function BookingPage() {
           ]}
         />
         <BookingEstimatingSummary book={bookDeatail} />
-        <BookingEstimatingInvoice book={bookDeatail} />
-        <BookingEstimatingForm />
+        <BookingEstimatingInvoice book={bookDeatail} onDownloadPDF={handleDownloadPDF} />
+        <BookingEstimatingForm book={bookDeatail} reduxCode={generated_redux_store_code} />
       </Container>
     </>
   )
