@@ -13,7 +13,7 @@ const fetchPostEquipmentCreate = (
 const fetchGetEquipmentRead = (
     query: IV1QueryPagination & IV1QueryGetEquipmentRead
 ): Promise<IAPIResponse<IV1Pagination<IV1PostEquipmentRead>>> => {
-    return axios.get(`${API_URL}${endpoint.equipmentRead}${transformer.urlSearchParams(query)}`);
+    return axios.get(`${endpoint.equipmentRead}${transformer.urlSearchParams(query)}`);
 }
 //EQ3.POST: api/v1/equipment/update
 const fetchPostEquipmentUpdate = (
