@@ -263,9 +263,18 @@ function EquipmentCreateForm(props: AccountFormProps) {
     }
     const values = watch()
 
-
+    const everyArr =  values.eqtypeperson[0].eqsches
     useEffect(()=>{
-        if((values.eqtypeperson[0].eqsches[0].eqpscheName === '') || (get(values,`eqtypeperson[0].eqsches[0].eqpscheUnitPrice.${currentTab}`,'') === '' ))
+        // for(var x =0, x < 5 , x++){
+            
+        // }
+        const checkName = values.eqtypeperson[0].eqsches.map(a =>a.eqpscheName)
+        console.log('checkName',checkName)
+        const hasEmptyStrings = checkName.includes("");
+        // console.log('allEmptyStrings',allEmptyStrings)
+        if((hasEmptyStrings)
+        //  || (get(values,`eqtypeperson[0].eqsches[0].eqpscheUnitPrice.${currentTab}`,'') === '' )
+         )
         {
             setSisableOtherTab(true)
         }
