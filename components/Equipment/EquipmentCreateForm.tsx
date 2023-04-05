@@ -127,7 +127,7 @@ function EquipmentCreateForm(props: AccountFormProps) {
                         eqpscheName: '',
                         eqpscheDescription: '',
                         eqpscheUnitPrice: {SCIKU_STUDENT_STAFF: '' , 
-                                            KU_STUDENT_STAFF:'2' ,OTHER_UNIVERSITY:'',
+                                            KU_STUDENT_STAFF:'' ,OTHER_UNIVERSITY:'',
                                                 GOVN_OFFICE:'',PRIVATE_COMPANY:''}, 
                         eqpscheUnitPer: 'Baht/Hour',
                         eqsubsches: [
@@ -265,7 +265,8 @@ function EquipmentCreateForm(props: AccountFormProps) {
 
 
     useEffect(()=>{
-        if(values.eqtypeperson[0].eqsches[0].eqpscheName === ''){
+        if((values.eqtypeperson[0].eqsches[0].eqpscheName === '') || (get(values,`eqtypeperson[0].eqsches[0].eqpscheUnitPrice.${currentTab}`,'') === '' ))
+        {
             setSisableOtherTab(true)
         }
         else{
@@ -518,9 +519,16 @@ function EquipmentCreateForm(props: AccountFormProps) {
                             console.log('newValue',newValue)
                             console.log('values',values)
                             setTemp(values.eqtypeperson[0].eqsches)
-                            // if(values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF === ''){
-                            //     setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.SCIKU_STUDENT_STAFF`, '500');
-                            // }
+                            if(values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.KU_STUDENT_STAFF === '' 
+                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.OTHER_UNIVERSITY === ''
+                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.GOVN_OFFICE === ''
+                            && values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.PRIVATE_COMPANY === ''
+                            ){
+                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.KU_STUDENT_STAFF`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
+                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.OTHER_UNIVERSITY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
+                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.GOVN_OFFICE`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
+                                setValue(`eqtypeperson.0.eqsches.0.eqpscheUnitPrice.PRIVATE_COMPANY`,values.eqtypeperson[0].eqsches[0].eqpscheUnitPrice.SCIKU_STUDENT_STAFF );
+                            }
                             console.log('temp',temp)
                             setCurrentTab(newValue)
                         }}
