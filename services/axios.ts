@@ -19,6 +19,7 @@ const axiosInstance: AxiosInstance = axios.create({
 })
 
 axiosInstance.interceptors.request.use(requestInterceptor, handleRequestError)
+axiosInstance.defaults.headers.common.token = "U2FsdGVkX1/TWWurepMzCuq89CnxPu801DSx3o9/FxY=";
 export const TOKEN_KEY = 'kusec-accesstoken'
 export const setSession = async (accessToken: string | null) => {
     if (accessToken) {

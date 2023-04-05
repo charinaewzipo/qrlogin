@@ -1,3 +1,8 @@
+import { API_URL } from "@ku/constants/config";
+import transformer from "@ku/utils/transformer";
+import axios from "./axios";
+import endpoint from "@ku/constants/endpoint";
+
 //EQ1.POST: api/v1/equipment/create
 const fetchPostEquipmentCreate = (
     query: IV1PostEquipmentCreate
@@ -8,7 +13,7 @@ const fetchPostEquipmentCreate = (
 const fetchGetEquipmentRead = (
     query: IV1QueryPagination & IV1QueryGetEquipmentRead
 ): Promise<IAPIResponse<IV1Pagination<IV1PostEquipmentRead>>> => {
-    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+    return axios.get(`${API_URL}${endpoint.equipmentRead}${transformer.urlSearchParams(query)}`);
 }
 //EQ3.POST: api/v1/equipment/update
 const fetchPostEquipmentUpdate = (
