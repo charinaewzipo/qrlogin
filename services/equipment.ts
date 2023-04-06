@@ -2,6 +2,7 @@ import { API_URL } from "@ku/constants/config";
 import transformer from "@ku/utils/transformer";
 import axios from "./axios";
 import endpoint from "@ku/constants/endpoint";
+import { AxiosResponse } from "axios";
 
 //EQ1.POST: api/v1/equipment/create
 const fetchPostEquipmentCreate = (
@@ -26,6 +27,24 @@ const fetchPostEquipmentDelete = (
     query: IV1PostEquipmentDelete
 ): Promise<IAPIResponse<IV1RespPostEquipmentDelete>> => {
     return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+}
+//EQ5.POST: api/v1/equipment/maintenance/create
+const postEquipmentMaintenanceCreate = (
+    query: IV1PostEquipmentMaintenanceCreate
+): Promise<AxiosResponse<IAPIResponse<IV1RespPostEquipmentMaintenanceCreate>>> => {
+    return axios.post(`${endpoint.equipmentMaintenanceCreate}`, query);
+}
+//EQ6.GET: api/v1/equipment/maintenance/read
+const fetchGetEquipmentMaintenanceRead = (
+    query: IV1QueryPagination & IV1QueryGetEquipmentMaintenanceRead
+): Promise<AxiosResponse<IAPIResponse<IV1Pagination<IV1GetEquipmentMaintenanceRead>>>> => {
+    return axios.get(`${endpoint.equipmentMaintenanceRead}${transformer.urlSearchParams(query)}`);
+}
+//EQ7.POST: api/v1/equipment/maintenance/update
+const postEquipmentMaintenanceUpdate = (
+    query: IV1PostEquipmentMaintenanceUpdate
+): Promise<AxiosResponse<IAPIResponse<IV1RespPostEquipmentMaintenanceUpdate>>> => {
+    return axios.post(`${endpoint.equipmentMaintenanceUpdate}`, query);
 }
 //EQ9.GET: api/v1/equipment/unavailable
 const fetchGetEquipmentUnavailable = (
@@ -62,6 +81,9 @@ export {
     fetchGetEquipmentRead,
     fetchPostEquipmentUpdate,
     fetchPostEquipmentDelete,
+    postEquipmentMaintenanceCreate,
+    fetchGetEquipmentMaintenanceRead,
+    postEquipmentMaintenanceUpdate,
     fetchGetUnAvailableSchedule,
     fetchGetUnAvailableScheduleStats,
     fetchGetEquipmentUnavailable,

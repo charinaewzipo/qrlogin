@@ -12,25 +12,30 @@ import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/componen
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
 import { format, parseISO } from 'date-fns'
-import axios from '@ku/services/axios'
+import axios from 'axios'
 import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
+import { fetchGetEquipmentMaintenanceRead, postEquipmentMaintenanceUpdate } from '@ku/services/equipment'
+import numeral from 'numeral'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function MaintenanceLogEdit() {
     // const { t } = useTranslation()
     const { enqueueSnackbar } = useSnackbar()
-    const router = useRouter()
+    const {
+        push,
+        query: { id, log_id },
+        isReady,
+    } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
 	const [maintenanceApiData, setMaintenanceApiData] = useState<IV1GetEquipmentMaintenanceRead>()
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
-    const pathData = router.query
 
 	useEffect(() => {
-	  fetchMaintenanceData('234')
-	}, [])  
+        if (!isReady) return;
+	    fetchMaintenanceData()
+	}, [isReady])  
 
     async function getFileFromUrl(url: string){
         // สร้างไฟล์เปล่าตาม size ของไฟล์ที่ได้จาก header เพื่อเอาไปโชว์ก่อน
@@ -39,6 +44,8 @@ export function MaintenanceLogEdit() {
             method: 'head',
             url: url,
         })
+        console.log(response);
+        
         const fileSize = Number(get(response.headers, 'content-length', 0))
         const blob = new Blob([response.data], { type: response.headers['content-type'] })
         const arrayBuffer = new ArrayBuffer(fileSize)
@@ -50,42 +57,50 @@ export function MaintenanceLogEdit() {
         return file
     }      
 
-	const fetchMaintenanceData = async (id: string) => {
-        const apiData = {
-            eqId: 1,
-            eqmtnId: 1,
-            eqmtnDescription: 'Engineer จาก crest แก้ไขปัญหาภาพ noise จากการเสียหายของอุปกรณ์',
-            eqmtnCost: 3500,
-            eqmtnDate: '2022-02-28T10:30:00.000Z',
-            eqmtnCreatedAt: '2022-02-28T11:00:00.000Z',
-            eqmtnUpdatedAt: '2022-02-28T11:15:00.000Z',
-            eqmtnPicLink: 'https://cdn.thewirecutter.com/wp-content/media/2022/08/macbook-2048px-9765.jpg',
-            eqmtnPicCreatedAt: '2022-02-28T11:05:00.000Z',
-            eqmtnPicUpdatedAt: '2022-02-28T11:05:00.000Z'
-        }
-        setMaintenanceApiData(apiData)
-		setMaintenanceData({
-            descriptions: apiData.eqmtnDescription,
-            cost: fNumber(apiData.eqmtnCost),
-            date: format(parseISO(apiData.eqmtnDate.replace('Z', '')), 'dd MMM yyyy'),
-            maintenanceFiles: [],
-		})
-        const maintenanceFiles = await getFileFromUrl(apiData.eqmtnPicLink)
-        setMaintenanceData(prev => ({...prev, maintenanceFiles: [maintenanceFiles]}))
+	const fetchMaintenanceData = async () => {
+        await fetchGetEquipmentMaintenanceRead({
+            eqId: Number(id),
+            eqmtnId: Number(log_id),
+            page: 1,
+            limit: 1,
+        })
+            .then(async (res) => {
+                const apiData = get(res, 'data.data.dataList.0', null)
+                setMaintenanceApiData(apiData)
+                setMaintenanceData({
+                    descriptions: get(apiData, 'eqmtnDescription', ''),
+                    cost: fNumber(get(apiData, 'eqmtnCost', '')),
+                    date: format(parseISO(get(apiData, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy'),
+                    maintenanceFiles: [],
+                })
+                const maintenanceFiles = await getFileFromUrl(get(apiData, 'eqmtnpicLink', ''))
+                setMaintenanceData((prev) => ({ ...prev, maintenanceFiles: [maintenanceFiles] }))
+            })
+            .catch((err) => {})
 	}
 
-	const handleFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
-        //TODO: api submit
-        enqueueSnackbar('Updated maintenance log.')
-        setErrorMsg('error msg')
-        console.log('submit', data)
-        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: pathData.id }})
+	const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
+        setErrorMsg('')
+        await postEquipmentMaintenanceUpdate({
+            eqmtnId: Number(get(maintenanceApiData, 'eqmtnId', '')),
+            eqmtnDescription: get(data, 'descriptions', ''),
+            eqmtnCost: numeral(get(data, 'cost', 0)).value(),
+            eqmtnDate: get(data, 'date', ''),
+            eqmtnpicLink:
+                'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
+            // รอ api รูป
+        })
+            .then(async (res) => {
+                enqueueSnackbar('Updated maintenance log.')
+                push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
+            })
+            .catch((err) => {
+                setErrorMsg('error msg')
+            })
     }
 
     const handleFormReset = () => {
-		//todo ยิง api ใหม่
-		fetchMaintenanceData('123')
-        setMaintenanceData({ ...maintenanceData, descriptions: 'asdasdasdasdasd' })
+        fetchMaintenanceData()
     }
 
     return (
@@ -110,7 +125,7 @@ export function MaintenanceLogEdit() {
                                     { name: 'List', href: '/equipment' },
                                     {
                                         name: 'Coating Material (CM1)',
-                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail${pathData.id}`)}`,
+                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail`, `${id}`)}`,
                                     },
                                     { name: 'Maintenance Detail' },
                                 ]}

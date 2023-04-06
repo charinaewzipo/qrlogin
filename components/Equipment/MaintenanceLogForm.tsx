@@ -57,7 +57,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const defaultValues = props.defaultValue || {
         descriptions: '',
         cost: '',
-        date: '',
+        date: null,
         maintenanceFiles: [],
     }
 
