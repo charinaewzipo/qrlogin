@@ -44,8 +44,6 @@ export function MaintenanceLogEdit() {
             method: 'head',
             url: url,
         })
-        console.log(response);
-        
         const fileSize = Number(get(response.headers, 'content-length', 0))
         const blob = new Blob([response.data], { type: response.headers['content-type'] })
         const arrayBuffer = new ArrayBuffer(fileSize)

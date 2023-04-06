@@ -91,8 +91,6 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 
     const onSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const submitData = cloneDeep(data)
-        //TODO: แปลง submitdata.date เป็น timestamp
-        //TODO: ต่อ api อัพไฟล์
         props.onSubmit(submitData)
     }
 
