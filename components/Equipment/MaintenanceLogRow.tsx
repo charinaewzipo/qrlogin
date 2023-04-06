@@ -1,5 +1,4 @@
 // @mui
-import { useTheme } from '@mui/material/styles';
 import { TableRow, TableCell, Typography } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
@@ -25,7 +24,7 @@ export default function MaintenanceLogRow({
 
       const response = await axios({
           method: 'get',
-          url: get(row, 'eqmtnPicLink', ''),
+          url: get(row, 'eqmtnpicLink', ''),
           responseType: 'blob',
       })
       const blob = new Blob([response.data], { type: response.headers['content-type'] })
@@ -33,7 +32,7 @@ export default function MaintenanceLogRow({
 
       const link = document.createElement('a')
       link.href = fileURL
-      link.download = fileNameByUrl(get(row, 'eqmtnPicLink', ''))
+      link.download = fileNameByUrl(get(row, 'eqmtnpicLink', ''))
       link.target = "_blank"
       
       link.click()
@@ -54,7 +53,7 @@ export default function MaintenanceLogRow({
               </TableCell>
               <TableCell align="center">
                   <Label onClick={handleDownload} variant="outlined" color="info" sx={{ cursor: 'pointer' }} >
-                      {fileNameByUrl(get(row, 'eqmtnPicLink', ''))}
+                      {fileNameByUrl(get(row, 'eqmtnpicLink', ''))}
                   </Label>
               </TableCell>
               <TableCell align="left">

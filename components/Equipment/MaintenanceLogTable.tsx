@@ -13,26 +13,31 @@ import {
 import { useRouter } from 'next/router'
 import {
     useTable,
-    emptyRows,
     TableNoData,
-    TableEmptyRows,
     TableHeadCustom,
 } from '@sentry/components/table'
 import Scrollbar from '@sentry/components/scrollbar'
 import MaintenanceLogRow from './MaintenanceLogRow'
-import { fetchPostEquipmentMaintenanceRead } from '@ku/services/equipment'
-import { useEffect, useState } from 'react'
+import { useEffect } from 'react'
 
 interface Props {
+    maintenanceLogsData: IV1GetEquipmentMaintenanceRead[]
+    totalRecord: number
     onClickAddLogs: () => void
+    onPageChange?: (page: number, limit: number) => void
 }
-function MaintenanceLogTable({ onClickAddLogs }: Props) {
+function MaintenanceLogTable({
+    maintenanceLogsData,
+    totalRecord,
+    onClickAddLogs,
+    onPageChange,
+}: Props) {
     const TABLE_HEAD = [
         { id: 'Date', label: 'Date', align: 'left' },
         { id: 'Cost', label: 'Cost', align: 'right' },
         { id: 'File', label: 'File', align: 'center' },
         { id: 'Descriptions', label: 'Descriptions', align: 'left' },
-        { id: 'Create date', label: 'Create date', align: 'left', },
+        { id: 'Create date', label: 'Create date', align: 'left' },
     ]
     const {
         page,
@@ -51,23 +56,28 @@ function MaintenanceLogTable({ onClickAddLogs }: Props) {
         onChangeRowsPerPage,
     } = useTable()
 
-    const [tableData, setTableData] = useState<IV1GetEquipmentMaintenanceRead[]>([])
     const theme = useTheme()
-    const { query: { id } } = useRouter()
+    const {
+        isReady,
+    } = useRouter()
 
     useEffect(() => {
-        fetchPostEquipmentMaintenanceRead({ eqId: Number(id) }).then(res => {
-            setTableData(res.data.dataList)
-        })
-    }, [])
+        if (!isReady) return
+        onPageChange(page, rowsPerPage)
+    }, [page, rowsPerPage, isReady])
 
-    const isNotFound = !tableData.length
+    const isNotFound = !maintenanceLogsData.length
     return (
         <Stack gap={8}>
             <Stack sx={{ mt: 12 }} flexDirection="row" justifyContent="space-between">
-                <Typography variant='h5'>Maintenance Logs</Typography>
+                <Typography variant="h5">Maintenance Logs</Typography>
                 <Stack flexDirection="row" gap={2}>
-                    <LoadingButton type="submit" variant="contained" color="info" onClick={onClickAddLogs}>
+                    <LoadingButton
+                        type="submit"
+                        variant="contained"
+                        color="info"
+                        onClick={onClickAddLogs}
+                    >
                         Add Maintenance Logs
                     </LoadingButton>
                 </Stack>
@@ -80,7 +90,7 @@ function MaintenanceLogTable({ onClickAddLogs }: Props) {
                             sx={{
                                 minWidth: 650,
                                 'thead > tr > th': {
-                                    color: theme.palette.text.primary
+                                    color: theme.palette.text.primary,
                                 },
                                 th: {
                                     backgroundColor: 'transparent',
@@ -91,11 +101,14 @@ function MaintenanceLogTable({ onClickAddLogs }: Props) {
                                 },
                             }}
                         >
-                            <TableHeadCustom headLabel={TABLE_HEAD} rowCount={tableData.length} />
+                            <TableHeadCustom
+                                headLabel={TABLE_HEAD}
+                                rowCount={maintenanceLogsData.length}
+                            />
 
                             <TableBody>
-                                {tableData
-                                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                {maintenanceLogsData
+                                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => {
                                         return (
                                             <MaintenanceLogRow
@@ -104,10 +117,6 @@ function MaintenanceLogTable({ onClickAddLogs }: Props) {
                                             />
                                         )
                                     })}
-
-                                <TableEmptyRows
-                                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                                />
 
                                 <TableNoData isNotFound={isNotFound} />
                             </TableBody>
@@ -118,7 +127,7 @@ function MaintenanceLogTable({ onClickAddLogs }: Props) {
                     sx={{ borderTop: `2px solid ${theme.palette.divider}` }}
                     rowsPerPageOptions={[5, 10, 25]}
                     component="div"
-                    count={tableData.length}
+                    count={totalRecord}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={onChangePage}

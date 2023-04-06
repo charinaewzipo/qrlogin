@@ -11,6 +11,8 @@ import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
 import { ACCOUNT_PATH, EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
+import { fetchGetEquipmentMaintenanceRead } from '@ku/services/equipment'
+import { get } from 'lodash'
 
 EquipmentDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -19,8 +21,10 @@ export function EquipmentDetail() {
     // const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
     const { enqueueSnackbar } = useSnackbar();
-    const { push, query: { id }} = useRouter()
+    const { push, query: { id } } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
+    const [maintenanceLogData, setMintenanceLogData] = useState<IV1GetEquipmentMaintenanceRead[]>([])
+    const [totalMaintenanceLogRecord, setTotalMaintenanceLogRecord] = useState(0)
 
     const onFormSubmit = (data: IAccountFormValuesProps) => {
         //TODO: api submit
@@ -35,6 +39,18 @@ export function EquipmentDetail() {
 
     const onClickAddLogs = () => {
         push(MERGE_PATH(EQUIPMENT_PATH, 'detail', String(id), 'maintenance-log'))
+    }
+
+    
+    const fetchMaintenancedata = (page: number, limit: number) => {
+        fetchGetEquipmentMaintenanceRead({
+            eqId: Number(id),
+            page: page + 1,
+            limit: limit
+        }).then(res => {
+            setTotalMaintenanceLogRecord(get(res, 'data.data.totalEecord', 0))
+            setMintenanceLogData(get(res, 'data.data.dataList', []))
+        })
     }
 
     return (
@@ -61,11 +77,19 @@ export function EquipmentDetail() {
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-                              <EquipmentCreateForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} />
-                              <Stack sx={{mt:3}}>
-                              <MaintenanceLogTable onClickAddLogs={onClickAddLogs} />
-                              </Stack>
-                             
+                            <EquipmentCreateForm
+                                onSubmit={onFormSubmit}
+                                onCancel={onFormCancel}
+                                errorMsg={errorMsg}
+                            />
+                            <Stack sx={{ mt: 3 }}>
+                                <MaintenanceLogTable
+                                    onClickAddLogs={onClickAddLogs}
+                                    onPageChange={fetchMaintenancedata}
+                                    maintenanceLogsData={maintenanceLogData}
+                                    totalRecord={totalMaintenanceLogRecord}
+                                />
+                            </Stack>
                         </div>
                     </div>
                 </Box>
