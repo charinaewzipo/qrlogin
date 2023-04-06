@@ -141,7 +141,7 @@ function BookDetail({
                         <Typography gutterBottom variant="subtitle1">
                             {bookingData.eqRtimTimes.map((time) => (
                                 <Label color="info" sx={{ mr: 1 }}>
-                                    {`${time}:00-${time}:59`}
+                                    {`${time}:00 - ${time}:59`}
                                 </Label>
                             ))}
                         </Typography>
