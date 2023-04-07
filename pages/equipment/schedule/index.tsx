@@ -137,6 +137,7 @@ export default function EquipmentSchedulePage() {
       enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
       console.log(err)
     }).finally(() => {
+      GetUnAvailableScheduleStats()
       GetUnAvailableSchedule()
     })
   }
