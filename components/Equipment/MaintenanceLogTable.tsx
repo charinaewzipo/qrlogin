@@ -19,6 +19,7 @@ import {
 import Scrollbar from '@sentry/components/scrollbar'
 import MaintenanceLogRow from './MaintenanceLogRow'
 import { useEffect } from 'react'
+import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 
 interface Props {
     maintenanceLogsData: IV1GetEquipmentMaintenanceRead[]
@@ -59,6 +60,8 @@ function MaintenanceLogTable({
     const theme = useTheme()
     const {
         isReady,
+        push,
+        query: {id}
     } = useRouter()
 
     useEffect(() => {
@@ -67,6 +70,11 @@ function MaintenanceLogTable({
     }, [page, rowsPerPage, isReady])
 
     const isNotFound = !maintenanceLogsData.length
+
+    const handleClickRow = (mid: number) => {
+        push(MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`, 'maintenance-log', `${mid}`))
+    }
+
     return (
         <Stack gap={8}>
             <Stack sx={{ mt: 12 }} flexDirection="row" justifyContent="space-between">
@@ -114,6 +122,7 @@ function MaintenanceLogTable({
                                             <MaintenanceLogRow
                                                 key={get(row, 'equnavascheId', -1)}
                                                 row={row}
+                                                onClickRow={handleClickRow}
                                             />
                                         )
                                     })}
