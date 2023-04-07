@@ -1,7 +1,8 @@
 import { LoadingButton } from '@mui/lab'
-import { Stack, Paper, Typography, Divider, Grid, TextField } from '@mui/material'
+import { Stack, Paper, Typography, Grid, TextField } from '@mui/material'
 import { DatePicker } from '@mui/x-date-pickers'
 import Label from '@sentry/components/label'
+import { padStart } from 'lodash'
 
 const constant = {
     bookInformation: 'Book information',
@@ -29,16 +30,17 @@ function BookInformation({
     reservedTimes
 }: IBookInformationProps) {
     const renderTimeButton = (time: number) => {
+        const formattedTime = padStart(`${time}`, 2, '0')
         if (unavailableTimes && unavailableTimes.includes(time)) {
             return (
                 <LoadingButton variant={'outlined'} color="inherit" size="large" fullWidth>
-                    {`${time}.00`}
+                    {`${formattedTime}:00`}
                 </LoadingButton>
             )
         } else if (reservedTimes && reservedTimes.includes(time)) {
             return (
                 <LoadingButton variant={'text'} color="inherit" size="large" fullWidth>
-                    {`${time}.00`}
+                    {`${formattedTime}:00`}
                 </LoadingButton>
             )
         } else if (selectedTimes.includes(time)) {
@@ -50,7 +52,7 @@ function BookInformation({
                     size="large"
                     fullWidth
                 >
-                    {`${time}.00`}
+                    {`${formattedTime}:00`}
                 </LoadingButton>
             )
         } else {
@@ -61,7 +63,7 @@ function BookInformation({
                     size="large"
                     fullWidth
                 >
-                    {`${time}.00`}
+                    {`${formattedTime}:00`}
                 </LoadingButton>
             )
         }
@@ -92,9 +94,9 @@ function BookInformation({
                         value={selectedDate || null}
                         renderInput={(params) => <TextField fullWidth {...params} />}
                     />
-                    <Stack justifyContent='space-between' direction='row'>
+                    <Stack justifyContent='space-between' gap={1} direction='row' flexWrap={'wrap'}>
                         <Typography variant="subtitle1">{constant.selectTimes}</Typography>
-                        <Stack direction='row' spacing={1}>
+                        <Stack direction='row' gap={1} flexWrap={'wrap'}>
                             <Label variant='filled' color='info'>{constant.selected}</Label>
                             <Label variant='outlined' color='primary'>{constant.available}</Label>
                             <Label variant='outlined'>{constant.reserved}</Label>
