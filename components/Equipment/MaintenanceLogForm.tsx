@@ -15,7 +15,7 @@ import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
 import { fNumber } from '@sentry/utils/formatNumber'
-import axios from '@ku/services/axios'
+import axios from 'axios'
 
 export interface IMaintenanceLogFormValuesProps {
   descriptions: string
