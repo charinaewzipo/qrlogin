@@ -4,7 +4,7 @@ import { TableRow, TableCell, Typography, Button } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
 import { format } from 'date-fns'
-import { get, isEmpty, noop } from 'lodash';
+import { get, noop } from 'lodash';
 import Iconify from '@sentry/components/iconify/Iconify';
 import { getTimeOfDay } from '@ku/utils/formatDate';
 // ----------------------------------------------------------------------

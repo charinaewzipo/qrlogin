@@ -75,8 +75,8 @@ interface IV1QueryGetEquipmentRead {
     eqSortCode?: boolean
 }
 interface IV1QueryGetEquipmentUnavailableSchedule {
-    startTime?: timestamp
-    endTime?: timestamp
+    startTime?: string
+    endTime?: string
     status?: IEquipmentUnavailableStatus
 }
 

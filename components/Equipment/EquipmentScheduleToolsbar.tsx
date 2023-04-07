@@ -1,12 +1,8 @@
 import { Stack, InputAdornment, TextField, MenuItem } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers';
-import Iconify from '@sentry/components/iconify/Iconify';
-// components
-
 
 // ----------------------------------------------------------------------
 
-const INPUT_WIDTH = 160;
 
 type Props = {
   filterStartDate: Date | null;

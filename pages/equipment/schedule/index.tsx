@@ -13,7 +13,6 @@ import {
   TableBody,
   Container,
   TableContainer,
-  TablePagination,
   Box,
   useTheme,
 } from '@mui/material'
@@ -28,16 +27,17 @@ import {
   useTable,
   TableNoData,
   TableHeadCustom,
+  TablePaginationCustom,
 } from '@sentry/components/table'
 
 import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { format } from 'date-fns'
+import { format, formatISO } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
-import { get, isEmpty, pickBy } from 'lodash'
+import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats, fetchPostEquipmentUnavailableDelete } from '@ku/services/equipment'
 import { getTimeOfDay } from '@ku/utils/formatDate'
 
@@ -60,17 +60,8 @@ EquipmentSchedulePage.getLayout = (page: React.ReactElement) => <AuthorizedLayou
 export default function EquipmentSchedulePage() {
   const {
     page,
-    order,
-    orderBy,
     rowsPerPage,
     setPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable();
@@ -83,6 +74,7 @@ export default function EquipmentSchedulePage() {
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [detailSchedule, setDetailSchedule] = useState<IV1RespGetEquipmentUnavailableSchedule>(null)
+  const [totalRecord, setTotalRecord] = useState<number>(0);
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
@@ -102,8 +94,8 @@ export default function EquipmentSchedulePage() {
     );
   }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
 
-  const GetUnAvailableScheduleStats = async () => {
-    await fetchGetUnAvailableScheduleStats().then(response => {
+  const GetUnAvailableScheduleStats = () => {
+    fetchGetUnAvailableScheduleStats().then(response => {
       if (response.code === 200000) {
         setScheduleStats(get(response, 'data', initialScheduleStats))
       }
@@ -111,35 +103,34 @@ export default function EquipmentSchedulePage() {
       console.log(err)
     })
   }
-  const GetUnAvailableSchedule = async () => {
+  const GetUnAvailableSchedule = () => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
-      page: page,
+      page: page + 1,
       limit: rowsPerPage,
-      startTime: filterStartDate,
-      endTime: filterEndDate,
+      startTime: !isNull(filterStartDate) ? formatISO(filterStartDate) : null,
+      endTime: !isNull(filterEndDate) ? formatISO(filterEndDate) : null,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
     Object.keys(query).forEach(key => {
-      if (query[key] === null || query[key] === undefined) {
+      if (isNull(query[key]) || isUndefined(query[key])) {
         delete query[key]
       }
     })
-    console.log("query", query)
-    await fetchGetUnAvailableSchedule((query)).then(response => {
-      console.log("response.data", response.data)
+    fetchGetUnAvailableSchedule(query).then(response => {
       if (response.code === 200000) {
         setTableData(get(response, 'data.dataList', []))
+        setTotalRecord(get(response, 'data.totalRecord', 0))
       }
     }).catch(err => {
       console.log(err)
     })
   }
 
-  const PostEquipmentUnavailableDelete = async () => {
+  const PostEquipmentUnavailableDelete = () => {
     const query: IV1PostEquipmentUnavailableDelete = {
       equnavascheId: get(detailSchedule, 'equnavascheId', -1)
     }
-    await fetchPostEquipmentUnavailableDelete(query).then(response => {
+    fetchPostEquipmentUnavailableDelete(query).then(response => {
       if (response.code === 200000) {
         enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
       }
@@ -275,10 +266,8 @@ export default function EquipmentSchedulePage() {
               </Table>
             </Scrollbar>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={tableData.length}
+          <TablePaginationCustom
+            count={(totalRecord)}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}

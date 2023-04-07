@@ -10,5 +10,5 @@ export const getTimeOfDay = (timeArray: number[]) => {
         return 'Afternoon'
     } else if (timeArray.every((i) => timeDay.Full_Day.includes(i))) {
         return 'Full Day'
-    }
+    } else return 'Early morning'
 }
