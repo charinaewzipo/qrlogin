@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 // next
 import Head from 'next/head'
 import NextLink from 'next/link'
@@ -10,16 +10,12 @@ import {
   Card,
   Table,
   Button,
-  Divider,
   TableBody,
   Container,
   TableContainer,
-  Tooltip,
-  IconButton,
   TablePagination,
   Box,
   useTheme,
-  Drawer,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -30,28 +26,19 @@ import Scrollbar from '@sentry/components/scrollbar'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
-  TableSkeleton,
-  getComparator,
 } from '@sentry/components/table'
-import { fetchGetAssessments } from '@ku/services/assessment'
+
 import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
-import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
-import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
-import Image from '@sentry/components/image/Image'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
 import { format } from 'date-fns'
-
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, pickBy } from 'lodash'
-import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats } from '@ku/services/equipment'
+import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats, fetchPostEquipmentUnavailableDelete } from '@ku/services/equipment'
 import { getTimeOfDay } from '@ku/utils/formatDate'
 
 const initialScheduleStats = {
@@ -147,6 +134,23 @@ export default function EquipmentSchedulePage() {
       console.log(err)
     })
   }
+
+  const PostEquipmentUnavailableDelete = async () => {
+    const query: IV1PostEquipmentUnavailableDelete = {
+      equnavascheId: get(detailSchedule, 'equnavascheId', -1)
+    }
+    await fetchPostEquipmentUnavailableDelete(query).then(response => {
+      if (response.code === 200000) {
+        enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
+      }
+    }).catch(err => {
+      enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
+      console.log(err)
+    }).finally(() => {
+      GetUnAvailableSchedule()
+    })
+  }
+
   const TABS = [
     { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
     {
@@ -169,13 +173,11 @@ export default function EquipmentSchedulePage() {
   const handleOnCancel = (item: IV1RespGetEquipmentUnavailableSchedule) => {
     setDetailSchedule(item)
     setOpenConfirmModal(true)
-    detailSchedule
+
   }
   const handleOnClickModal = () => {
     setOpenConfirmModal(false)
-    get(detailSchedule, 'equnavascheStatus', '') === 'PENDING' ?
-      enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
-      : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
+    PostEquipmentUnavailableDelete()
   }
   const isNotFound = (!tableData.length)
   return (
