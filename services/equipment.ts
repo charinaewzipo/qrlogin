@@ -31,19 +31,19 @@ const fetchPostEquipmentDelete = (
 //EQ5.POST: api/v1/equipment/maintenance/create
 const postEquipmentMaintenanceCreate = (
     query: IV1PostEquipmentMaintenanceCreate
-): Promise<AxiosResponse<IAPIResponse<IV1RespPostEquipmentMaintenanceCreate>>> => {
+): Promise<IAPIResponse<IV1RespPostEquipmentMaintenanceCreate>> => {
     return axios.post(`${endpoint.equipmentMaintenanceCreate}`, query);
 }
 //EQ6.GET: api/v1/equipment/maintenance/read
 const fetchGetEquipmentMaintenanceRead = (
     query: IV1QueryPagination & IV1QueryGetEquipmentMaintenanceRead
-): Promise<AxiosResponse<IAPIResponse<IV1Pagination<IV1GetEquipmentMaintenanceRead>>>> => {
+): Promise<IAPIResponse<IV1Pagination<IV1GetEquipmentMaintenanceRead>>> => {
     return axios.get(`${endpoint.equipmentMaintenanceRead}${transformer.urlSearchParams(query)}`);
 }
 //EQ7.POST: api/v1/equipment/maintenance/update
 const postEquipmentMaintenanceUpdate = (
     query: IV1PostEquipmentMaintenanceUpdate
-): Promise<AxiosResponse<IAPIResponse<IV1RespPostEquipmentMaintenanceUpdate>>> => {
+): Promise<IAPIResponse<IV1RespPostEquipmentMaintenanceUpdate>> => {
     return axios.post(`${endpoint.equipmentMaintenanceUpdate}`, query);
 }
 //EQ9.GET: api/v1/equipment/unavailable
