@@ -63,7 +63,7 @@ export function MaintenanceLogEdit() {
             limit: 1,
         })
             .then(async (res) => {
-                const apiData = get(res, 'data.data.dataList.0', null)
+                const apiData = get(res, 'data.dataList.0', null)
                 setMaintenanceApiData(apiData)
                 setMaintenanceData({
                     descriptions: get(apiData, 'eqmtnDescription', ''),
