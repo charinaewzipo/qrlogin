@@ -1,7 +1,8 @@
-import { API_URL } from "@ku/constants/config";
-import transformer from "@ku/utils/transformer";
-import axios from "./axios";
-import endpoint from "@ku/constants/endpoint";
+import { API_URL } from '@ku/constants/config'
+import transformer from '@ku/utils/transformer'
+import axios from './axios'
+import endpoint from '@ku/constants/endpoint'
+import { AxiosResponse } from 'axios'
 
 //EQ1.POST: api/v1/equipment/create
 const fetchPostEquipmentCreate = (
@@ -13,7 +14,7 @@ const fetchPostEquipmentCreate = (
 const fetchGetEquipmentRead = (
     query: IV1QueryPagination & IV1QueryGetEquipmentRead
 ): Promise<IAPIResponse<IV1Pagination<IV1PostEquipmentRead>>> => {
-    return axios.get(`${endpoint.equipmentRead}${transformer.urlSearchParams(query)}`);
+    return axios.get(`${endpoint.equipmentRead}${transformer.urlSearchParams(query)}`)
 }
 //EQ3.POST: api/v1/equipment/update
 const fetchPostEquipmentUpdate = (
@@ -49,13 +50,15 @@ const fetchPostEquipmentUnavailableDelete = (
 //EQ12.GET: api/v1/equipment/unavailable/schedule
 const fetchGetUnAvailableSchedule = (
     query: IV1QueryGetEquipmentUnavailableSchedule & IV1QueryPagination
-): Promise<IAPIResponse<IV1Pagination<IV1RespGetEquipmentUnavailableSchedule>>> => {
-    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+): Promise<AxiosResponse<IAPIResponse<IV1Pagination<IV1RespGetEquipmentUnavailableSchedule>>>> => {
+    return axios.get(
+        `${endpoint.equipmentUnAvailableSchedule}${transformer.urlSearchParams(query)}`
+    )
 } //EQ13.GET: api/v1/equipment/unavailable/schedule/stats
 const fetchGetUnAvailableScheduleStats = (): Promise<
-    IAPIResponse<IV1RespGetEquipmentUnavailableStatsSchedule>
+    AxiosResponse<IAPIResponse<IV1RespGetEquipmentUnavailableStatsSchedule>>
 > => {
-    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+    return axios.get(`${endpoint.equipmentUnAvailableScheduleStats}`)
 }
 export {
     fetchPostEquipmentCreate,

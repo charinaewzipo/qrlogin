@@ -50,7 +50,7 @@ import { format } from 'date-fns'
 
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
-import { get } from 'lodash'
+import { get, isEmpty } from 'lodash'
 import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats } from '@ku/services/equipment'
 
 
@@ -82,10 +82,19 @@ const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
     equnavascheUpdatedAt: 1648435200,
   },
 ]
-const mockStats = {
-  upcomingCount: 2,
-  finishCount: 2,
+const initialScheduleStats = {
+  upcoming_count: 0,
+  finish_count: 0,
 }
+const initialSchedulData = [{
+  equnavascheId: 0,
+  equnavascheCreatedByName: '',
+  equnavascheDays: '',
+  equnavascheTimes: [],
+  equnavascheStatus: '',
+  equnavascheCreatedAt: '',
+  equnavascheUpdatedAt: '',
+}]
 const TABLE_HEAD = [
   { id: 'activeDate', label: 'Active date', align: 'left', width: 150 },
   { id: 'time', label: 'Time', align: 'left' },
@@ -132,11 +141,15 @@ export default function EquipmentSchedulePage() {
     GetUnAvailableSchedule()
   }, [])
 
+  useEffect(() => {
+    console.log("scheduleStats", scheduleStats)
+  }, [scheduleStats])
+
   const GetUnAvailableScheduleStats = async () => {
     await fetchGetUnAvailableScheduleStats().then(response => {
-      if (response.code === 200) {
-        setScheduleStats(mockStats)
-        // setScheduleStats(response.data)
+      if (response.data.code === 200000) {
+        setScheduleStats(response.data.data)
+        // setScheduleStats(get(response,'data.data',initialScheduleStats))
       }
     }).catch(err => {
       console.log(err)
@@ -151,9 +164,13 @@ export default function EquipmentSchedulePage() {
       status: filterStatus,
     }
     await fetchGetUnAvailableSchedule(query).then(response => {
-      if (response.code === 200) {
+      console.log("response.data", response.data)
+      if (response.data.code === 200000) {
+
+        // setTableData(get(response, 'data.data.dataList', initialSchedulData))
         setTableData(mockDataTable)
-        // setStatusStat(response.data)
+        // setTableData(response.data.data.dataList)
+
       }
     }).catch(err => {
       console.log(err)
@@ -163,12 +180,12 @@ export default function EquipmentSchedulePage() {
 
   const TABS = [
 
-    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
+    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcoming_count', 0) },
     {
       value: 'Finish',
       label: 'Finish',
       color: 'default',
-      count: get(scheduleStats, 'finishCount', 0),
+      count: get(scheduleStats, 'finish_count', 0),
     },
 
   ] as const
@@ -272,18 +289,19 @@ export default function EquipmentSchedulePage() {
                 />
 
                 <TableBody>
-                  {tableData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
-                      return (
-                        <EquipmentScheduleRow
-                          key={get(row, 'equnavascheId', -1)}
-                          row={row}
-                          onViewRow={() => handleViewRow(get(row, 'equnavascheId', -1))}
-                          onRemove={() => handleOnCancel(row)}
-                        />
-                      )
-                    })}
+                  {!isEmpty(tableData) &&
+                    tableData
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((row) => {
+                        return (
+                          <EquipmentScheduleRow
+                            key={get(row, 'equnavascheId', -1)}
+                            row={row}
+                            onViewRow={() => handleViewRow(get(row, 'equnavascheId', -1))}
+                            onRemove={() => handleOnCancel(row)}
+                          />
+                        )
+                      })}
 
                   <TableEmptyRows
                     emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
