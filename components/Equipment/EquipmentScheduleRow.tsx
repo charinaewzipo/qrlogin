@@ -6,6 +6,7 @@ import Label from '@sentry/components/label/Label';
 import { format } from 'date-fns'
 import { get, isEmpty, noop } from 'lodash';
 import Iconify from '@sentry/components/iconify/Iconify';
+import { getTimeOfDay } from '@ku/utils/formatDate';
 // ----------------------------------------------------------------------
 
 type Props = {
@@ -20,6 +21,9 @@ export default function EquipmentScheduleRow({
   onRemove
 }: Props) {
   const theme = useTheme();
+
+
+
   return (
     <>
       <TableRow
@@ -31,14 +35,14 @@ export default function EquipmentScheduleRow({
       >
         <TableCell align="left"><Typography variant="body2" >
 
-          {format((get(row, 'equnavascheUpdatedAt', new Date())), 'dd MMM yyyy')}
+          {format(new Date(get(row, 'equnavascheDays', new Date())), 'dd MMM yyyy')}
 
         </Typography> </TableCell>
-        <TableCell align="left"> <Typography variant="body2" >{get(row, 'equnavascheDays', '')}</Typography></TableCell>
+        <TableCell align="left"> <Typography variant="body2" >{getTimeOfDay(get(row, 'equnavascheTimes', []))}</Typography></TableCell>
         <TableCell align="left"> <Typography variant="body2" >{get(row, 'equnavascheCreatedByName', '')}</Typography></TableCell>
 
         <TableCell align="left">
-          {format((get(row, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')}
+          {format(new Date(get(row, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')}
         </TableCell>
 
         <TableCell align="left">

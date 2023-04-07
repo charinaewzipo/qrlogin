@@ -50,38 +50,10 @@ import { format } from 'date-fns'
 
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
-import { get, isEmpty } from 'lodash'
+import { get, isEmpty, pickBy } from 'lodash'
 import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats } from '@ku/services/equipment'
+import { getTimeOfDay } from '@ku/utils/formatDate'
 
-
-const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
-  {
-    equnavascheId: 123,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Full Day',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  },
-  {
-    equnavascheId: 1234,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Early morning',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  }, {
-    equnavascheId: 1235,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Early morning',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  },
-]
 const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
@@ -134,8 +106,13 @@ export default function EquipmentSchedulePage() {
   }, [])
 
   useEffect(() => {
-    console.log("API PANGPANAG")
-    GetUnAvailableSchedule()
+    setPage(0)
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        GetUnAvailableSchedule()
+      }, 1000)
+    );
   }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
 
   const GetUnAvailableScheduleStats = async () => {
@@ -155,7 +132,13 @@ export default function EquipmentSchedulePage() {
       endTime: filterEndDate,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
-    await fetchGetUnAvailableSchedule(query).then(response => {
+    Object.keys(query).forEach(key => {
+      if (query[key] === null || query[key] === undefined) {
+        delete query[key]
+      }
+    })
+    console.log("query", query)
+    await fetchGetUnAvailableSchedule((query)).then(response => {
       console.log("response.data", response.data)
       if (response.code === 200000) {
         setTableData(get(response, 'data.dataList', []))
@@ -164,10 +147,7 @@ export default function EquipmentSchedulePage() {
       console.log(err)
     })
   }
-
-
   const TABS = [
-
     { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
     {
       value: 'FINISH',
@@ -175,7 +155,6 @@ export default function EquipmentSchedulePage() {
       color: 'default',
       count: get(scheduleStats, 'finishCount', 0),
     },
-
   ] as const
 
   const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
@@ -190,13 +169,13 @@ export default function EquipmentSchedulePage() {
   const handleOnCancel = (item: IV1RespGetEquipmentUnavailableSchedule) => {
     setDetailSchedule(item)
     setOpenConfirmModal(true)
-
+    detailSchedule
   }
   const handleOnClickModal = () => {
     setOpenConfirmModal(false)
     get(detailSchedule, 'equnavascheStatus', '') === 'PENDING' ?
-      enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`)
-      : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`, { variant: 'error' })
+      enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
+      : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
   }
   const isNotFound = (!tableData.length)
   return (
@@ -289,11 +268,6 @@ export default function EquipmentSchedulePage() {
                           />
                         )
                       })}
-
-                  <TableEmptyRows
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
-
                   <TableNoData isNotFound={isNotFound} />
                 </TableBody>
               </Table>
@@ -319,7 +293,7 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-              { sx: { mb: 0 }, text: `To cancel upcoming ${format((get(detailSchedule, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')} ${get(detailSchedule, 'equnavascheDays', 'Full day')} schedule` },
+              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
               <Typography
