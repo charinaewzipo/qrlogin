@@ -39,6 +39,7 @@ import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats, fetchPostEquipmentUnavailableDelete } from '@ku/services/equipment'
 import { getTimeOfDay } from '@ku/utils/formatDate'
+import messages from '@ku/constants/response'
 
 const initialScheduleStats = {
   upcomingCount: 0,
@@ -53,6 +54,7 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', align: 'left', width: 120 },
   { id: 'button', label: '', align: 'left', width: 150 },
 ];
+
 
 EquipmentSchedulePage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 
@@ -78,6 +80,15 @@ export default function EquipmentSchedulePage() {
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
+  const TABS = [
+    { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
+    {
+      value: 'FINISH',
+      label: 'Finish',
+      color: 'default',
+      count: get(scheduleStats, 'finishCount', 0),
+    },
+  ] as const
   useEffect(() => {
     GetUnAvailableScheduleStats()
     GetUnAvailableSchedule()
@@ -99,7 +110,8 @@ export default function EquipmentSchedulePage() {
         setScheduleStats(get(response, 'data', initialScheduleStats))
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, 'response.code', messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
   const GetUnAvailableSchedule = () => {
@@ -121,7 +133,8 @@ export default function EquipmentSchedulePage() {
         setTotalRecord(get(response, 'data.totalRecord', 0))
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, 'response.code', messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
 
@@ -135,28 +148,12 @@ export default function EquipmentSchedulePage() {
       }
     }).catch(err => {
       enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
-      console.log(err)
+
     }).finally(() => {
       GetUnAvailableScheduleStats()
       GetUnAvailableSchedule()
     })
   }
-
-  const TABS = [
-    { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
-    {
-      value: 'FINISH',
-      label: 'Finish',
-      color: 'default',
-      count: get(scheduleStats, 'finishCount', 0),
-    },
-  ] as const
-
-  const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
-    setPage(0)
-    setFilterStatus(newValue)
-  }
-
   const handleViewRow = (id: number) => {
     push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id.toString()))
   };
@@ -207,7 +204,10 @@ export default function EquipmentSchedulePage() {
         <Card>
           <Tabs
             value={filterStatus}
-            onChange={handleFilterStatus}
+            onChange={(event, newValue) => {
+              setPage(0)
+              setFilterStatus(newValue)
+            }}
             sx={{
               px: 2,
               bgcolor: 'background.neutral',
