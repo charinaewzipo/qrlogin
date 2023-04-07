@@ -6,7 +6,7 @@ import { format } from 'date-fns'
 import { get } from 'lodash';
 import { fCurrencyBaht } from '@ku/utils/formatNumber';
 import { fileNameByUrl } from '@sentry/components/file-thumbnail';
-import axios from '@ku/services/axios';
+import axios from 'axios';
 // ----------------------------------------------------------------------
 
 type Props = {

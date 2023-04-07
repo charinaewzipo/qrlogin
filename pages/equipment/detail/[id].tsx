@@ -48,8 +48,8 @@ export function EquipmentDetail() {
             page: page + 1,
             limit: limit
         }).then(res => {
-            setTotalMaintenanceLogRecord(get(res, 'data.data.totalEecord', 0))
-            setMintenanceLogData(get(res, 'data.data.dataList', []))
+            setTotalMaintenanceLogRecord(get(res, 'data.totalRecord', 0))
+            setMintenanceLogData(get(res, 'data.dataList', []))
         })
     }
 
