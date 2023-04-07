@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
-import { format, parseISO } from 'date-fns'
+import { format, formatISO, parseISO } from 'date-fns'
 import axios from 'axios'
 import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
@@ -83,7 +83,7 @@ export function MaintenanceLogEdit() {
             eqmtnId: Number(get(maintenanceApiData, 'eqmtnId', '')),
             eqmtnDescription: get(data, 'descriptions', ''),
             eqmtnCost: numeral(get(data, 'cost', 0)).value(),
-            eqmtnDate: get(data, 'date', ''),
+            eqmtnDate: formatISO(new Date(get(data, 'date', ''))),
             eqmtnpicLink:
                 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
             // รอ api รูป

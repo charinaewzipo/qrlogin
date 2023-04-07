@@ -23,7 +23,7 @@ export function MaintenanceLog() {
     const [errorMsg, setErrorMsg] = useState('')
 
     const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
-        const mtnDate = data.date ? data.date : formatISO(startOfDay(new Date()))
+        const mtnDate = data.date ? formatISO(new Date(get(data, 'date', ''))) : formatISO(startOfDay(new Date()))
         setErrorMsg('')
         await postEquipmentMaintenanceCreate({
             eqId: Number(id),

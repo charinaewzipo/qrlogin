@@ -1,14 +1,37 @@
-import axios, { AxiosRequestConfig, AxiosInstance, AxiosError, AxiosResponse } from 'axios'
+import axios, {
+    AxiosRequestConfig,
+    AxiosInstance,
+    AxiosError,
+    AxiosResponse,
+    AxiosResponseTransformer,
+    AxiosRequestTransformer,
+    AxiosRequestHeaders,
+} from 'axios'
 import { API_URL } from '@ku/constants/config'
 import transformer from '@ku/utils/transformer'
+import { get, isEmpty } from 'lodash';
 
-const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
+const transformResponse: AxiosResponseTransformer = (data) => transformer.snakeToCamelcaseTransform(JSON.parse(data));
+const transformRequest: AxiosRequestTransformer  = (data) =>
+  JSON.stringify(transformer.camelToSnakecaseTransform(data));
+
+  const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
+    // const contentTypes = !isEmpty(get(config, 'headers.Content-Type', ''))
+    //     ? get(config, 'headers.Content-Type', '')
+    //     : 'application/json'
     const configure: AxiosRequestConfig = {
         ...config,
-        url: config.url?.replace(/([^:])(\/\/)/g, '$1/')
+        url: config.url?.replace(/([^:])(\/\/)/g, '$1/'),
+        transformResponse,
+        transformRequest,
+        // params: isEmpty(config.params) ? {} : transformer.camelToSnakecaseTransform(config.params),
+        // headers: {
+        //     ...config.headers,
+        //     ['Content-Type']: contentTypes,
+        // },
     }
-    return configure
-}
+      return configure
+  }
 
 const responseInterceptor = (response: AxiosResponse<IResponse>): any => {
     const successResponse = transformer.response(response)
@@ -32,7 +55,11 @@ const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(requestInterceptor, handleRequestError)
 axiosInstance.interceptors.response.use(responseInterceptor, handleResponseError)
+
+axiosInstance.defaults.headers.common['Accept'] = 'application/json'
 axiosInstance.defaults.headers.common.token = "U2FsdGVkX18SCQi6NdV6mJYacEMplhMDSbr83ezGJKw=";
+axiosInstance.defaults.headers['Content-Type'] = "application/json";
+
 export const TOKEN_KEY = 'kusec-accesstoken'
 export const setSession = async (accessToken: string | null) => {
     if (accessToken) {
