@@ -40,7 +40,8 @@ import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats, fetchPostEquipmentUnavailableDelete } from '@ku/services/equipment'
 import { getTimeOfDay } from '@ku/utils/formatDate'
 import messages from '@ku/constants/response'
-
+import responseCode from '@ku/constants/responseCode'
+import { AxiosError } from 'axios'
 const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
@@ -92,6 +93,7 @@ export default function EquipmentSchedulePage() {
   useEffect(() => {
     GetUnAvailableScheduleStats()
     GetUnAvailableSchedule()
+
   }, [])
 
   useEffect(() => {
@@ -106,11 +108,11 @@ export default function EquipmentSchedulePage() {
 
   const GetUnAvailableScheduleStats = () => {
     fetchGetUnAvailableScheduleStats().then(response => {
-      if (response.code === 200000) {
+      if (response.code === responseCode.OK_CODE) {
         setScheduleStats(get(response, 'data', initialScheduleStats))
       }
-    }).catch(err => {
-      const errorMessage = get(messages, 'response.code', messages[0])
+    }).catch((err: AxiosError) => {
+      const errorMessage = get(messages, err.code, messages[0])
       enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
@@ -128,12 +130,12 @@ export default function EquipmentSchedulePage() {
       }
     })
     fetchGetUnAvailableSchedule(query).then(response => {
-      if (response.code === 200000) {
+      if (response.code === responseCode.OK_CODE) {
         setTableData(get(response, 'data.dataList', []))
         setTotalRecord(get(response, 'data.totalRecord', 0))
       }
-    }).catch(err => {
-      const errorMessage = get(messages, 'response.code', messages[0])
+    }).catch((err: AxiosError) => {
+      const errorMessage = get(messages, err.code, messages[0])
       enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
@@ -143,10 +145,10 @@ export default function EquipmentSchedulePage() {
       equnavascheId: get(detailSchedule, 'equnavascheId', -1)
     }
     fetchPostEquipmentUnavailableDelete(query).then(response => {
-      if (response.code === 200000) {
+      if (response.code === responseCode.OK_CODE) {
         enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
       }
-    }).catch(err => {
+    }).catch((err: AxiosError) => {
       enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
 
     }).finally(() => {
@@ -167,7 +169,6 @@ export default function EquipmentSchedulePage() {
     setOpenConfirmModal(false)
     PostEquipmentUnavailableDelete()
   }
-  const isNotFound = (!tableData.length)
   return (
     <>
       <Head>
@@ -261,7 +262,7 @@ export default function EquipmentSchedulePage() {
                           />
                         )
                       })}
-                  <TableNoData isNotFound={isNotFound} />
+                  <TableNoData isNotFound={isEmpty(tableData)} />
                 </TableBody>
               </Table>
             </Scrollbar>
