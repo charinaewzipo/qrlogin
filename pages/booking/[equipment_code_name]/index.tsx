@@ -275,6 +275,37 @@ export function bookingCreate() {
         console.log(postObj)
     }
 
+    const availableDate = [
+        {
+            start: '2023-03-31T02:00:40.239Z',
+            title: '15:00 - 16:00',
+        },
+        {
+            start: '2023-03-31T03:00:40.239Z',
+            title: '17:00 - 18:00',
+        },
+        {
+            start: '2023-04-06T02:00:40.239Z',
+            title: '15:00 - 16:00',
+        },
+        {
+            start: '2023-03-31T02:00:40.239Z',
+            title: '15:00 - 16:00',
+        },
+        {
+            start: '2023-03-31T02:00:40.239Z',
+            title: '18:00 - 19:00',
+        },
+        {
+            start: '2023-04-15T02:00:40.239Z',
+            title: '18:00 - 19:00',
+        },
+        {
+            start: '2023-04-16T02:00:40.239Z',
+            title: '18:00 - 19:00',
+        },
+    ]
+
     return (
         <>
             <Head>
@@ -304,7 +335,7 @@ export function bookingCreate() {
                                     bookingData={mockData}
                                     onClickBookNow={handleToBookNow}
                                 />
-                                {/* <AvailableDateCalendar /> */}
+                                <AvailableDateCalendar events={availableDate} />
                                 <Stack sx={{ scrollMarginTop: '80px'}} ref={bookNowRef}>
                                     <BookInformation
                                         selectedDate={selectedDate}

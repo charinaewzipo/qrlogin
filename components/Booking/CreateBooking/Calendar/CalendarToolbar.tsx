@@ -1,22 +1,22 @@
 import { Stack, Button, Typography, IconButton } from '@mui/material'
 import Iconify from '@sentry/components/iconify'
 import useResponsive from '@sentry/hooks/useResponsive'
-import { fDate } from '@sentry/utils/formatTime'
+import { format } from 'date-fns'
 
 type Props = {
+    title: string
     date: Date
     onToday: VoidFunction
     onNextDate: VoidFunction
     onPrevDate: VoidFunction
-    onOpenFilter: VoidFunction
 }
 
 export default function CalendarToolbar({
+    title,
     date,
     onToday,
     onNextDate,
     onPrevDate,
-    onOpenFilter,
 }: Props) {
     const isDesktop = useResponsive('up', 'sm')
 
@@ -29,7 +29,7 @@ export default function CalendarToolbar({
         >
             {isDesktop && (
                 <Stack direction="row" spacing={1}>
-                    Available Date
+                    {title}
                 </Stack>
             )}
 
@@ -38,7 +38,7 @@ export default function CalendarToolbar({
                     <Iconify icon="eva:arrow-ios-back-fill" />
                 </IconButton>
 
-                <Typography variant="h5">{fDate(date)}</Typography>
+                <Typography variant="h5">{format(date, 'MMMM yyyy')}</Typography>
 
                 <IconButton onClick={onNextDate}>
                     <Iconify icon="eva:arrow-ios-forward-fill" />
@@ -51,10 +51,6 @@ export default function CalendarToolbar({
                         Today
                     </Button>
                 )}
-
-                <IconButton onClick={onOpenFilter}>
-                    <Iconify icon="ic:round-filter-list" />
-                </IconButton>
             </Stack>
         </Stack>
     )

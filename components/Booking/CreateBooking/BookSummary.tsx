@@ -64,7 +64,7 @@ function BookSummary({
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
                             {bookingData.eqRtimTimes.map((time) => (
-                                <Label key={`${time}-booking-time`} color="info" sx={{ mr: 1 }}>
+                                <Label key={`${time}-booking-time`} color="info" sx={{ mr: 1, mb: 1 }}>
                                     {`${time}:00 - ${time}:59`}
                                 </Label>
                             ))}

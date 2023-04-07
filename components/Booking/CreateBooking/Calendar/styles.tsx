@@ -33,13 +33,13 @@ const StyledCalendar = styled('div')(({ theme }) => ({
 
   // Event
   '& .fc .fc-event': {
-    borderColor: 'transparent',
+    borderColor: alpha(theme.palette.info.main, .32),
     backgroundColor: 'transparent',
   },
   '& .fc .fc-event .fc-event-main': {
     padding: '2px 4px',
     borderRadius: 4,
-    backgroundColor: theme.palette.common.white,
+    backgroundColor: alpha(theme.palette.info.main, .24),
     transition: theme.transitions.create('filter'),
     '&:hover': { filter: 'brightness(0.92)' },
     '&:before,&:after': {
@@ -72,6 +72,8 @@ const StyledCalendar = styled('div')(({ theme }) => ({
     overflow: 'hidden',
     whiteSpace: 'nowrap',
     textOverflow: 'ellipsis',
+    color: theme.palette.info.dark,
+    fontWeight: '600',
   },
   '& .fc .fc-event .fc-event-time': {
     padding: 0,
@@ -108,6 +110,9 @@ const StyledCalendar = styled('div')(({ theme }) => ({
   },
 
   // Month View
+  '& .fc-daygrid-day': {
+    height: '120px',
+  },
   '& .fc .fc-day-other .fc-daygrid-day-top': {
     opacity: 1,
     '& .fc-daygrid-day-number': {
