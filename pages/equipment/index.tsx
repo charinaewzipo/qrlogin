@@ -233,6 +233,9 @@ export default function EquipmentList() {
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
+  const [totalRecord, setTotalRecord] = useState<number>(0)
+
+
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
@@ -248,44 +251,52 @@ export default function EquipmentList() {
       page: page,
       limit: rowsPerPage,
       eqId: '',
-      eqStatus: filterName,
-      eqSearch: filterRole,
+      // eqStatus: filterName,
+      // eqSearch: filterRole,
+      eqStatus: filterRole,
+      eqSearch: filterName,
       eqSortName: false,
       eqSortCode: false,
     }
     await fetchGetEquipmentRead(query).then(response => {
-      if (response.code === 200) {
+      console.log("response ",response);
+      console.log("data ",response.data.dataList);
+      
+      if (response.code === 200000) {
+        
+        // setTableData(response.data.dataList)
+        setPage(response.data.page-1)
+        setTotalRecord(response.data.totalRecord)
+        
         setTableData(mockTableData)
-        // setStatusStat(response.data)
+        // setTotalRecord(100)
+        // setPage(0)
       }
     }).catch(err => {
       console.log(err)
     })
   }
 
-
-  const handleFilterName = (filterName: string) => {
-    setFilterName(filterName);
-    setPage(0);
+  useEffect(() => {
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
         GetEquipmentRead()
       }, 1000)
-    );
+    )
+  }, [filterName])
+  const handleFilterName = (filterName: string) => {
+    setFilterName(filterName);
+    setPage(0);
   };
   const handleExportRows = (id: string[]) => {
     console.log("exportRows", id)
   };
+
+  useEffect(() => { GetEquipmentRead() }, [filterRole])
   const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterRole(event.target.value);
     setPage(0);
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
   };
   const handleViewRow = (id: string) => {
     push(MERGE_PATH(EQUIPMENT_PATH, 'detail', id))
@@ -455,7 +466,7 @@ export default function EquipmentList() {
           <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={dataFiltered.length}
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
