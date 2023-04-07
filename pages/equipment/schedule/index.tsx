@@ -132,10 +132,10 @@ export default function EquipmentSchedulePage() {
     }
     fetchPostEquipmentUnavailableDelete(query).then(response => {
       if (response.code === 200000) {
-        enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
+        enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
       }
     }).catch(err => {
-      enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
+      enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
       console.log(err)
     }).finally(() => {
       GetUnAvailableSchedule()
@@ -284,7 +284,7 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
+              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
               <Typography
