@@ -1,6 +1,5 @@
 // next
 import { useState, useEffect } from 'react'
-// next
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -34,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { format, formatISO } from 'date-fns'
+import { format, formatISO, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
@@ -107,8 +106,8 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page + 1,
       limit: rowsPerPage,
-      startTime: !isNull(filterStartDate) ? formatISO(filterStartDate) : null,
-      endTime: !isNull(filterEndDate) ? formatISO(filterEndDate) : null,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? formatISO(filterStartDate) : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? formatISO(filterEndDate) : null,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
     Object.keys(query).forEach(key => {
