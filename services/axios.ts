@@ -5,11 +5,9 @@ import axios, {
     AxiosResponse,
     AxiosResponseTransformer,
     AxiosRequestTransformer,
-    AxiosRequestHeaders,
 } from 'axios'
 import { API_URL } from '@ku/constants/config'
 import transformer from '@ku/utils/transformer'
-import { get, isEmpty } from 'lodash';
 
 const transformResponse: AxiosResponseTransformer = (data) => transformer.snakeToCamelcaseTransform(JSON.parse(data));
 const transformRequest: AxiosRequestTransformer  = (data) =>

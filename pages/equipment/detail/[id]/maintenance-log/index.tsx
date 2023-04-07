@@ -13,6 +13,7 @@ import { postEquipmentMaintenanceCreate } from '@ku/services/equipment'
 import { get } from 'lodash'
 import numeral from 'numeral'
 import { formatISO, startOfDay } from 'date-fns'
+import messages from '@ku/constants/response'
 
 MaintenanceLog.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -39,7 +40,7 @@ export function MaintenanceLog() {
                 push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
             })
             .catch((err) => {
-                setErrorMsg('error msg')
+                setErrorMsg(get(err, 'response.data.devMessage', messages[0]))
             })
     }
 

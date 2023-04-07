@@ -17,6 +17,7 @@ import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
 import { fetchGetEquipmentMaintenanceRead, postEquipmentMaintenanceUpdate } from '@ku/services/equipment'
 import numeral from 'numeral'
+import messages from '@ku/constants/response'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -93,7 +94,7 @@ export function MaintenanceLogEdit() {
                 push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
             })
             .catch((err) => {
-                setErrorMsg('error msg')
+                setErrorMsg(get(err, 'response.data.devMessage', messages[0]))
             })
     }
 
