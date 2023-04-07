@@ -11,10 +11,12 @@ import axios from 'axios';
 
 type Props = {
   row: IV1GetEquipmentMaintenanceRead
+  onClickRow: (id: number) => void
 }
 
 export default function MaintenanceLogRow({
   row,
+  onClickRow
 }: Props) {
   const handleDownload = async (
       e: React.MouseEvent<HTMLDivElement, MouseEvent>,
@@ -39,33 +41,43 @@ export default function MaintenanceLogRow({
       link.remove()
   }
   return (
-      <>
-          <TableRow hover tabIndex={-1} role="none">
-              <TableCell align="left">
-                  <Typography variant="body2">
-                      {format(new Date(get(row, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy')}
-                  </Typography>
-              </TableCell>
-              <TableCell align="right">
-                  <Typography variant="body2">
-                      {fCurrencyBaht(get(row, 'eqmtnCost', ''))}
-                  </Typography>
-              </TableCell>
-              <TableCell align="center">
-                  <Label onClick={handleDownload} variant="outlined" color="info" sx={{ cursor: 'pointer' }} >
-                      {fileNameByUrl(get(row, 'eqmtnpicLink', ''))}
-                  </Label>
-              </TableCell>
-              <TableCell align="left">
-                  <Typography variant="body2">{get(row, 'eqmtnDescription', '')}</Typography>
-              </TableCell>
+      <TableRow
+          hover
+          tabIndex={-1}
+          role="none"
+          onClick={() => onClickRow(get(row, 'eqmtnId', 0))}
+          sx={{ cursor: 'pointer' }}
+      >
+          <TableCell align="left">
+              <Typography variant="body2">
+                  {format(new Date(get(row, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy')}
+              </Typography>
+          </TableCell>
+          <TableCell align="right">
+              <Typography variant="body2">{fCurrencyBaht(get(row, 'eqmtnCost', ''))}</Typography>
+          </TableCell>
+          <TableCell align="center">
+              <Label
+                  onClick={handleDownload}
+                  variant="outlined"
+                  color="info"
+                  sx={{ cursor: 'pointer' }}
+              >
+                  {fileNameByUrl(get(row, 'eqmtnpicLink', ''))}
+              </Label>
+          </TableCell>
+          <TableCell align="left">
+              <Typography variant="body2">{get(row, 'eqmtnDescription', '')}</Typography>
+          </TableCell>
 
-              <TableCell align="left">
-                  <Typography variant="body2">
-                      {format(new Date(get(row, 'eqmtnCreatedAt', '').replace('Z', '')), 'dd MMM yyyy HH:mm:ss')}
-                  </Typography>
-              </TableCell>
-          </TableRow>
-      </>
+          <TableCell align="left">
+              <Typography variant="body2">
+                  {format(
+                      new Date(get(row, 'eqmtnCreatedAt', '').replace('Z', '')),
+                      'dd MMM yyyy HH:mm:ss'
+                  )}
+              </Typography>
+          </TableCell>
+      </TableRow>
   )
 }
