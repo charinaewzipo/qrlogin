@@ -67,13 +67,13 @@ const fetchPostEquipmentUnavailableDelete = (
 //EQ12.GET: api/v1/equipment/unavailable/schedule
 const fetchGetUnAvailableSchedule = (
     query: IV1QueryGetEquipmentUnavailableSchedule & IV1QueryPagination
-): Promise<AxiosResponse<IAPIResponse<IV1Pagination<IV1RespGetEquipmentUnavailableSchedule>>>> => {
+): Promise<IAPIResponse<IV1Pagination<IV1RespGetEquipmentUnavailableSchedule>>> => {
     return axios.get(
         `${endpoint.equipmentUnAvailableSchedule}${transformer.urlSearchParams(query)}`
     )
 } //EQ13.GET: api/v1/equipment/unavailable/schedule/stats
 const fetchGetUnAvailableScheduleStats = (): Promise<
-    AxiosResponse<IAPIResponse<IV1RespGetEquipmentUnavailableStatsSchedule>>
+    IAPIResponse<IV1RespGetEquipmentUnavailableStatsSchedule>
 > => {
     return axios.get(`${endpoint.equipmentUnAvailableScheduleStats}`)
 }

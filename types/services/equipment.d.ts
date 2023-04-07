@@ -1,3 +1,4 @@
+type IEquipmentUnavailableStatus = 'PENDING' | 'FINISH'
 interface IV1PostEquipmentCreate {
     eqStatus: string
     eqCode: string
@@ -76,7 +77,7 @@ interface IV1QueryGetEquipmentRead {
 interface IV1QueryGetEquipmentUnavailableSchedule {
     startTime?: timestamp
     endTime?: timestamp
-    status?: string
+    status?: IEquipmentUnavailableStatus
 }
 
 interface IV1RespGetEquipmentUnavailableSchedule {

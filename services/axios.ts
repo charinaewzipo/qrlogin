@@ -1,11 +1,24 @@
-import axios, { AxiosRequestConfig, AxiosInstance, AxiosError, AxiosResponse } from 'axios'
+import axios, {
+    AxiosRequestConfig,
+    AxiosInstance,
+    AxiosError,
+    AxiosResponse,
+    AxiosRequestHeaders,
+} from 'axios'
 import { API_URL } from '@ku/constants/config'
 import transformer from '@ku/utils/transformer'
+const transformResponse = transformer.camelToSnakecaseTransform
+const transformRequest = (data) => JSON.stringify(transformer.snakeToCamelcaseTransform(data))
 
 const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
     const configure: AxiosRequestConfig = {
         ...config,
-        url: config.url?.replace(/([^:])(\/\/)/g, '$1/')
+        headers: {
+            ...config.headers,
+        } as AxiosRequestHeaders,
+        transformResponse,
+        transformRequest,
+        url: config.url?.replace(/([^:])(\/\/)/g, '$1/'),
     }
     return configure
 }
@@ -32,7 +45,7 @@ const axiosInstance: AxiosInstance = axios.create({
 
 axiosInstance.interceptors.request.use(requestInterceptor, handleRequestError)
 axiosInstance.interceptors.response.use(responseInterceptor, handleResponseError)
-axiosInstance.defaults.headers.common.token = "U2FsdGVkX18SCQi6NdV6mJYacEMplhMDSbr83ezGJKw=";
+axiosInstance.defaults.headers.common.token = 'U2FsdGVkX1/wL3FsoaDkGDWstgA874r0P0vfhZHLvRw='
 export const TOKEN_KEY = 'kusec-accesstoken'
 export const setSession = async (accessToken: string | null) => {
     if (accessToken) {

@@ -83,18 +83,10 @@ const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
   },
 ]
 const initialScheduleStats = {
-  upcoming_count: 0,
-  finish_count: 0,
+  upcomingCount: 0,
+  finishCount: 0,
 }
-const initialSchedulData = [{
-  equnavascheId: 0,
-  equnavascheCreatedByName: '',
-  equnavascheDays: '',
-  equnavascheTimes: [],
-  equnavascheStatus: '',
-  equnavascheCreatedAt: '',
-  equnavascheUpdatedAt: '',
-}]
+
 const TABLE_HEAD = [
   { id: 'activeDate', label: 'Active date', align: 'left', width: 150 },
   { id: 'time', label: 'Time', align: 'left' },
@@ -127,7 +119,7 @@ export default function EquipmentSchedulePage() {
   const [tableData, setTableData] = useState<IV1RespGetEquipmentUnavailableSchedule[]>([])
   const [scheduleStats, setScheduleStats] = useState<IV1RespGetEquipmentUnavailableStatsSchedule>()
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
-  const [filterStatus, setFilterStatus] = useState('upcoming')
+  const [filterStatus, setFilterStatus] = useState('PENDING')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
@@ -142,14 +134,14 @@ export default function EquipmentSchedulePage() {
   }, [])
 
   useEffect(() => {
-    console.log("scheduleStats", scheduleStats)
-  }, [scheduleStats])
+    console.log("API PANGPANAG")
+    GetUnAvailableSchedule()
+  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
 
   const GetUnAvailableScheduleStats = async () => {
     await fetchGetUnAvailableScheduleStats().then(response => {
-      if (response.data.code === 200000) {
-        setScheduleStats(response.data.data)
-        // setScheduleStats(get(response,'data.data',initialScheduleStats))
+      if (response.code === 200000) {
+        setScheduleStats(get(response, 'data', initialScheduleStats))
       }
     }).catch(err => {
       console.log(err)
@@ -159,18 +151,14 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page,
       limit: rowsPerPage,
-      startTime: '',
-      endTime: '',
-      status: filterStatus,
+      startTime: filterStartDate,
+      endTime: filterEndDate,
+      status: filterStatus as IEquipmentUnavailableStatus,
     }
     await fetchGetUnAvailableSchedule(query).then(response => {
       console.log("response.data", response.data)
-      if (response.data.code === 200000) {
-
-        // setTableData(get(response, 'data.data.dataList', initialSchedulData))
-        setTableData(mockDataTable)
-        // setTableData(response.data.data.dataList)
-
+      if (response.code === 200000) {
+        setTableData(get(response, 'data.dataList', []))
       }
     }).catch(err => {
       console.log(err)
@@ -180,12 +168,12 @@ export default function EquipmentSchedulePage() {
 
   const TABS = [
 
-    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcoming_count', 0) },
+    { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
     {
-      value: 'Finish',
+      value: 'FINISH',
       label: 'Finish',
       color: 'default',
-      count: get(scheduleStats, 'finish_count', 0),
+      count: get(scheduleStats, 'finishCount', 0),
     },
 
   ] as const
@@ -193,7 +181,6 @@ export default function EquipmentSchedulePage() {
   const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
     setPage(0)
     setFilterStatus(newValue)
-    console.log("filterStatus", filterStatus)
   }
 
   const handleViewRow = (id: number) => {
