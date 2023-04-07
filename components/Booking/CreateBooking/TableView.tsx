@@ -1,7 +1,6 @@
 import {
     Stack,
     Paper,
-    Divider,
     Typography,
     TableContainer,
     Table,
@@ -9,16 +8,15 @@ import {
     TableHead,
     TableRow,
     TableBody,
-    Grid,
 	Box,
 	styled,
     Checkbox,
     TextField,
     Radio,
 } from '@mui/material'
-import { fCurrencyBaht, fNumber } from '@ku/utils/formatNumber'
+import { fCurrencyBaht } from '@ku/utils/formatNumber'
 import React, { useEffect, useState } from 'react'
-import { cloneDeep, findIndex, get, isNumber, isUndefined, sum } from 'lodash'
+import { cloneDeep, get, isNumber, sum } from 'lodash'
 import numeral from 'numeral'
 
 const constant = {
@@ -113,7 +111,7 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
             }
         }
         console.log(allRowPrice);
-        
+
         for (const { index, subIndex, unitprice } of allRowPrice) {
             const qty = getQuantity(index, subIndex)
             if (qty > 0) {
