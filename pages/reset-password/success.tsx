@@ -1,4 +1,4 @@
-import { Box, Stack, styled, Typography, useTheme } from '@mui/material'
+import { Box, Divider, Stack, styled, Typography, useTheme } from '@mui/material'
 import Head from 'next/head'
 import React, { useEffect } from 'react'
 import Image from '@sentry/components/image';
@@ -67,20 +67,14 @@ const ResetPassword = () => {
             </Stack>
           </Stack>
 
-          <Box
-            sx={{
-              display: 'flex',
-              mt: 4,
-              borderBottom: `1px solid ${theme.palette.divider}`,
-            }}
-          >
-          </Box>
+          <Divider sx={{ mt: 4 }} />
           <LoadingButton
             fullWidth
             size="medium"
             type="submit"
             variant="outlined"
-            sx={{ color: theme.palette.text.primary, border: `1px solid ${theme.palette.divider}`, mt: 3 }}
+            color='inherit'
+            sx={{ mt: 3 }}
             onClick={() => router.push(LOGIN_PATH)}
           >
             <Image
