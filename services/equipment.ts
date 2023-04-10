@@ -55,7 +55,7 @@ const fetchGetEquipmentUnavailable = (
 const fetchPostEquipmentUnavailableCreate = (
     query: IV1PostEquipmentUnavailableCreate
 ): Promise<IAPIResponse<IV1RespPostEquipmentUnavailableCreate>> => {
-    return Promise.resolve({ code: 200, devMessage: 'OK', data: [] as any })
+    return axios.post(`${endpoint.equipmentUnAvailableCreate}`, query)
 }
 //EQ11.POST: api/v1/equipment/unavailable/delete
 const fetchPostEquipmentUnavailableDelete = (

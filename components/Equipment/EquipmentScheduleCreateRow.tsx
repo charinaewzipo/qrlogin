@@ -27,17 +27,6 @@ export default function EquipmentScheduleCreateRow({
   onViewRow,
 
 }: Props) {
-  const theme = useTheme();
-
-  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpenMenuActions(event.currentTarget);
-  // };
-
-  // const handleCloseMenu = () => {
-  //   setOpenMenuActions(null);
-  // };
 
   return (
     <TableRow hover selected={selected} key={get(row, 'eqId', '-1')} onClick={onViewRow} sx={{ cursor: 'pointer' }}>

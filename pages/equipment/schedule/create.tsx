@@ -20,6 +20,7 @@ import {
   Alert,
   FormHelperText,
 } from '@mui/material'
+import responseCode from '@ku/constants/responseCode'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
@@ -36,7 +37,7 @@ import {
 } from '@sentry/components/table'
 import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
-import { addDays } from 'date-fns'
+import { addDays, formatISO, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
@@ -46,7 +47,8 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { fetchGetEquipmentRead, fetchGetEquipmentUnavailable, fetchGetUnAvailableSchedule, fetchPostEquipmentCreate, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
-import { get, isEmpty } from 'lodash'
+import { get, isEmpty, isNull, isUndefined } from 'lodash'
+import messages from '@ku/constants/response'
 
 
 const mockTableData: IV1PostEquipmentRead[] =
@@ -273,22 +275,28 @@ export default function EquipmentScheduleCreatePage() {
     setError,
     formState: { isSubmitting, errors },
   } = methods
-
-
-
   const TIME_OPTIONS = [
     'Ealry morning (7:00 - 12:59)',
     'Afternoon (13:00 - 22:00)',
     'Full day (7:00 - 22:00)',
   ];
-
   useEffect(() => {
     GetEquipmentRead()
   }, [])
 
+  useEffect(() => {
+    setPage(0)
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        GetEquipmentRead()
+      }, 1000)
+    );
+  }, [filterSearchEquipment])
   const GetEquipmentRead = async () => {
+    console.log("filterSearchEquipment", filterSearchEquipment)
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page,
+      page: page + 1,
       limit: rowsPerPage,
       eqId: '',
       eqStatus: '',
@@ -296,34 +304,47 @@ export default function EquipmentScheduleCreatePage() {
       eqSortName: false,
       eqSortCode: false,
     }
+    Object.keys(query).forEach(key => {
+      if (isNull(query[key]) || isUndefined(query[key]) || query[key] === "") {
+        delete query[key]
+      }
+    })
     await fetchGetEquipmentRead(query).then(response => {
-      if (response.code === 200) {
-        setTableData(mockTableData)
-        // setStatusStat(response.data)
+      if (response.code === responseCode.OK_CODE) {
+        setTableData(get(response, 'data.dataList', []))
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
-  const PostEquipmentCreate = async () => {
-    const ArrayNumber = selected.map(numString => parseInt(numString))
+  const PostEquipmentCreate = async (data: FormValuesProps) => {
+    const mapTimeToArray = () => {
+      if (data.time === 'Ealry morning (7:00 - 12:59)') {
+        return [7, 8, 9, 10, 11, 12]
+      } else if (data.time === 'Afternoon (13:00 - 22:00)') {
+        return [13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+      } else return [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+    }
+    const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
-      date: Date.now(),
-      times: [],
-      eqId: ArrayNumber,
-      status: ''
+      date: !isNull(data.date) && isValid(data.date) ? formatISO(data.date) : null,
+      times: mapTimeToArray(),
+      eqId: ArrayEqID,
+      // status: "PENDING",
     }
     console.log("selected", selected)
     console.log("query", query)
     await fetchPostEquipmentUnavailableCreate(query).then(response => {
-      if (response.code === 200) {
+      if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
-        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
-        enqueueSnackbar('Create schedule success.')
+        // push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
+        // enqueueSnackbar('Create schedule success.')
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
   const handleViewRow = (id: string) => {
@@ -331,34 +352,26 @@ export default function EquipmentScheduleCreatePage() {
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
   }
   const handleOnclickCancel = () => {
     reset()
     setSelected([])
   }
+
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
-      console.log("onSubmit", data)
       try {
-        PostEquipmentCreate()
-
+        console.log("onSubmit", data)
+        PostEquipmentCreate(data)
       } catch (error) {
-        // console.error(error)
+        const errorMessage = get(messages, error.code, messages[0])
         const errorOptions: ErrorOption = {
-          message: 'errorResponse.data || errorResponse.devMessage',
+          message: errorMessage,
         }
         setError('afterSubmit', errorOptions)
       }
     }
   }
-
-  const isNotFound = (!tableData.length)
 
   const RenderChips = (): JSX.Element => {
     return (
@@ -449,6 +462,7 @@ export default function EquipmentScheduleCreatePage() {
                   value={value}
                   disablePortal
                   disableClearable
+                  isOptionEqualToValue={(option, value) => option === value}
                   options={TIME_OPTIONS.map((option) => option)}
                   onChange={(event, newValue) => {
                     onChange(() => setValue('time', `${newValue}`))
@@ -497,24 +511,23 @@ export default function EquipmentScheduleCreatePage() {
               />
 
               <TableBody>
-                {tableData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
-                    row ? (
-                      <EquipmentScheduleCreateRow
-                        key={get(row, 'eqId', '')}
-                        row={row}
-                        selected={selected.includes(get(row, 'eqId', ''))}
-                        onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
-                        onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
-                      />
-                    ) : (
-                      !isNotFound && <TableSkeleton key={index} />
-                    )
-                  )}
-
-
-                <TableNoData isNotFound={isNotFound} />
+                {!isEmpty(tableData) &&
+                  tableData
+                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                    .map((row, index) =>
+                      row ? (
+                        <EquipmentScheduleCreateRow
+                          key={get(row, 'eqId', '')}
+                          row={row}
+                          selected={selected.includes(get(row, 'eqId', ''))}
+                          onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
+                          onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
+                        />
+                      ) : (
+                        !isEmpty(tableData) && <TableSkeleton key={index} />
+                      )
+                    )}
+                <TableNoData isNotFound={isEmpty(tableData)} />
               </TableBody>
             </Table>
           </TableContainer>
