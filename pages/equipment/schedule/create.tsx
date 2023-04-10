@@ -5,12 +5,10 @@ import * as Yup from 'yup'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import {
-  Card,
   Table,
   TableBody,
   Container,
   TableContainer,
-  TablePagination,
   Box,
   useTheme,
   Stack,
@@ -28,14 +26,11 @@ import Iconify from '@sentry/components/iconify'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSkeleton,
   TablePaginationCustom,
 } from '@sentry/components/table'
-import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
 import { addDays, formatISO, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
@@ -45,168 +40,16 @@ import FormProvider from '@sentry/components/hook-form/FormProvider'
 import { Controller, useForm, ErrorOption } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
-import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
-import { fetchGetEquipmentRead, fetchGetEquipmentUnavailable, fetchGetUnAvailableSchedule, fetchPostEquipmentCreate, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import { RHFAutocomplete } from '@sentry/components/hook-form'
+import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 
-
-const mockTableData: IV1PostEquipmentRead[] =
-  [{
-    eqId: "ABC123",
-    eqStatus: "available",
-    eqCode: "EQ001",
-    eqName: "Power Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1548435200, // April 26, 2022
-    eqUpdatedAt: 1949577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC124",
-    eqStatus: "Unavailable",
-    eqCode: "EQ001",
-    eqName: "DeWalt",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1448435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC125",
-    eqStatus: "Temporary Unavailable",
-    eqCode: "EQ001",
-    eqName: "ABC124 Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.Temporary UnavailableTemporary Unavailable",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }]
-
+const TIME_OPTIONS = [
+  'Ealry morning (7:00 - 12:59)',
+  'Afternoon (13:00 - 22:00)',
+  'Full day (7:00 - 22:00)',
+];
 const TABLE_HEAD = [
   { id: 'name', label: 'Equipment', align: 'left' },
 ];
@@ -237,10 +80,12 @@ export default function EquipmentScheduleCreatePage() {
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
+  const [tableAllData, setTableAllData] = useState<IV1PostEquipmentRead[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
-
+  const [totalRecord, setTotalRecord] = useState<number>(0);
+  const [isSelectAllRows, setIsSelectAllRows] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
@@ -251,6 +96,24 @@ export default function EquipmentScheduleCreatePage() {
     }
   }, [selected])
 
+  useEffect(() => {
+    // setPage(0)
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        GetEquipmentRead()
+      }, 1000)
+    );
+  }, [page, rowsPerPage, filterSearchEquipment])
+
+  useEffect(() => {
+    if (!isEmpty(tableAllData)) {
+      onSelectAllRows(
+        true,
+        tableAllData.map((row) => get(row, 'eqId', ''))
+      )
+    }
+  }, [tableAllData])
   const EquipmentScheduleScheme = Yup.object().shape({
     date: Yup.date().nullable().required('Date is require'),
     time: Yup.string().required('Time is require'),
@@ -275,29 +138,11 @@ export default function EquipmentScheduleCreatePage() {
     setError,
     formState: { isSubmitting, errors },
   } = methods
-  const TIME_OPTIONS = [
-    'Ealry morning (7:00 - 12:59)',
-    'Afternoon (13:00 - 22:00)',
-    'Full day (7:00 - 22:00)',
-  ];
-  useEffect(() => {
-    GetEquipmentRead()
-  }, [])
 
-  useEffect(() => {
-    setPage(0)
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
-  }, [filterSearchEquipment])
-  const GetEquipmentRead = async () => {
-    console.log("filterSearchEquipment", filterSearchEquipment)
+  const GetEquipmentRead = async (isSelectAll: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
       page: page + 1,
-      limit: rowsPerPage,
+      limit: isSelectAll ? 9999 : rowsPerPage,
       eqId: '',
       eqStatus: '',
       eqSearch: filterSearchEquipment,
@@ -311,7 +156,13 @@ export default function EquipmentScheduleCreatePage() {
     })
     await fetchGetEquipmentRead(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
-        setTableData(get(response, 'data.dataList', []))
+        if (isSelectAll) {
+          setTableAllData(get(response, 'data.dataList', []))
+        } else {
+
+          setTableData(get(response, 'data.dataList', []))
+        }
+        setTotalRecord(get(response, 'data.totalRecord', 0))
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
@@ -340,7 +191,7 @@ export default function EquipmentScheduleCreatePage() {
         reset()
         setSelected([])
         // push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
-        // enqueueSnackbar('Create schedule success.')
+        enqueueSnackbar('Create schedule success.')
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
@@ -357,7 +208,9 @@ export default function EquipmentScheduleCreatePage() {
     reset()
     setSelected([])
   }
-
+  const handleSelectAllRows = () => {
+    GetEquipmentRead(true)
+  }
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       try {
@@ -365,10 +218,7 @@ export default function EquipmentScheduleCreatePage() {
         PostEquipmentCreate(data)
       } catch (error) {
         const errorMessage = get(messages, error.code, messages[0])
-        const errorOptions: ErrorOption = {
-          message: errorMessage,
-        }
-        setError('afterSubmit', errorOptions)
+        setError('afterSubmit', errorMessage)
       }
     }
   }
@@ -502,11 +352,21 @@ export default function EquipmentScheduleCreatePage() {
                 headLabel={TABLE_HEAD}
                 rowCount={tableData.length}
                 numSelected={selected.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => get(row, 'eqId', ''))
-                  )
+                onSelectAllRows={(checked) => {
+                  console.log("checked", checked)
+                  if (checked) {
+                    handleSelectAllRows()
+                    onSelectAllRows(
+                      checked,
+                      tableAllData.map((row) => get(row, 'eqId', ''))
+                    )
+                  } else {
+                    onSelectAllRows(
+                      checked,
+                      tableData.map((row) => get(row, 'eqId', ''))
+                    )
+                  }
+                }
                 }
               />
 
@@ -532,7 +392,7 @@ export default function EquipmentScheduleCreatePage() {
             </Table>
           </TableContainer>
           <TablePaginationCustom
-            count={tableData.length}
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
