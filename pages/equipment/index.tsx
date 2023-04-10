@@ -251,33 +251,28 @@ export default function EquipmentList() {
     return debouncedCallback.cancel
   }, [])
 
-  const GetEquipmentRead = (status: string, limit: number, pageToGo: number, keyword: string) => {
+  const GetEquipmentRead = (status: string, limit: number, pageToGo: number, keyword: string, isSortName:boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
       page: pageToGo + 1,
       limit: limit,
       eqId: '',
-      eqStatus: status.toUpperCase().replace(" ","_").replace("ALL",""),
+      eqStatus: makeStatusCode(status),
       eqSearch: keyword,
-      eqSortName: false,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
     fetchGetEquipmentRead(query).then(response => {
-      console.log("response ",response);
-      console.log("data ",response.data.dataList);
-      
       if (response.code === 200000) {
         setTableData(response.data.dataList)
         setPage(pageToGo)
         setTotalRecord(response.data.totalRecord || 0)
-        
-        // setTableData(mockTableData)
-        // setTotalRecord(100)
-        // setPage(0)
       }
     }).catch(err => {
       console.log(err)
     })
   }
+
+  const makeStatusCode = (val) => val.toUpperCase().replace(" ","_").replace("ALL","")
 
   const debouncedCallback = debounce((status: string, limit: number, pageToGo: number, keyword: string) => {GetEquipmentRead(status, limit, pageToGo, keyword)}, 1000)
   const callBackTimeout = useCallback(debouncedCallback,[])
@@ -298,39 +293,7 @@ export default function EquipmentList() {
   const handleViewRow = (id: string) => {
     push(MERGE_PATH(EQUIPMENT_PATH, 'detail', id))
   };
-  function applySortFilter({
-    tableData,
-    comparator,
-    // filterName,
-  }: {
-    tableData: IV1PostEquipmentRead[];
-    comparator: (a: any, b: any) => number;
-    // filterName: string;
-  }) {
-    const stabilizedThis = tableData.map((el, index) => [el, index] as const);
 
-    stabilizedThis.sort((a, b) => {
-      const order = comparator(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
-    });
-
-    tableData = stabilizedThis.map((el) => el[0]);
-
-    // if (filterName) {
-    //   tableData = tableData.filter(
-    //     (item: Record<string, any>) =>
-    //       item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    //   );
-    // }
-
-    return tableData;
-  }
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy)
-    // filterName,
-  });
   const isNotFound = (!tableData.length && !!filterName)
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -338,10 +301,7 @@ export default function EquipmentList() {
     setRowsPerPage(limit)
     GetEquipmentRead(filterRole, limit, 0, filterName)
   }
-
-  console.log("selected",selected);
   
-
   return (
     <>
       <Head>
@@ -352,13 +312,8 @@ export default function EquipmentList() {
         <CustomBreadcrumbs
           heading={'Equipments'}
           links={[
-            {
-              name: 'Equipments',
-              href: EQUIPMENT_PATH,
-            },
-            {
-              name: 'List',
-            },
+            { name: 'Equipments', href: EQUIPMENT_PATH },
+            { name: 'List' },
           ]}
           action={<>
 
@@ -367,10 +322,7 @@ export default function EquipmentList() {
                 variant="contained"
                 color='info'
                 startIcon={<Iconify icon="eva:clock-fill" />}
-                sx={{
-                  bgcolor: 'info.main',
-                  mr: 1
-                }}
+                sx={{ bgcolor: 'info.main', mr: 1 }}
               >
                 Manage Available Schedules
               </Button>
@@ -394,10 +346,7 @@ export default function EquipmentList() {
             onFilterRole={handleFilterRole}
             optionsRole={ROLE_OPTIONS}
           />
-
-          {/* <Divider /> */}
           <Scrollbar>
-
             <TableContainer sx={{ minWidth: 960, position: 'relative', overflow: 'unset' }}>
               <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
@@ -432,34 +381,27 @@ export default function EquipmentList() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={selectAll?totalRecord:tableData.length}
+                  // rowCount={selectAll?totalRecord:tableData.length}
+                  rowCount={selected.length}
                   numSelected={selected.length}
                   onSort={(id)=>{
-                    console.log("id",id);
                     if (id === 'eqName') {
-                      GetEquipmentRead(filterRole, rowsPerPage, page, filterName)
+                      GetEquipmentRead(filterRole, rowsPerPage, page, filterName, order==='asc')
+                      onSort(id)
                     }
-                    // eqName
-                    // onSort
                   }}
                   onSelectAllRows={(checked) =>{
-                    
                     if (checked) {
                       setSelectAll(true)
                       const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-                        page: page + 1,
-                        limit: 9999999,
-                        eqId: '',
-                        eqStatus: filterRole.toUpperCase().replace(" ","_").replace("ALL",""),
+                        page: 1, limit: 9999999, eqId: '', eqStatus: makeStatusCode(filterRole),
                         eqSearch: filterName,
                         eqSortName: false,
                         eqSortCode: false,
                       }
                       fetchGetEquipmentRead(query).then(response => {
                         if (response.code === 200000) { onSelectAllRows( checked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
-                      }).catch(err => {
-                        console.log(err)
-                      })
+                      }).catch(err => { console.log(err) })
                     }else{
                       onSelectAllRows( checked, tableData.map((row) => get(row, 'eqId', '')) )
                     }
@@ -467,8 +409,7 @@ export default function EquipmentList() {
                   }}
                 />
                 <TableBody>
-                  {!isEmpty(dataFiltered) && dataFiltered
-                    .map((row, index) =>
+                  {tableData.map((row, index) =>
                       row ? (
                         <EquipmentRow
                           key={get(row, 'eqId', '')}
