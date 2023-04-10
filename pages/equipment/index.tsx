@@ -5,19 +5,15 @@ import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import {
-  Tab,
-  Tabs,
   Card,
   Table,
   Button,
-  Divider,
   TableBody,
   Container,
   TableContainer,
   Tooltip,
   IconButton,
   TablePagination,
-  Box,
   useTheme,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
@@ -33,7 +29,6 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TableSkeleton,
-  getComparator,
 } from '@sentry/components/table'
 
 import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
@@ -41,163 +36,6 @@ import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
 import Image from '@sentry/components/image/Image'
 import { fetchGetEquipmentRead } from '@ku/services/equipment'
 import { debounce, get, isEmpty } from 'lodash'
-
-
-const mockTableData: IV1PostEquipmentRead[] =
-  [{
-    eqId: "ABC123",
-    eqStatus: "available",
-    eqCode: "EQ001",
-    eqName: "Power Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1548435200, // April 26, 2022
-    eqUpdatedAt: 1949577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC124",
-    eqStatus: "Unavailable",
-    eqCode: "EQ001",
-    eqName: "DeWalt",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1448435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC125",
-    eqStatus: "Temporary Unavailable",
-    eqCode: "EQ001",
-    eqName: "ABC124 Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }]
 
 const TABLE_HEAD = [
   { id: 'eqName', label: 'Equipment', align: 'left', width: 350 },
@@ -224,13 +62,10 @@ export default function EquipmentList() {
     setPage,
     //
     selected,
-    setSelected,
     onSelectRow,
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
@@ -239,9 +74,6 @@ export default function EquipmentList() {
 
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
-  
-  const [selectAll, setSelectAll] = useState(false);
 
   const theme = useTheme()
   const { push } = useRouter()
@@ -391,17 +223,17 @@ export default function EquipmentList() {
                     }
                   }}
                   onSelectAllRows={(checked) =>{
-                    if (checked) {
-                      setSelectAll(true)
+                    const getEQ2All = (isChecked:boolean)=>{
                       const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
                         page: 1, limit: 9999999, eqId: '', eqStatus: makeStatusCode(filterRole),
-                        eqSearch: filterName,
-                        eqSortName: false,
-                        eqSortCode: false,
+                        eqSearch: filterName, eqSortName: false, eqSortCode: false,
                       }
                       fetchGetEquipmentRead(query).then(response => {
-                        if (response.code === 200000) { onSelectAllRows( checked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
+                        if (response.code === 200000) { onSelectAllRows( isChecked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
                       }).catch(err => { console.log(err) })
+                    }
+                    if ( checked || (!checked && !isEmpty(selected) && selected.length!==totalRecord) ) {
+                      getEQ2All(true)
                     }else{
                       onSelectAllRows( checked, tableData.map((row) => get(row, 'eqId', '')) )
                     }

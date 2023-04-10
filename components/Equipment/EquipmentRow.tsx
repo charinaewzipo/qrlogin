@@ -6,6 +6,7 @@ import Label from '@sentry/components/label/Label';
 import { format } from 'date-fns'
 import { get } from 'lodash';
 import { ImageComponent } from '../Image';
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime';
 
 // ----------------------------------------------------------------------
 
@@ -72,8 +73,8 @@ export default function EquipmentRow({
 
       </TableCell>
 
-      <TableCell> {format(getUTCDate(get(row, 'eqCreatedAt', '')), 'dd MMM yyyy HH:mm')}</TableCell>
-      <TableCell> {format(getUTCDate(get(row, 'eqUpdatedAt', '')), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell>{fDateTimeFormat(get(row, 'eqCreatedAt', ''))}</TableCell>
+      <TableCell>{fDateTimeFormat(get(row, 'eqUpdatedAt', ''))}</TableCell>
 
       <TableCell align="left">
         <Label

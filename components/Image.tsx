@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useEffect } from "react";
 import ImageBox from '@sentry/components/image/Image';
 import { SxProps } from "@mui/material";
+import uuidv4 from "@sentry/utils/uuidv4";
 
 const ImageComponent =  ({ src, ...props }: {src:string, sx?: SxProps} ) => {
 
@@ -29,7 +30,7 @@ const ImageComponent =  ({ src, ...props }: {src:string, sx?: SxProps} ) => {
         <ImageBox
             disabledEffect
             alt={src}
-            src={imgSrc}
+            src={`${imgSrc}?${uuidv4()}`}
             sx={props.sx}
         />
       </>;
