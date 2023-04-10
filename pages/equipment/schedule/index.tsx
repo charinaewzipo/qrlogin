@@ -91,7 +91,7 @@ export default function EquipmentSchedulePage() {
     },
   ] as const
   useEffect(() => {
-    setPage(0)
+
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
@@ -227,9 +227,11 @@ export default function EquipmentSchedulePage() {
             filterStartDate={filterStartDate}
             filterEndDate={filterEndDate}
             onFilterStartDate={(newValue) => {
+              setPage(0)
               setFilterStartDate(newValue);
             }}
             onFilterEndDate={(newValue) => {
+              setPage(0)
               setFilterEndDate(newValue);
             }}
           />
@@ -245,18 +247,16 @@ export default function EquipmentSchedulePage() {
 
                 <TableBody>
                   {!isEmpty(tableData) &&
-                    tableData
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row) => {
-                        return (
-                          <EquipmentScheduleRow
-                            key={get(row, 'equnavascheId', -1)}
-                            row={row}
-                            onViewRow={() => handleViewRow(get(row, 'equnavascheId', -1))}
-                            onRemove={() => handleOnCancel(row)}
-                          />
-                        )
-                      })}
+                    tableData.map((row) => {
+                      return (
+                        <EquipmentScheduleRow
+                          key={get(row, 'equnavascheId', -1)}
+                          row={row}
+                          onViewRow={() => handleViewRow(get(row, 'equnavascheId', -1))}
+                          onRemove={() => handleOnCancel(row)}
+                        />
+                      )
+                    })}
                   <TableNoData isNotFound={isEmpty(tableData)} />
                 </TableBody>
               </Table>
