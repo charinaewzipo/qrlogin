@@ -54,7 +54,7 @@ export default function EquipmentRow({
           <Image
             disabledEffect
             alt={get(row, 'eqName', '')}
-            src={row.eqPicture[0].eqpicLink}
+            src={get(row,'eqPicture[0].eqpicLink','')}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} >
@@ -69,14 +69,14 @@ export default function EquipmentRow({
 
       </TableCell>
 
-      <TableCell> {format((get(row, 'eqCreatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
-      <TableCell> {format((get(row, 'eqUpdatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell> {format(new Date(get(row, 'eqCreatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell> {format(new Date(get(row, 'eqUpdatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
 
       <TableCell align="left">
         <Label
           color={
-            (get(row, 'eqStatus', '') === 'Unavailable' && 'default') ||
-            (get(row, 'eqStatus', '') === 'Temporary Unavailable' && 'warning') ||
+            (get(row, 'eqStatus', '') === 'UNAVAILABLE' && 'default') ||
+            (get(row, 'eqStatus', '') === 'TEMPORARY_UNAVAILABLE' && 'warning') ||
             'success'
           }
           sx={{ textTransform: 'capitalize' }}
