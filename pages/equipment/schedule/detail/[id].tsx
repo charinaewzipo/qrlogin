@@ -32,6 +32,7 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TableSkeleton,
+  TablePaginationCustom,
 } from '@sentry/components/table'
 import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
@@ -518,9 +519,8 @@ export default function EquipmentScheduleDetailPage() {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
+          <TablePaginationCustom
+
             count={tableData.length}
             rowsPerPage={rowsPerPage}
             page={page}
@@ -530,14 +530,14 @@ export default function EquipmentScheduleDetailPage() {
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
             <LoadingButton
-              size="large"
+              size="medium"
               color='error'
               onClick={handleOnclickRemove}
             >
               Remove
             </LoadingButton>
             <LoadingButton
-              size="large"
+              size="medium"
               type="submit"
               variant="contained"
               onClick={() => {
