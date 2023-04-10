@@ -139,14 +139,14 @@ export default function EquipmentScheduleCreatePage() {
     formState: { isSubmitting, errors },
   } = methods
 
-  const GetEquipmentRead = async (isSelectAll: boolean = false) => {
+  const GetEquipmentRead = (isSortName: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
       page: page + 1,
-      limit: isSelectAll ? 9999 : rowsPerPage,
+      limit: rowsPerPage,
       eqId: '',
       eqStatus: '',
       eqSearch: filterSearchEquipment,
-      eqSortName: false,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
     Object.keys(query).forEach(key => {
@@ -154,14 +154,9 @@ export default function EquipmentScheduleCreatePage() {
         delete query[key]
       }
     })
-    await fetchGetEquipmentRead(query).then(response => {
+    fetchGetEquipmentRead(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
-        if (isSelectAll) {
-          setTableAllData(get(response, 'data.dataList', []))
-        } else {
-
-          setTableData(get(response, 'data.dataList', []))
-        }
+        setTableData(get(response, 'data.dataList', []))
         setTotalRecord(get(response, 'data.totalRecord', 0))
       }
     }).catch(err => {
@@ -169,7 +164,7 @@ export default function EquipmentScheduleCreatePage() {
       enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
-  const PostEquipmentCreate = async (data: FormValuesProps) => {
+  const PostEquipmentCreate = (data: FormValuesProps) => {
     const mapTimeToArray = () => {
       if (data.time === 'Ealry morning (7:00 - 12:59)') {
         return [7, 8, 9, 10, 11, 12]
@@ -184,9 +179,8 @@ export default function EquipmentScheduleCreatePage() {
       eqId: ArrayEqID,
       // status: "PENDING",
     }
-    console.log("selected", selected)
-    console.log("query", query)
-    await fetchPostEquipmentUnavailableCreate(query).then(response => {
+
+    fetchPostEquipmentUnavailableCreate(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
@@ -208,9 +202,7 @@ export default function EquipmentScheduleCreatePage() {
     reset()
     setSelected([])
   }
-  const handleSelectAllRows = () => {
-    GetEquipmentRead(true)
-  }
+
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       try {
@@ -349,44 +341,57 @@ export default function EquipmentScheduleCreatePage() {
             <Table>
               <TableHeadCustom
                 sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
+                order={order}
+                orderBy={orderBy}
                 headLabel={TABLE_HEAD}
                 rowCount={tableData.length}
                 numSelected={selected.length}
-                onSelectAllRows={(checked) => {
-                  console.log("checked", checked)
-                  if (checked) {
-                    handleSelectAllRows()
-                    onSelectAllRows(
-                      checked,
-                      tableAllData.map((row) => get(row, 'eqId', ''))
-                    )
-                  } else {
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => get(row, 'eqId', ''))
-                    )
+                onSort={(id) => {
+                  if (id === 'eqName') {
+                    GetEquipmentRead(order === 'asc')
+                    onSort(id)
                   }
+                }}
+                onSelectAllRows={(checked) => {
+                  const getEQ2All = (isChecked: boolean) => {
+                    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+                      page: 1,
+                      limit: 9999999,
+                      // eqId: '',
+                      // eqStatus: '',
+                      eqSearch: filterSearchEquipment,
+                      eqSortName: false,
+                      eqSortCode: false,
+                    }
+                    fetchGetEquipmentRead(query).then(response => {
+                      if (response.code === responseCode.OK_CODE) { onSelectAllRows(isChecked, response.data.dataList.map((row) => get(row, 'eqId', ''))) }
+                    }).catch(err => { console.log(err) })
+                  }
+                  if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
+                    getEQ2All(true)
+                  } else {
+                    onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
+                  }
+
                 }
                 }
               />
 
               <TableBody>
                 {!isEmpty(tableData) &&
-                  tableData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <EquipmentScheduleCreateRow
-                          key={get(row, 'eqId', '')}
-                          row={row}
-                          selected={selected.includes(get(row, 'eqId', ''))}
-                          onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
-                          onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
-                        />
-                      ) : (
-                        !isEmpty(tableData) && <TableSkeleton key={index} />
-                      )
-                    )}
+                  tableData.map((row, index) =>
+                    row ? (
+                      <EquipmentScheduleCreateRow
+                        key={get(row, 'eqId', '')}
+                        row={row}
+                        selected={selected.includes(get(row, 'eqId', ''))}
+                        onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
+                        onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
+                      />
+                    ) : (
+                      !isEmpty(tableData) && <TableSkeleton key={index} />
+                    )
+                  )}
                 <TableNoData isNotFound={isEmpty(tableData)} />
               </TableBody>
             </Table>

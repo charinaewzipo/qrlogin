@@ -1,13 +1,8 @@
-import { useState } from 'react';
-import { sentenceCase } from 'change-case';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box } from '@mui/material';
-import Image from '@sentry/components/image/Image';
-import Label from '@sentry/components/label/Label';
 // utils
-import { format } from 'date-fns'
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
+import { ImageComponent } from '../Image';
 
 // ----------------------------------------------------------------------
 
@@ -38,10 +33,8 @@ export default function EquipmentScheduleCreateRow({
         <Box
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          <Image
-            disabledEffect
-            alt={get(row, 'eqName', '')}
-            src={get(row, 'eqPicture[0].eqpicLink', '/assets/icons/components/ic_default_img.svg')}
+          <ImageComponent
+            src={get(row, 'eqPicture[0].eqpicLink', '')}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer' }} >
