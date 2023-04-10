@@ -91,14 +91,11 @@ export default function EquipmentSchedulePage() {
     },
   ] as const
   useEffect(() => {
-    GetUnAvailableScheduleStats()
-  }, [])
-
-  useEffect(() => {
     setPage(0)
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
+        GetUnAvailableScheduleStats()
         GetUnAvailableSchedule()
       }, 1000)
     );
