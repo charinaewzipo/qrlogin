@@ -92,8 +92,6 @@ export default function EquipmentSchedulePage() {
   ] as const
   useEffect(() => {
     GetUnAvailableScheduleStats()
-    GetUnAvailableSchedule()
-
   }, [])
 
   useEffect(() => {
