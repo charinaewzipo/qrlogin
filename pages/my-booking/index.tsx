@@ -16,7 +16,7 @@ import BookingToolsbar from '@ku/components/MyBooking/Table/BookingToolsbar'
 import { fTimestamp } from '@sentry/utils/formatTime'
 import { useRouter } from 'next/router'
 import { MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
-  
+
 const mockData: IV1RespGetBookingMeRead = {
     eqId: 1,
     eqCreateBy: 1,
@@ -235,11 +235,11 @@ export default function MyBookingList() {
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
 
     const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
-    const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);  
+    const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
     const [filterName, setFilterName] = useState('')
     const [detailUser, setDetailUser] = useState(null)
 
-    const permissionMe: IAccountUserPermission = 'Finance'
+    const permissionMe = 'Finance'
 
     const {
         order,
@@ -310,7 +310,7 @@ export default function MyBookingList() {
         { value: 'cancelled', label: 'Cancelled', color: 'default', count: getLengthByStatus('CANCELED')},
         { value: 'finish', label: 'Finish', color: 'default', count: getLengthByStatus('FINISH')},
     ] as const
-    
+
     return (
         <>
             <Head>
@@ -520,7 +520,7 @@ function applyFilter({
 }: {
     inputData: IV1RespGetBookingMeRead[]
     comparator: (a: any, b: any) => number
-    permission: IAccountUserPermission
+    permission: string
     filterName: string
     filterStatus: string
     filterStartDate: Date | null
@@ -572,4 +572,3 @@ function applyFilter({
 
     return inputData
 }
-  

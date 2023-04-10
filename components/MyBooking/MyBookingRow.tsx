@@ -1,5 +1,5 @@
 import { TableRow, TableCell, Typography, IconButton, MenuItem, Stack } from '@mui/material'
-import { fDate } from '@sentry/utils/formatTime'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 import Label, { LabelColor } from '@sentry/components/label'
 import { useState } from 'react'
 import Iconify from '@sentry/components/iconify'
@@ -52,7 +52,7 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
             action: ()=>{console.log("Payment QR Code");},
             label: <><Iconify icon="material-symbols:receipt" />Payment QR Code</>,
         },
-    } 
+    }
 
     const menuPopoverByStatus: { [key in TBookStatus] } = {
         PENDING: [listMenuPopover.quotation, listMenuPopover.cancelBooking],
@@ -83,8 +83,12 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                 return 'default'
         }
     }
-    const renderBookingTime = (times: number[]) =>
-        times.map((time, i) => `${time}:00-${time}:59${i < times.length - 1 ? ', ' : ''}`)
+	const renderBookingTime = (times: number[]) =>
+		times.map((time, i) =>
+			<Typography whiteSpace='pre' component='span' variant="body2">
+				{`${time}:00 - ${time}:59${i < times.length - 1 ? `, ` : ''}`}
+			</Typography>
+		)
 
     return (
         <>
@@ -110,8 +114,12 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                         </Stack>
                     </Stack>
                 </TableCell>
-                <TableCell align="left">{fDate(row.bookCreatedAt)}</TableCell>
-                <TableCell align="left">{renderBookingTime(row.eqRtimTimes)}</TableCell>
+                <TableCell align="left">{fDateTimeFormat(row.bookCreatedAt, 'DD MMM YYYY')}</TableCell>
+                <TableCell align="left">
+					<Stack direction='row' flexWrap='wrap'>
+						{renderBookingTime(row.eqRtimTimes)}
+					</Stack>
+				</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.eqPriceSubTotal)}</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.payTotal)}</TableCell>
                 <TableCell align="left">
