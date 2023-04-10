@@ -12,12 +12,13 @@ import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/componen
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
 import { format, formatISO, parseISO } from 'date-fns'
-import axios from 'axios'
-import { get } from 'lodash'
+import axios, { AxiosError } from 'axios'
+import { get, isNumber } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
 import { fetchGetEquipmentMaintenanceRead, postEquipmentMaintenanceUpdate } from '@ku/services/equipment'
 import numeral from 'numeral'
 import messages from '@ku/constants/response'
+import codes from '@ku/constants/responseCode'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -36,7 +37,7 @@ export function MaintenanceLogEdit() {
 	useEffect(() => {
         if (!isReady) return;
 	    fetchMaintenanceData()
-	}, [isReady])  
+	}, [isReady])
 
     async function getFileFromUrl(url: string){
         // สร้างไฟล์เปล่าตาม size ของไฟล์ที่ได้จาก header เพื่อเอาไปโชว์ก่อน
@@ -54,9 +55,10 @@ export function MaintenanceLogEdit() {
         file.path = filename
         file.preview = url
         return file
-    }      
+    }
 
-	const fetchMaintenanceData = async () => {
+    const fetchMaintenanceData = async () => {
+        if (!isNumber(id) && !isNumber(log_id)) push(MERGE_PATH(EQUIPMENT_PATH, 'detail'))
         await fetchGetEquipmentMaintenanceRead({
             eqId: Number(id),
             eqmtnId: Number(log_id),
@@ -64,19 +66,25 @@ export function MaintenanceLogEdit() {
             limit: 1,
         })
             .then(async (res) => {
-                const apiData = get(res, 'data.dataList.0', null)
-                setMaintenanceApiData(apiData)
-                setMaintenanceData({
-                    descriptions: get(apiData, 'eqmtnDescription', ''),
-                    cost: fNumber(get(apiData, 'eqmtnCost', '')),
-                    date: format(parseISO(get(apiData, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy'),
-                    maintenanceFiles: [],
-                })
-                const maintenanceFiles = await getFileFromUrl(get(apiData, 'eqmtnpicLink', ''))
-                setMaintenanceData((prev) => ({ ...prev, maintenanceFiles: [maintenanceFiles] }))
+                if (res.code === codes.OK_CODE) {
+                    const apiData = get(res, 'data.dataList.0', null)
+                    if (apiData.length === 0) push(MERGE_PATH(EQUIPMENT_PATH, 'detail'))
+                    setMaintenanceApiData(apiData)
+                    setMaintenanceData({
+                        descriptions: get(apiData, 'eqmtnDescription', ''),
+                        cost: fNumber(get(apiData, 'eqmtnCost', '')),
+                        date: format(parseISO(get(apiData, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy'),
+                        maintenanceFiles: [],
+                    })
+                    const maintenanceFiles = await getFileFromUrl(get(apiData, 'eqmtnpicLink', ''))
+                    setMaintenanceData((prev) => ({ ...prev, maintenanceFiles: [maintenanceFiles] }))
+                }
             })
-            .catch((err) => {})
-	}
+            .catch((err: AxiosError) => {
+                const errorMessage = get(err, 'devMessage', messages[0])
+                enqueueSnackbar(errorMessage, { variant: 'error' })
+            })
+    }
 
 	const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         setErrorMsg('')
@@ -93,8 +101,8 @@ export function MaintenanceLogEdit() {
                 enqueueSnackbar('Updated maintenance log.')
                 push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
             })
-            .catch((err) => {
-                setErrorMsg(get(err, 'response.data.devMessage', messages[0]))
+            .catch((err: AxiosError) => {
+                setErrorMsg(get(err, 'devMessage', messages[0]))
             })
     }
 

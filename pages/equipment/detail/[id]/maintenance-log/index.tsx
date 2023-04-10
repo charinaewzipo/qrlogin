@@ -14,6 +14,8 @@ import { get } from 'lodash'
 import numeral from 'numeral'
 import { formatISO, startOfDay } from 'date-fns'
 import messages from '@ku/constants/response'
+import { AxiosError } from 'axios'
+import codes from '@ku/constants/responseCode'
 
 MaintenanceLog.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -36,11 +38,13 @@ export function MaintenanceLog() {
             // รอ api รูป
         })
             .then(async (res) => {
-                enqueueSnackbar('Added maintenance log.')
-                push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
+                if (res.code === codes.OK_CODE) {
+                    enqueueSnackbar('Added maintenance log.')
+                    push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
+                }
             })
-            .catch((err) => {
-                setErrorMsg(get(err, 'response.data.devMessage', messages[0]))
+            .catch((err: AxiosError) => {
+                setErrorMsg(get(err, 'devMessage', messages[0]))
             })
     }
 
