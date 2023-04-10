@@ -2,10 +2,10 @@
 import { TableRow, TableCell, Typography, Button } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
-import { format } from 'date-fns'
 import { get, noop } from 'lodash';
 import Iconify from '@sentry/components/iconify/Iconify';
 import { getTimeOfDay } from '@ku/utils/formatDate';
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime';
 // ----------------------------------------------------------------------
 type Props = {
   row: IV1RespGetEquipmentUnavailableSchedule
@@ -27,12 +27,13 @@ export default function EquipmentScheduleRow({
         sx={{ cursor: 'pointer' }}
       >
         <TableCell align="left"><Typography variant="body2" >
-          {format(new Date(get(row, 'equnavascheDays', new Date())), 'dd MMM yyyy')}
+          {fDateTimeFormat(get(row, 'equnavascheDays', ''), 'DD MMM YYYY')}
         </Typography> </TableCell>
         <TableCell align="left"> <Typography variant="body2" >{getTimeOfDay(get(row, 'equnavascheTimes', []))}</Typography></TableCell>
         <TableCell align="left"> <Typography variant="body2" >{get(row, 'equnavascheCreatedByName', '')}</Typography></TableCell>
         <TableCell align="left">
-          {format(new Date(get(row, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')}
+          {fDateTimeFormat(get(row, 'equnavascheCreatedAt', ''), 'DD MMM YYYY hh:mm:ss')}
+
         </TableCell>
         <TableCell align="left">
           <Label color={get(row, 'equnavascheStatus', '') === 'PENDING' ? 'warning' : 'default'}>{get(row, 'equnavascheStatus', '').toLocaleLowerCase()}</Label>

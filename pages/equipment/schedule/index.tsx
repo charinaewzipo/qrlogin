@@ -33,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { format, formatISO, isValid } from 'date-fns'
+import { formatISO, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
@@ -42,6 +42,7 @@ import { getTimeOfDay } from '@ku/utils/formatDate'
 import messages from '@ku/constants/response'
 import responseCode from '@ku/constants/responseCode'
 import { AxiosError } from 'axios'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
@@ -91,7 +92,6 @@ export default function EquipmentSchedulePage() {
     },
   ] as const
   useEffect(() => {
-
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
@@ -141,10 +141,10 @@ export default function EquipmentSchedulePage() {
     }
     fetchPostEquipmentUnavailableDelete(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
-        enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
+        enqueueSnackbar(`Cancelled schedule of ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
       }
     }).catch((err: AxiosError) => {
-      enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
+      enqueueSnackbar(`Failled cancel schedule of ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
 
     }).finally(() => {
       GetUnAvailableScheduleStats()
@@ -263,7 +263,7 @@ export default function EquipmentSchedulePage() {
             </Scrollbar>
           </TableContainer>
           <TablePaginationCustom
-            count={(totalRecord)}
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
@@ -280,7 +280,8 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-              { sx: { mb: 0 }, text: `To cancel upcoming ${format(new Date(get(detailSchedule, 'equnavascheDays', new Date())), 'dd MMM yyyy')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
+
+              { sx: { mb: 0 }, text: `To cancel upcoming ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
               <Typography
