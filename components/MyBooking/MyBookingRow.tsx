@@ -110,7 +110,9 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                             <Typography
                                 variant="body2"
                                 color="text.secondary"
-                            >{`No: ${row.eqId}`}</Typography>
+                            >
+                                {`No: ${row.eqId}`}
+                            </Typography>
                         </Stack>
                     </Stack>
                 </TableCell>

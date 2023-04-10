@@ -219,8 +219,8 @@ const TABLE_HEAD = [
     { id: 'booking', label: 'Booking', align: 'left', width: 200 },
     { id: 'bookingDate', label: 'Booking Date', align: 'left', width: 150 },
     { id: 'bookingTime', label: 'Booking Time', align: 'left' },
-    { id: 'estimatedCost', label: 'Estimated Cost', align: 'right' },
-    { id: 'totalPaid', label: 'Total Paid', align: 'right', width: 100 },
+    { id: 'estimatedCost', label: 'Estimated Cost', align: 'right', width: 140 },
+    { id: 'totalPaid', label: 'Total Paid', align: 'right', width: 120 },
     { id: 'status', label: 'Status', align: 'left' },
     { id: 'menu', label: '', align: 'left', width: 80 },
 ]
@@ -252,9 +252,7 @@ export default function MyBookingList() {
         setPage,
         onChangePage,
         onChangeRowsPerPage,
-    } = useTable({
-        defaultOrderBy: 'bookCreatedAt',
-    }) // TODO: please change createDate
+    } = useTable()
 
     const dataFiltered = applyFilter({
         inputData: tableData,
@@ -361,10 +359,10 @@ export default function MyBookingList() {
                             onFilterName={handleFilterName}
                             onResetFilter={handleResetFilter}
                             onFilterStartDate={(newValue) => {
-                              setFilterStartDate(newValue);
+                                setFilterStartDate(newValue)
                             }}
                             onFilterEndDate={(newValue) => {
-                              setFilterEndDate(newValue);
+                                setFilterEndDate(newValue)
                             }}
                         />
 
