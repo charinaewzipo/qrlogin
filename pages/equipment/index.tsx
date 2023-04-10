@@ -18,8 +18,7 @@ import {
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
-// components
-
+import responseCode from '@ku/constants/responseCode'
 import Iconify from '@sentry/components/iconify'
 import Scrollbar from '@sentry/components/scrollbar'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
@@ -94,7 +93,7 @@ export default function EquipmentList() {
       eqSortCode: false,
     }
     fetchGetEquipmentRead(query).then(response => {
-      if (response.code === 200000) {
+      if (response.code === responseCode.OK_CODE) {
         setTableData(response.data.dataList)
         setPage(pageToGo)
         setTotalRecord(response.data.totalRecord || 0)
@@ -229,7 +228,7 @@ export default function EquipmentList() {
                         eqSearch: filterName, eqSortName: false, eqSortCode: false,
                       }
                       fetchGetEquipmentRead(query).then(response => {
-                        if (response.code === 200000) { onSelectAllRows( isChecked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
+                        if (response.code === responseCode.OK_CODE) { onSelectAllRows( isChecked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
                       }).catch(err => { console.log(err) })
                     }
                     if ( checked || (!checked && !isEmpty(selected) && selected.length!==totalRecord) ) {
