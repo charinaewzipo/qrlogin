@@ -530,14 +530,14 @@ export default function EquipmentScheduleDetailPage() {
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
             <LoadingButton
-              size="large"
+              size="medium"
               color='error'
               onClick={handleOnclickRemove}
             >
               Remove
             </LoadingButton>
             <LoadingButton
-              size="large"
+              size="medium"
               type="submit"
               variant="contained"
               onClick={() => {
