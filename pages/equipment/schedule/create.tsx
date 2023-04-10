@@ -37,7 +37,7 @@ import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
 import FormProvider from '@sentry/components/hook-form/FormProvider'
-import { Controller, useForm, ErrorOption } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete } from '@sentry/components/hook-form'
@@ -45,13 +45,14 @@ import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 
+
 const TIME_OPTIONS = [
   'Ealry morning (7:00 - 12:59)',
   'Afternoon (13:00 - 22:00)',
   'Full day (7:00 - 22:00)',
 ];
 const TABLE_HEAD = [
-  { id: 'name', label: 'Equipment', align: 'left' },
+  { id: 'eqName', label: 'Equipment', align: 'left' },
 ];
 type FormValuesProps = {
   date: Date | null,
@@ -97,7 +98,6 @@ export default function EquipmentScheduleCreatePage() {
   }, [selected])
 
   useEffect(() => {
-    // setPage(0)
     clearTimeout(countDown);
     setCountDown(
       setTimeout(() => {
@@ -106,16 +106,8 @@ export default function EquipmentScheduleCreatePage() {
     );
   }, [page, rowsPerPage, filterSearchEquipment])
 
-  useEffect(() => {
-    if (!isEmpty(tableAllData)) {
-      onSelectAllRows(
-        true,
-        tableAllData.map((row) => get(row, 'eqId', ''))
-      )
-    }
-  }, [tableAllData])
   const EquipmentScheduleScheme = Yup.object().shape({
-    date: Yup.date().nullable().required('Date is require'),
+    date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
   })
   const defaultValues: FormValuesProps = useMemo(
@@ -131,12 +123,11 @@ export default function EquipmentScheduleCreatePage() {
   })
   const {
     reset,
-    watch,
     control,
     setValue,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods
 
   const GetEquipmentRead = (isSortName: boolean = false) => {
@@ -184,7 +175,7 @@ export default function EquipmentScheduleCreatePage() {
       if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
-        // push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
+        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
         enqueueSnackbar('Create schedule success.')
       }
     }).catch(err => {
@@ -196,6 +187,7 @@ export default function EquipmentScheduleCreatePage() {
     push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setPage(0)
     setFilterSearchEquipment(event.target.value);
   }
   const handleOnclickCancel = () => {
@@ -206,7 +198,6 @@ export default function EquipmentScheduleCreatePage() {
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       try {
-        console.log("onSubmit", data)
         PostEquipmentCreate(data)
       } catch (error) {
         const errorMessage = get(messages, error.code, messages[0])
@@ -220,7 +211,8 @@ export default function EquipmentScheduleCreatePage() {
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
         {selected.map((id) => {
-          const findData = tableData.find(i => i.eqId === id)
+          const Data = isSelectAllRows ? tableAllData : tableData
+          const findData = Data.find(i => i.eqId === id)
           return (
             <>
               {!isEmpty(findData) &&
@@ -337,6 +329,7 @@ export default function EquipmentScheduleCreatePage() {
               }}
             />
           </Box>
+
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
             <Table>
               <TableHeadCustom
@@ -344,7 +337,7 @@ export default function EquipmentScheduleCreatePage() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
+                rowCount={selected.length}
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {
@@ -355,17 +348,19 @@ export default function EquipmentScheduleCreatePage() {
                 onSelectAllRows={(checked) => {
                   const getEQ2All = (isChecked: boolean) => {
                     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-                      page: 1,
-                      limit: 9999999,
-                      // eqId: '',
-                      // eqStatus: '',
-                      eqSearch: filterSearchEquipment,
-                      eqSortName: false,
-                      eqSortCode: false,
+                      page: 1, limit: 9999999,
+                      eqSortName: false, eqSortCode: false,
                     }
                     fetchGetEquipmentRead(query).then(response => {
-                      if (response.code === responseCode.OK_CODE) { onSelectAllRows(isChecked, response.data.dataList.map((row) => get(row, 'eqId', ''))) }
-                    }).catch(err => { console.log(err) })
+                      if (response.code === responseCode.OK_CODE) {
+                        setIsSelectAllRows(true)
+                        setTableAllData(get(response, 'data.dataList', []))
+                        onSelectAllRows(isChecked, get(response, 'data.dataList', []).map((row) => get(row, 'eqId', '')))
+                      }
+                    }).catch(err => {
+                      const errorMessage = get(messages, err.code, messages[0])
+                      enqueueSnackbar(errorMessage, { variant: 'error' })
+                    })
                   }
                   if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
                     getEQ2All(true)
@@ -373,10 +368,8 @@ export default function EquipmentScheduleCreatePage() {
                     onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
                   }
 
-                }
-                }
+                }}
               />
-
               <TableBody>
                 {!isEmpty(tableData) &&
                   tableData.map((row, index) =>
