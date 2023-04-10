@@ -13,6 +13,9 @@ import { ACCOUNT_PATH, EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
 import { fetchGetEquipmentMaintenanceRead } from '@ku/services/equipment'
 import { get } from 'lodash'
+import { AxiosError } from 'axios'
+import messages from '@ku/constants/response'
+import codes from '@ku/constants/responseCode'
 
 EquipmentDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -41,15 +44,20 @@ export function EquipmentDetail() {
         push(MERGE_PATH(EQUIPMENT_PATH, 'detail', String(id), 'maintenance-log'))
     }
 
-    
+
     const fetchMaintenancedata = (page: number, limit: number) => {
         fetchGetEquipmentMaintenanceRead({
             eqId: Number(id),
             page: page + 1,
             limit: limit
         }).then(res => {
-            setTotalMaintenanceLogRecord(get(res, 'data.totalRecord', 0))
-            setMintenanceLogData(get(res, 'data.dataList', []))
+            if (res.code === codes.OK_CODE) {
+                setTotalMaintenanceLogRecord(get(res, 'data.totalRecord', 0))
+                setMintenanceLogData(get(res, 'data.dataList', []))
+            }
+        }).catch((err: AxiosError) => {
+            const errorMessage = get(err, 'devMessage', messages[0])
+            enqueueSnackbar(errorMessage, { variant: 'error' })
         })
     }
 
