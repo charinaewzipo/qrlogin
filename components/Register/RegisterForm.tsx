@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
 import { Controller, useForm } from 'react-hook-form'
@@ -12,6 +12,7 @@ import { clamp, cloneDeep, every, get } from 'lodash';
 import Image from '@sentry/components/image'
 import { DatePicker } from '@mui/x-date-pickers';
 import { fetchGetSupervisor } from '@ku/services/supervisor';
+import { NumberFormatCustomNoComma } from '@ku/utils/numberFormatCustom';
 
 export interface RegisterFormValuesProps {
     email: string
@@ -110,9 +111,6 @@ interface RegisterFormProps {
     onBack: () => void
     errorMsg: string
 }
-interface IIdImageUpload {
-  index: number
-}
 function RegisterForm(props: RegisterFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
@@ -170,7 +168,7 @@ function RegisterForm(props: RegisterFormProps) {
             then: Yup.string().required('Position is require'),
         }),
         expiryDate: Yup.date()
-            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970"')
+            .typeError('Expected date format is dd mmm yyyy. Example: "1 jan 1970"')
             .nullable()
             .when(['position', 'typeOfPerson'], {
                 is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
@@ -289,7 +287,7 @@ function RegisterForm(props: RegisterFormProps) {
         'supervisorCode',
         'supervisorStatus',
     ])
-    
+
     useEffect(() => {
         clearTimeout(supervisorTimeout);
         setValue('supervisorStatus', 'waiting')
@@ -299,7 +297,7 @@ function RegisterForm(props: RegisterFormProps) {
             }, 500)
         )
     }, [watchSupervisorCode])
-    
+
     useEffect(() => {
         if (isSubmitted)
             trigger()
@@ -325,22 +323,6 @@ function RegisterForm(props: RegisterFormProps) {
     const onSubmit = async (data: RegisterFormValuesProps) => {
         const submitData = cloneDeep(data)
         props.onSubmit(submitData)
-    }
-    const handleChangeNumber = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        fieldName: keyof RegisterFormValuesProps,
-    ) => {
-        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
-        const newValue = e.target.value.replace(new RegExp(',', 'g'), '') || ''
-        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValue)) {
-            setValue(fieldName, newValue)
-            if (isSubmitted) trigger()
-            setTimeout(() => {
-                //set text cursor at same position after setValue
-                const typingIndexFromStart = newValue.length + typingIndexFromEnd;
-                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
-            }, 0)
-        }
     }
 
     const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
@@ -382,7 +364,7 @@ function RegisterForm(props: RegisterFormProps) {
         }
         trigger('supervisorCode')
     }
-    
+
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
             <Stack spacing={3} justifyContent="center" textAlign={'center'}>
@@ -612,7 +594,7 @@ function RegisterForm(props: RegisterFormProps) {
                     name="phoneNumber"
                     label={isRequire(constant.phoneNumber)}
                     inputProps={{ maxLength: 10 }}
-                    onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
+                    InputProps={{ inputComponent: NumberFormatCustomNoComma }}
                 />
                 <Stack flexDirection={'row'} flexWrap={'wrap'} justifyContent={'center'} gap={1.5}>
                     {[...Array(idImageLength).keys()].map((i) => (
