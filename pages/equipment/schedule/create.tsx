@@ -32,6 +32,7 @@ import {
   TableEmptyRows,
   TableHeadCustom,
   TableSkeleton,
+  TablePaginationCustom,
 } from '@sentry/components/table'
 import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
@@ -517,9 +518,7 @@ export default function EquipmentScheduleCreatePage() {
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
+          <TablePaginationCustom
             count={tableData.length}
             rowsPerPage={rowsPerPage}
             page={page}
