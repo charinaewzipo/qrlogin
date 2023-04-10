@@ -1,13 +1,12 @@
-import { useState } from 'react';
-import { sentenceCase } from 'change-case';
 // @mui
 import { useTheme } from '@mui/material/styles';
-import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box } from '@mui/material';
-import Image from '@sentry/components/image/Image';
+import { TableRow, Checkbox, TableCell, Typography, Box } from '@mui/material';
 import Label from '@sentry/components/label/Label';
 // utils
 import { format } from 'date-fns'
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
+import { ImageComponent } from '../Image';
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime';
 
 // ----------------------------------------------------------------------
 
@@ -28,18 +27,19 @@ export default function EquipmentRow({
 
 }: Props) {
   const theme = useTheme();
-
-  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpenMenuActions(event.currentTarget);
-  // };
-
-  // const handleCloseMenu = () => {
-  //   setOpenMenuActions(null);
-  // };
-
-
+  const getUTCDate = (dateString = Date.now()) => {
+    const date = new Date(dateString);
+  
+    return new Date(
+      date.getUTCFullYear(),
+      date.getUTCMonth(),
+      date.getUTCDate(),
+      date.getUTCHours(),
+      date.getUTCMinutes(),
+      date.getUTCSeconds(),
+    );
+  };
+  
   return (
     <TableRow hover selected={selected} key={get(row, 'eqId', '')} onClick={onViewRow} sx={{ cursor: 'pointer' }} >
       <TableCell padding="checkbox" onClick={e => e.stopPropagation()}>
@@ -51,10 +51,14 @@ export default function EquipmentRow({
           sx={{ display: 'flex', justifyContent: 'center' }}
 
         >
-          <Image
+          {/* <Image
             disabledEffect
             alt={get(row, 'eqName', '')}
-            src={row.eqPicture[0].eqpicLink}
+            src={get(row,'eqPicture[0].eqpicLink','')}
+            sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
+          /> */}
+          <ImageComponent
+            src={get(row,'eqPicture[0].eqpicLink','')}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }} >
@@ -69,14 +73,14 @@ export default function EquipmentRow({
 
       </TableCell>
 
-      <TableCell> {format((get(row, 'eqCreatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
-      <TableCell> {format((get(row, 'eqUpdatedAt', new Date())), 'dd MMM yyyy HH:mm')}</TableCell>
+      <TableCell>{fDateTimeFormat(get(row, 'eqCreatedAt', ''))}</TableCell>
+      <TableCell>{fDateTimeFormat(get(row, 'eqUpdatedAt', ''))}</TableCell>
 
       <TableCell align="left">
         <Label
           color={
-            (get(row, 'eqStatus', '') === 'Unavailable' && 'default') ||
-            (get(row, 'eqStatus', '') === 'Temporary Unavailable' && 'warning') ||
+            (get(row, 'eqStatus', '') === 'UNAVAILABLE' && 'default') ||
+            (get(row, 'eqStatus', '') === 'TEMPORARY_UNAVAILABLE' && 'warning') ||
             'success'
           }
           sx={{ textTransform: 'capitalize' }}
