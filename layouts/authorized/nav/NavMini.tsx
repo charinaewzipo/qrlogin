@@ -9,10 +9,12 @@ import Logo from '@ku/components/Logo'
 import { NavSectionMini } from '@sentry/components/nav-section'
 //
 import navConfig from './config'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 
 export default function NavMini() {
+    const { user } = useAuthContext()
     return (
         <Box
             component="nav"
@@ -33,7 +35,7 @@ export default function NavMini() {
             >
                 <Logo logoType="full" sx={{ mx: 'auto', my: 2 }} />
 
-                <NavSectionMini data={navConfig} />
+                <NavSectionMini data={navConfig(user.authPermission)} />
             </Stack>
         </Box>
     )

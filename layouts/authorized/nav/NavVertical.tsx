@@ -14,6 +14,7 @@ import { NavSectionVertical } from '@sentry/components/nav-section'
 //
 import navConfig from './config'
 import NavAccount from './NavAccount'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 
@@ -24,7 +25,7 @@ type Props = {
 
 export default function NavVertical({ openNav, onCloseNav }: Props) {
     const { pathname } = useRouter()
-
+    const { user } = useAuthContext()
     const isDesktop = useResponsive('up', 'lg')
 
     useEffect(() => {
@@ -54,12 +55,12 @@ export default function NavVertical({ openNav, onCloseNav }: Props) {
                     flexShrink: 0,
                 }}
             >
-                <Logo logoType="full"/>
+                <Logo logoType="full" />
 
                 <NavAccount />
             </Stack>
 
-            <NavSectionVertical data={navConfig} />
+            <NavSectionVertical data={navConfig(user.authPermission)} />
 
             <Box sx={{ flexGrow: 1 }} />
         </Scrollbar>

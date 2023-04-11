@@ -41,22 +41,79 @@ const ICONS = {
     ecommerce: icon('ic_ecommerce'),
 }
 
-const navConfig = [
+const navConfig = (privilege: TPermission) => [
     // GENERAL
     // ----------------------------------------------------------------------
-    {
-        subheader: 'admin menus',
-        items: [
-            { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
-            { title: 'Accounts', path: ACCOUNT_PATH, icon: ICONS.person },
-            { title: 'Booking', path: BOOKING_PATH, icon: ICONS.booking },
-            { title: 'Booking Report', path: BOOKING_REPORT_PATH, icon: ICONS.bookingReport },
-            { title: 'My Booking', path: MY_BOOKING_PATH, icon: ICONS.myBooking },
-            { title: 'Equipments', path: EQUIPMENT_PATH, icon: ICONS.equipment },
-            { title: 'Assessments', path: ASSESSMENT_PATH, icon: ICONS.assessments },
-            { title: 'Privacy Policies', path: PRIVACY_POLICIES_PATH, icon: ICONS.privacy },
-        ],
-    },
+    ...(privilege === 'ADMIN'
+        ? [
+              {
+                  subheader: 'admin menus',
+                  items: [
+                      { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
+                      { title: 'Accounts', path: ACCOUNT_PATH, icon: ICONS.person },
+                      { title: 'Booking', path: BOOKING_PATH, icon: ICONS.booking },
+                      {
+                          title: 'Booking Report',
+                          path: BOOKING_REPORT_PATH,
+                          icon: ICONS.bookingReport,
+                      },
+                      { title: 'My Booking', path: MY_BOOKING_PATH, icon: ICONS.myBooking },
+                      { title: 'Equipments', path: EQUIPMENT_PATH, icon: ICONS.equipment },
+                      { title: 'Assessments', path: ASSESSMENT_PATH, icon: ICONS.assessments },
+                      {
+                          title: 'Privacy Policies',
+                          path: PRIVACY_POLICIES_PATH,
+                          icon: ICONS.privacy,
+                      },
+                  ],
+              },
+          ]
+        : []),
+    ...(privilege === 'FINANCE'
+        ? [
+              {
+                  subheader: 'Finance menus',
+                  items: [
+                      { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
+                      {
+                          title: 'Booking Report',
+                          path: BOOKING_REPORT_PATH,
+                          icon: ICONS.bookingReport,
+                      },
+                  ],
+              },
+          ]
+        : []),
+    ...(privilege === 'SUPERVISOR'
+        ? [
+              {
+                  subheader: 'Supervisor menus',
+                  items: [
+                      { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
+                      { title: 'Accounts', path: ACCOUNT_PATH, icon: ICONS.person },
+                      { title: 'Booking', path: BOOKING_PATH, icon: ICONS.booking },
+                      {
+                          title: 'Booking Report',
+                          path: BOOKING_REPORT_PATH,
+                          icon: ICONS.bookingReport,
+                      },
+                      { title: 'My Booking', path: MY_BOOKING_PATH, icon: ICONS.myBooking },
+                  ],
+              },
+          ]
+        : []),
+    ...(privilege === 'USER'
+        ? [
+              {
+                  subheader: 'User menus',
+                  items: [
+                      { title: 'Dashboard', path: DASHBOARD_PATH, icon: ICONS.dashboard },
+                      { title: 'Booking', path: BOOKING_PATH, icon: ICONS.booking },
+                      { title: 'My Booking', path: MY_BOOKING_PATH, icon: ICONS.myBooking },
+                  ],
+              },
+          ]
+        : []),
 ]
 
 export default navConfig
