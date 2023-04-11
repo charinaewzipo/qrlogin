@@ -1,9 +1,33 @@
-interface IV1QueyGetBookingMeRead {
-    startTime?: string
-    endTime?: string
-    search?: string
-    eqId?: number
-    bookStatus: string
+type TBookStatus =
+    | 'PENDING'
+    | 'CONFIRM'
+    | 'WAITING_FOR_PAYMENT'
+    | 'WAITING_FOR_PAYMENT_CONFIRM'
+    | 'CANCELED'
+    | 'FINISH'
+
+interface IV1TablePayments {
+    payId: number
+    payBookId: number
+    payQuotationPicture: string
+    payInvoicePicture: string
+    payReceiptPicture: string
+    paySlipPicture: string
+    payQrPicture: string
+    payQrExpiry: string
+    payQrRef1: string
+    payQrRef2: string
+    payOt: number
+    payDiscount: number
+    payFees: number
+    payTotal: number
+    payRemark: string
+    payBillingAddress: string
+    payReceiptNumber: string
+    payDateTime: string
+    payAmount: number
+    payCreatedAt: string
+    payUpdatedAt: string
 }
 
 interface IV1RespGetBookingMeRead {
@@ -41,9 +65,9 @@ interface IV1EquipmentPictures {
 interface IV1EquipmentPrice {
     eqpId: number
     eqpEqId: number
-    eqpTypePerson: TTypeOfPerson
-    eqpSubOption: TSubOptionType
-    eqpChecked: TTypeOfChecked
+    eqpTypePerson: string
+    eqpSubOption: string
+    eqpChecked: string
     eqpIsChecked: boolean
     eqpName: string
     eqpDescription: string
@@ -58,7 +82,7 @@ interface IV1EquipmentPrice {
 
 interface IV1EquipmentSubPrice {
     eqsubpId: number
-    eqsubpChecked: TTypeOfChecked
+    eqsubpChecked: string
     eqsubpName: string
     eqsubpDescription: string
     eqsubpUnitPrice: number
@@ -68,28 +92,21 @@ interface IV1EquipmentSubPrice {
     eqsubpCreatedAt: string
     eqsubpUpdatedAt: string
 }
-interface IV1TablePayments {
-    payId: number
-    payBookId: number
-    payQuotationPicture: string
-    payInvoicePicture: string
-    payReceiptPicture: string
+
+interface IV1PostBookingPayments {
+    bookId: number
     paySlipPicture: string
-    payQrPicture: string
-    payQrExpiry: string
-    payQrRef1: string
-    payQrRef2: string
-    payOt: number
-    payDiscount: number
-    payFees: number
     payRemark: string
     payBillingAddress: string
-    payReceiptNumber: string
     payDateTime: string
     payAmount: number
-    payCreatedAt: string
-    payUpdatedAt: string
-    payTotal: number
+}
+interface IV1QueyGetBookingMeRead {
+    startTime?: string
+    endTime?: string
+    search?: string
+    eqId?: number
+    bookStatus: string
 }
 
 interface IV1PostBookingCreate {
