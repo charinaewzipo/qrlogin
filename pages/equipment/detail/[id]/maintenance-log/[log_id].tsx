@@ -6,14 +6,14 @@ import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
+import { EQUIPMENT_PATH, MERGE_PATH, NOTFOUND_PATH } from '@ku/constants/routes'
 import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
 import { format, formatISO, parseISO } from 'date-fns'
 import axios, { AxiosError } from 'axios'
-import { get, isNumber } from 'lodash'
+import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
 import { fetchGetEquipmentMaintenanceRead, postEquipmentMaintenanceUpdate } from '@ku/services/equipment'
 import numeral from 'numeral'
@@ -35,7 +35,7 @@ export function MaintenanceLogEdit() {
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
 
 	useEffect(() => {
-        if (!isReady) return;
+        if (!isReady) return
 	    fetchMaintenanceData()
 	}, [isReady])
 
@@ -58,7 +58,7 @@ export function MaintenanceLogEdit() {
     }
 
     const fetchMaintenanceData = async () => {
-        if (!isNumber(id) && !isNumber(log_id)) push(MERGE_PATH(EQUIPMENT_PATH, 'detail'))
+        if (!isFinite(+id) || !isFinite(+log_id)) push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
         await fetchGetEquipmentMaintenanceRead({
             eqId: Number(id),
             eqmtnId: Number(log_id),
@@ -67,8 +67,12 @@ export function MaintenanceLogEdit() {
         })
             .then(async (res) => {
                 if (res.code === codes.OK_CODE) {
-                    const apiData = get(res, 'data.dataList.0', null)
-                    if (apiData.length === 0) push(MERGE_PATH(EQUIPMENT_PATH, 'detail'))
+                    const dataList = get(res, 'data.dataList', [])
+                    if (!dataList.length) {
+                        push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
+                        return
+                    }
+                    const apiData = get(dataList, '0', null)
                     setMaintenanceApiData(apiData)
                     setMaintenanceData({
                         descriptions: get(apiData, 'eqmtnDescription', ''),

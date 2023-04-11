@@ -17,7 +17,7 @@ export function NotFoundEquipment() {
                 <title> Equipment Not Found </title>
             </Head>
             <Grid container>
-                <Grid xs={6} sx={{ margin: '0 auto' }}>
+                <Grid item xs={6} sx={{ margin: '0 auto' }}>
                     <MotionContainer alignItems='center' sx={{  }}>
                         <m.div variants={varBounce().in}>
                             <Typography variant="h5" textAlign='center' paragraph>
@@ -36,7 +36,7 @@ export function NotFoundEquipment() {
 
                         <m.div variants={varBounce().in}>
                             <Typography variant='body1'whiteSpace='pre' >
-                                {`The booking result not found, please recheck form your\nbooking report list.`}
+                                {`The equipment result not found, please recheck form your\nequipment list.`}
                             </Typography>
                             <Typography variant='body1' sx={{ mt: 3 }}>
                                 All the best,

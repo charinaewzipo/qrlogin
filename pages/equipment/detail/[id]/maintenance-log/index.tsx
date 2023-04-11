@@ -6,11 +6,11 @@ import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
-import { useState } from 'react'
+import { EQUIPMENT_PATH, MERGE_PATH, NOTFOUND_PATH } from '@ku/constants/routes'
+import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
-import { postEquipmentMaintenanceCreate } from '@ku/services/equipment'
-import { get } from 'lodash'
+import { fetchGetEquipmentRead, postEquipmentMaintenanceCreate } from '@ku/services/equipment'
+import { get, isFinite } from 'lodash'
 import numeral from 'numeral'
 import { formatISO, startOfDay } from 'date-fns'
 import messages from '@ku/constants/response'
@@ -22,8 +22,33 @@ MaintenanceLog.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {pag
 export function MaintenanceLog() {
     // const { t } = useTranslation()
     const { enqueueSnackbar } = useSnackbar()
-    const { push, query: { id } } = useRouter()
+    const { push, query: { id }, isReady } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
+
+    useEffect(() => {
+        if (!isReady) return
+        checkEquipmentExist()
+    }, [isReady])
+    
+
+    const checkEquipmentExist = () => {
+        if (!isFinite(+id)) push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
+        fetchGetEquipmentRead({ eqId: `${id}`, limit: 1, page: 1 })
+            .then((res) => {
+                if (res.code === codes.OK_CODE) {
+                    const dataLength = get(res, 'data.dataList', []).length
+                    if (dataLength) {
+                        return
+                    } else {
+                        push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
+                    }
+                }
+            })
+            .catch((err: AxiosError) => {
+                const errorMessage = get(err, 'devMessage', messages[0])
+                enqueueSnackbar(errorMessage, { variant: 'error' })
+            })
+    }
 
     const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const mtnDate = data.date ? formatISO(new Date(get(data, 'date', ''))) : formatISO(startOfDay(new Date()))
