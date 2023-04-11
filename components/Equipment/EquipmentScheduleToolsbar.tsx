@@ -21,6 +21,7 @@ export default function EquipmentScheduleToolsbar({
     <Stack spacing={2} direction={{ xs: 'column', md: 'row' }} sx={{ py: 2.5, px: 3 }}>
       <DatePicker
         label="Start date"
+        inputFormat="dd MMM yyyy"
         value={filterStartDate}
         onChange={onFilterStartDate}
         renderInput={(params) => (
@@ -33,6 +34,7 @@ export default function EquipmentScheduleToolsbar({
       />
       <DatePicker
         label="End date"
+        inputFormat="dd MMM yyyy"
         value={filterEndDate}
         onChange={onFilterEndDate}
         renderInput={(params) => (
