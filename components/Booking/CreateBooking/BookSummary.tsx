@@ -20,11 +20,15 @@ interface IBookSummaryProps {
     bookingData: IV1RespGetBookingMeRead
     onBook: () => void
     onCancelBooking: () => void
+    selectedDate: Date
+    selectedTime: number[]
 }
 function BookSummary({
     bookingData,
     onBook,
     onCancelBooking,
+    selectedDate,
+    selectedTime,
 }: IBookSummaryProps) {
     const getBookingStatusLabelColor = (): LabelColor => {
         switch (bookingData.bookStatus) {
@@ -55,7 +59,7 @@ function BookSummary({
                             {constant.bookingDate}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {format(new Date(bookingData.bookCreatedAt), 'dd/MM/yyyy')}
+                            {format(new Date(selectedDate), 'dd/MM/yyyy')}
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
@@ -63,7 +67,7 @@ function BookSummary({
                             {constant.bookingTime}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.map((time) => (
+                            {selectedTime.sort((a, b) => a - b).map((time) => (
                                 <Label key={`${time}-booking-time`} color="info" sx={{ mr: 1, mb: 1 }}>
                                     {`${time}:00 - ${time}:59`}
                                 </Label>
@@ -75,7 +79,7 @@ function BookSummary({
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.length} Hrs.
+                            {selectedTime.length} Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>

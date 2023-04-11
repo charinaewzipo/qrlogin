@@ -4,18 +4,15 @@ import { Box, Container, Stack } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
-import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
 import { useEffect, useRef, useState } from 'react'
-import numeral from 'numeral'
-import { formatISO } from 'date-fns'
+import { formatISO, isValid } from 'date-fns'
 import { MY_BOOKING_PATH } from '@ku/constants/routes'
 import EquipmentDetail from '@ku/components/Booking/CreateBooking/EquipmentDetail'
 import BookSummary from '@ku/components/Booking/CreateBooking/BookSummary'
 import TableView from '@ku/components/Booking/CreateBooking/TableView'
 import BookInformation from '@ku/components/Booking/CreateBooking/BookInformation'
 import AvailableDateCalendar from '@ku/components/Booking/CreateBooking/AvailableDateCalendar'
-import axios from '@ku/services/axios'
 
 bookingCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -227,7 +224,7 @@ const mockData: IV1RespGetBookingMeRead = {
   eqRtimTimes: [8, 10, 14],
 };
 
-  
+
 export function bookingCreate() {
     // const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
@@ -241,7 +238,7 @@ export function bookingCreate() {
         query: { equipment_code_name },
         push,
     } = useRouter()
-    
+
     const handleToBookNow = () => {
         bookNowRef.current.scrollIntoView()
     }
@@ -344,7 +341,7 @@ export function bookingCreate() {
                                         onSelectTime={handleSelectTime}
                                     />
                                 </Stack>
-                                {selectedDate && selectedTime.length !== 0 ? (
+                                {isValid(selectedDate) && selectedTime.length ? (
                                     <>
                                         <TableView
                                             bookingData={mockData}
@@ -355,6 +352,8 @@ export function bookingCreate() {
                                             bookingData={mockData}
                                             onBook={handlePostBook}
                                             onCancelBooking={() => {}}
+                                            selectedTime={selectedTime}
+                                            selectedDate={selectedDate}
                                         />
                                     </>
                                 ) : (
