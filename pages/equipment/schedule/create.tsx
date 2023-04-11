@@ -33,7 +33,7 @@ import {
   TablePaginationCustom,
 } from '@sentry/components/table'
 import { useSnackbar } from 'notistack'
-import { addDays, formatISO, isValid } from 'date-fns'
+import { addDays, isValid, } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
@@ -46,9 +46,7 @@ import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 import uuidv4 from '@sentry/utils/uuidv4'
-import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
-
-
+import { fDateTimeFormatAPI } from '@ku/utils/formatDate'
 
 const TIME_OPTIONS = [
   { label: 'Ealry morning (7:00 - 12:59)', value: [7, 8, 9, 10, 11, 12] },
@@ -101,6 +99,9 @@ export default function EquipmentScheduleCreatePage() {
     }
   }, [selected])
 
+  useEffect(() => {
+
+  }, [])
   useEffect(() => {
     clearTimeout(countDown);
     setCountDown(
@@ -163,7 +164,7 @@ export default function EquipmentScheduleCreatePage() {
     const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
-      date: !isNull(data.date) && isValid(data.date) ? formatISO(data.date) : null,
+      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormatAPI(data.date) : null,
       times: mapTime.value,
       eqId: ArrayEqID,
     }
