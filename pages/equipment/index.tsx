@@ -5,25 +5,22 @@ import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
 import {
-  Tab,
-  Tabs,
   Card,
   Table,
   Button,
-  Divider,
   TableBody,
   Container,
   TableContainer,
   Tooltip,
   IconButton,
   TablePagination,
-  Box,
   useTheme,
+  Alert,
+  Stack,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
-// components
-
+import responseCode from '@ku/constants/responseCode'
 import Iconify from '@sentry/components/iconify'
 import Scrollbar from '@sentry/components/scrollbar'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
@@ -33,171 +30,13 @@ import {
   TableHeadCustom,
   TableSelectedAction,
   TableSkeleton,
-  getComparator,
 } from '@sentry/components/table'
 
 import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
 import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
 import Image from '@sentry/components/image/Image'
 import { fetchGetEquipmentRead } from '@ku/services/equipment'
-import { get, isEmpty } from 'lodash'
-
-
-const mockTableData: IV1PostEquipmentRead[] =
-  [{
-    eqId: "ABC123",
-    eqStatus: "available",
-    eqCode: "EQ001",
-    eqName: "Power Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1548435200, // April 26, 2022
-    eqUpdatedAt: 1949577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC124",
-    eqStatus: "Unavailable",
-    eqCode: "EQ001",
-    eqName: "DeWalt",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1448435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC125",
-    eqStatus: "Temporary Unavailable",
-    eqCode: "EQ001",
-    eqName: "ABC124 Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }]
+import { debounce, get, isEmpty } from 'lodash'
 
 const TABLE_HEAD = [
   { id: 'eqName', label: 'Equipment', align: 'left', width: 350 },
@@ -220,16 +59,14 @@ export default function EquipmentList() {
     order,
     orderBy,
     rowsPerPage,
+    setRowsPerPage,
     setPage,
     //
     selected,
-    setSelected,
     onSelectRow,
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
@@ -238,104 +75,69 @@ export default function EquipmentList() {
 
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
+  
+  const [isTextAlert, setIsTextAlert] = useState('');
+
   const theme = useTheme()
   const { push } = useRouter()
 
   useEffect(() => {
-    GetEquipmentRead()
+    GetEquipmentRead(filterRole, rowsPerPage, 0, filterName)
+    return debouncedCallback.cancel
   }, [])
 
-  const GetEquipmentRead = async () => {
+  const GetEquipmentRead = (status: string, limit: number, pageToGo: number, keyword: string, isSortName:boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page,
-      limit: rowsPerPage,
+      page: pageToGo + 1,
+      limit: limit,
       eqId: '',
-      // eqStatus: filterName,
-      // eqSearch: filterRole,
-      eqStatus: filterRole,
-      eqSearch: filterName,
-      eqSortName: false,
+      eqStatus: makeStatusCode(status),
+      eqSearch: keyword,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
-    await fetchGetEquipmentRead(query).then(response => {
-      console.log("response ",response);
-      console.log("data ",response.data.dataList);
-      
-      if (response.code === 200000) {
-        
-        // setTableData(response.data.dataList)
-        setPage(response.data.page-1)
-        setTotalRecord(response.data.totalRecord)
-        
-        setTableData(mockTableData)
-        // setTotalRecord(100)
-        // setPage(0)
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setIsTextAlert("")
+        setTableData(response.data.dataList)
+        setPage(pageToGo)
+        setTotalRecord(response.data.totalRecord || 0)
       }
     }).catch(err => {
-      console.log(err)
+      setIsTextAlert(err.devMessage)
     })
   }
 
-  useEffect(() => {
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    )
-  }, [filterName])
+  const makeStatusCode = (val) => val.toUpperCase().replace(" ","_").replace("ALL","")
+
+  const debouncedCallback = debounce((status: string, limit: number, pageToGo: number, keyword: string) => {GetEquipmentRead(status, limit, pageToGo, keyword)}, 1000)
+  const callBackTimeout = useCallback(debouncedCallback,[])
+
   const handleFilterName = (filterName: string) => {
     setFilterName(filterName);
-    setPage(0);
+    callBackTimeout(filterRole, rowsPerPage, 0, filterName)
   };
   const handleExportRows = (id: string[]) => {
     console.log("exportRows", id)
   };
 
-  useEffect(() => { GetEquipmentRead() }, [filterRole])
   const handleFilterRole = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setFilterRole(event.target.value);
-    setPage(0);
+    const role = event.target.value
+    setFilterRole(role);
+    GetEquipmentRead(role, rowsPerPage, 0, filterName)
   };
   const handleViewRow = (id: string) => {
     push(MERGE_PATH(EQUIPMENT_PATH, 'detail', id))
   };
-  function applySortFilter({
-    tableData,
-    comparator,
-    // filterName,
-  }: {
-    tableData: IV1PostEquipmentRead[];
-    comparator: (a: any, b: any) => number;
-    // filterName: string;
-  }) {
-    const stabilizedThis = tableData.map((el, index) => [el, index] as const);
 
-    stabilizedThis.sort((a, b) => {
-      const order = comparator(a[0], b[0]);
-      if (order !== 0) return order;
-      return a[1] - b[1];
-    });
-
-    tableData = stabilizedThis.map((el) => el[0]);
-
-    // if (filterName) {
-    //   tableData = tableData.filter(
-    //     (item: Record<string, any>) =>
-    //       item.name.toLowerCase().indexOf(filterName.toLowerCase()) !== -1
-    //   );
-    // }
-
-    return tableData;
-  }
-  const dataFiltered = applySortFilter({
-    tableData,
-    comparator: getComparator(order, orderBy)
-    // filterName,
-  });
   const isNotFound = (!tableData.length && !!filterName)
 
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const limit = parseInt(event.target.value, 10)
+    setRowsPerPage(limit)
+    GetEquipmentRead(filterRole, limit, 0, filterName)
+  }
+  
   return (
     <>
       <Head>
@@ -346,13 +148,8 @@ export default function EquipmentList() {
         <CustomBreadcrumbs
           heading={'Equipments'}
           links={[
-            {
-              name: 'Equipments',
-              href: EQUIPMENT_PATH,
-            },
-            {
-              name: 'List',
-            },
+            { name: 'Equipments', href: EQUIPMENT_PATH },
+            { name: 'List' },
           ]}
           action={<>
 
@@ -361,10 +158,7 @@ export default function EquipmentList() {
                 variant="contained"
                 color='info'
                 startIcon={<Iconify icon="eva:clock-fill" />}
-                sx={{
-                  bgcolor: 'info.main',
-                  mr: 1
-                }}
+                sx={{ bgcolor: 'info.main', mr: 1 }}
               >
                 Manage Available Schedules
               </Button>
@@ -380,6 +174,9 @@ export default function EquipmentList() {
             </NextLink></>
           }
         />
+        { !isEmpty(isTextAlert) && <Stack spacing={3} sx={{mb:3}}>
+          <Alert severity="error" onClose={() => {setIsTextAlert('')}}>{isTextAlert}</Alert>
+        </Stack>}
         <Card>
           <EquipmentToolbar
             filterName={filterName}
@@ -388,10 +185,7 @@ export default function EquipmentList() {
             onFilterRole={handleFilterRole}
             optionsRole={ROLE_OPTIONS}
           />
-
-          {/* <Divider /> */}
           <Scrollbar>
-
             <TableContainer sx={{ minWidth: 960, position: 'relative', overflow: 'unset' }}>
               <Table size={dense ? 'small' : 'medium'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
@@ -403,12 +197,7 @@ export default function EquipmentList() {
                 dense={dense}
                 numSelected={selected.length}
                 rowCount={tableData.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => get(row, 'eqId', ''))
-                  )
-                }
+                onSelectAllRows={() =>{}}
                 action={
                   <Tooltip title="Export selected to excel">
                     <IconButton color="primary" onClick={() => handleExportRows(selected)}>
@@ -431,20 +220,38 @@ export default function EquipmentList() {
                   order={order}
                   orderBy={orderBy}
                   headLabel={TABLE_HEAD}
-                  rowCount={tableData.length}
+                  // rowCount={selectAll?totalRecord:tableData.length}
+                  rowCount={selected.length}
                   numSelected={selected.length}
-                  onSort={onSort}
-                  onSelectAllRows={(checked) =>
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => get(row, 'eqId', ''))
-                    )
-                  }
+                  onSort={(id)=>{
+                    if (id === 'eqName') {
+                      GetEquipmentRead(filterRole, rowsPerPage, page, filterName, order==='asc')
+                      onSort(id)
+                    }
+                  }}
+                  onSelectAllRows={(checked) =>{
+                    const getEQ2All = (isChecked:boolean)=>{
+                      const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+                        page: 1, limit: 9999999, eqId: '', eqStatus: makeStatusCode(filterRole),
+                        eqSearch: filterName, eqSortName: false, eqSortCode: false,
+                      }
+                      fetchGetEquipmentRead(query).then(response => {
+                        if (response.code === 200000) {
+                          setIsTextAlert("")
+                          onSelectAllRows( isChecked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) 
+                        }
+                      }).catch(err => { setIsTextAlert(err.devMessage) })
+                    }
+                    if ( checked || (!checked && !isEmpty(selected) && selected.length!==totalRecord) ) {
+                      getEQ2All(true)
+                    }else{
+                      onSelectAllRows( checked, tableData.map((row) => get(row, 'eqId', '')) )
+                    }
+                    
+                  }}
                 />
                 <TableBody>
-                  {!isEmpty(dataFiltered) && dataFiltered
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
+                  {tableData.map((row, index) =>
                       row ? (
                         <EquipmentRow
                           key={get(row, 'eqId', '')}
@@ -469,8 +276,8 @@ export default function EquipmentList() {
             count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
+            onPageChange={(e, page) => GetEquipmentRead(filterRole, rowsPerPage, page, filterName)}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
         </Card>
       </Container>

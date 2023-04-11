@@ -27,17 +27,6 @@ export default function EquipmentScheduleCreateRow({
   onViewRow,
 
 }: Props) {
-  const theme = useTheme();
-
-  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpenMenuActions(event.currentTarget);
-  // };
-
-  // const handleCloseMenu = () => {
-  //   setOpenMenuActions(null);
-  // };
 
   return (
     <TableRow hover selected={selected} key={get(row, 'eqId', '-1')} onClick={onViewRow} sx={{ cursor: 'pointer' }}>
@@ -52,7 +41,7 @@ export default function EquipmentScheduleCreateRow({
           <Image
             disabledEffect
             alt={get(row, 'eqName', '')}
-            src={get(row, 'eqPicture[0].eqpicLink', '')}
+            src={get(row, 'eqPicture[0].eqpicLink', '/assets/icons/components/ic_default_img.svg')}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
           <Box sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', cursor: 'pointer' }} >

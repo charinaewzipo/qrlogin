@@ -1,6 +1,5 @@
 // next
-import { useState, useEffect, useCallback } from 'react'
-// next
+import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -10,16 +9,11 @@ import {
   Card,
   Table,
   Button,
-  Divider,
   TableBody,
   Container,
   TableContainer,
-  Tooltip,
-  IconButton,
-  TablePagination,
   Box,
   useTheme,
-  Drawer,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -30,62 +24,30 @@ import Scrollbar from '@sentry/components/scrollbar'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
-  TableSkeleton,
-  getComparator,
+  TablePaginationCustom,
 } from '@sentry/components/table'
-import { fetchGetAssessments } from '@ku/services/assessment'
+
 import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
-import EquipmentToolbar from '@ku/components/Equipment/EquipmentToolsbar'
-import EquipmentRow from '@ku/components/Equipment/EquipmentRow'
-import Image from '@sentry/components/image/Image'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { format } from 'date-fns'
-
+import { formatISO, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
-import { get } from 'lodash'
-import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats } from '@ku/services/equipment'
-
-
-const mockDataTable: IV1RespGetEquipmentUnavailableSchedule[] = [
-  {
-    equnavascheId: 123,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Full Day',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  },
-  {
-    equnavascheId: 1234,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Early morning',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  }, {
-    equnavascheId: 1235,
-    equnavascheCreatedByName: 'Simsimi ok',
-    equnavascheDays: 'Early morning',
-    equnavascheTimes: [0, 1],
-    equnavascheStatus: 'PENDING',
-    equnavascheCreatedAt: 1648435200,
-    equnavascheUpdatedAt: 1648435200,
-  },
-]
-const mockStats = {
-  upcomingCount: 2,
-  finishCount: 2,
+import { get, isEmpty, isNull, isUndefined } from 'lodash'
+import { fetchGetUnAvailableSchedule, fetchGetUnAvailableScheduleStats, fetchPostEquipmentUnavailableDelete } from '@ku/services/equipment'
+import { getTimeOfDay } from '@ku/utils/formatDate'
+import messages from '@ku/constants/response'
+import responseCode from '@ku/constants/responseCode'
+import { AxiosError } from 'axios'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+const initialScheduleStats = {
+  upcomingCount: 0,
+  finishCount: 0,
 }
+
 const TABLE_HEAD = [
   { id: 'activeDate', label: 'Active date', align: 'left', width: 150 },
   { id: 'time', label: 'Time', align: 'left' },
@@ -95,22 +57,14 @@ const TABLE_HEAD = [
   { id: 'button', label: '', align: 'left', width: 150 },
 ];
 
+
 EquipmentSchedulePage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 
 export default function EquipmentSchedulePage() {
   const {
     page,
-    order,
-    orderBy,
     rowsPerPage,
     setPage,
-    //
-    selected,
-    setSelected,
-    onSelectRow,
-    onSelectAllRows,
-    //
-    onSort,
     onChangePage,
     onChangeRowsPerPage,
   } = useTable();
@@ -118,67 +72,85 @@ export default function EquipmentSchedulePage() {
   const [tableData, setTableData] = useState<IV1RespGetEquipmentUnavailableSchedule[]>([])
   const [scheduleStats, setScheduleStats] = useState<IV1RespGetEquipmentUnavailableStatsSchedule>()
   const [openConfirmModal, setOpenConfirmModal] = useState(false)
-  const [filterStatus, setFilterStatus] = useState('upcoming')
+  const [filterStatus, setFilterStatus] = useState('PENDING')
   const [filterStartDate, setFilterStartDate] = useState<Date | null>(null);
   const [filterEndDate, setFilterEndDate] = useState<Date | null>(null);
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [detailSchedule, setDetailSchedule] = useState<IV1RespGetEquipmentUnavailableSchedule>(null)
+  const [totalRecord, setTotalRecord] = useState<number>(0);
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
-  useEffect(() => {
-    GetUnAvailableScheduleStats()
-    GetUnAvailableSchedule()
-  }, [])
-
-  const GetUnAvailableScheduleStats = async () => {
-    await fetchGetUnAvailableScheduleStats().then(response => {
-      if (response.code === 200) {
-        setScheduleStats(mockStats)
-        // setScheduleStats(response.data)
-      }
-    }).catch(err => {
-      console.log(err)
-    })
-  }
-  const GetUnAvailableSchedule = async () => {
-    const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
-      page: page,
-      limit: rowsPerPage,
-      startTime: '',
-      endTime: '',
-      status: filterStatus,
-    }
-    await fetchGetUnAvailableSchedule(query).then(response => {
-      if (response.code === 200) {
-        setTableData(mockDataTable)
-        // setStatusStat(response.data)
-      }
-    }).catch(err => {
-      console.log(err)
-    })
-  }
-
-
   const TABS = [
-
-    { value: 'upcoming', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
+    { value: 'PENDING', label: 'Upcoming', color: 'warning', count: get(scheduleStats, 'upcomingCount', 0) },
     {
-      value: 'Finish',
+      value: 'FINISH',
       label: 'Finish',
       color: 'default',
       count: get(scheduleStats, 'finishCount', 0),
     },
-
   ] as const
+  useEffect(() => {
+    clearTimeout(countDown);
+    setCountDown(
+      setTimeout(() => {
+        GetUnAvailableScheduleStats()
+        GetUnAvailableSchedule()
+      }, 1000)
+    );
+  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
 
-  const handleFilterStatus = (event: React.SyntheticEvent<Element, Event>, newValue: string) => {
-    setPage(0)
-    setFilterStatus(newValue)
-    console.log("filterStatus", filterStatus)
+  const GetUnAvailableScheduleStats = () => {
+    fetchGetUnAvailableScheduleStats().then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setScheduleStats(get(response, 'data', initialScheduleStats))
+      }
+    }).catch((err: AxiosError) => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
+  const GetUnAvailableSchedule = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
+      page: page + 1,
+      limit: rowsPerPage,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? formatISO(filterStartDate) : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? formatISO(filterEndDate) : null,
+      status: filterStatus as IEquipmentUnavailableStatus,
+    }
+    Object.keys(query).forEach(key => {
+      if (isNull(query[key]) || isUndefined(query[key])) {
+        delete query[key]
+      }
+    })
+    fetchGetUnAvailableSchedule(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableData(get(response, 'data.dataList', []))
+        setTotalRecord(get(response, 'data.totalRecord', 0))
+      }
+    }).catch((err: AxiosError) => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
   }
 
+  const PostEquipmentUnavailableDelete = () => {
+    const query: IV1PostEquipmentUnavailableDelete = {
+      equnavascheId: get(detailSchedule, 'equnavascheId', -1)
+    }
+    fetchPostEquipmentUnavailableDelete(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        enqueueSnackbar(`Cancelled schedule of ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`)
+      }
+    }).catch((err: AxiosError) => {
+      enqueueSnackbar(`Failled cancel schedule of ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
+
+    }).finally(() => {
+      GetUnAvailableScheduleStats()
+      GetUnAvailableSchedule()
+    })
+  }
   const handleViewRow = (id: number) => {
     push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id.toString()))
   };
@@ -190,11 +162,8 @@ export default function EquipmentSchedulePage() {
   }
   const handleOnClickModal = () => {
     setOpenConfirmModal(false)
-    get(detailSchedule, 'equnavascheStatus', '') === 'PENDING' ?
-      enqueueSnackbar(`Cancelled schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`)
-      : enqueueSnackbar(`Failled cancel schedule of ${format(new Date(get(detailSchedule, 'activeDate', new Date())), 'dd MMM yyyy')} (${get(detailSchedule, 'time', 'Full day')}).`, { variant: 'error' })
+    PostEquipmentUnavailableDelete()
   }
-  const isNotFound = (!tableData.length)
   return (
     <>
       <Head>
@@ -231,7 +200,10 @@ export default function EquipmentSchedulePage() {
         <Card>
           <Tabs
             value={filterStatus}
-            onChange={handleFilterStatus}
+            onChange={(event, newValue) => {
+              setPage(0)
+              setFilterStatus(newValue)
+            }}
             sx={{
               px: 2,
               bgcolor: 'background.neutral',
@@ -255,9 +227,11 @@ export default function EquipmentSchedulePage() {
             filterStartDate={filterStartDate}
             filterEndDate={filterEndDate}
             onFilterStartDate={(newValue) => {
+              setPage(0)
               setFilterStartDate(newValue);
             }}
             onFilterEndDate={(newValue) => {
+              setPage(0)
               setFilterEndDate(newValue);
             }}
           />
@@ -272,9 +246,8 @@ export default function EquipmentSchedulePage() {
                 />
 
                 <TableBody>
-                  {tableData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row) => {
+                  {!isEmpty(tableData) &&
+                    tableData.map((row) => {
                       return (
                         <EquipmentScheduleRow
                           key={get(row, 'equnavascheId', -1)}
@@ -284,20 +257,13 @@ export default function EquipmentSchedulePage() {
                         />
                       )
                     })}
-
-                  <TableEmptyRows
-                    emptyRows={emptyRows(page, rowsPerPage, tableData.length)}
-                  />
-
-                  <TableNoData isNotFound={isNotFound} />
+                  <TableNoData isNotFound={isEmpty(tableData)} />
                 </TableBody>
               </Table>
             </Scrollbar>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={tableData.length}
+          <TablePaginationCustom
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={onChangePage}
@@ -314,7 +280,8 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-              { sx: { mb: 0 }, text: `To cancel upcoming ${format((get(detailSchedule, 'equnavascheCreatedAt', new Date())), 'dd MMM yyyy  HH:mm:ss')} ${get(detailSchedule, 'equnavascheDays', 'Full day')} schedule` },
+
+              { sx: { mb: 0 }, text: `To cancel upcoming ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
               <Typography

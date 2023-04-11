@@ -8,12 +8,14 @@ import axios, {
 } from 'axios'
 import { API_URL } from '@ku/constants/config'
 import transformer from '@ku/utils/transformer'
+import { get, isEmpty } from 'lodash'
 
-const transformResponse: AxiosResponseTransformer = (data) => transformer.snakeToCamelcaseTransform(JSON.parse(data));
-const transformRequest: AxiosRequestTransformer  = (data) =>
-  JSON.stringify(transformer.camelToSnakecaseTransform(data));
+const transformResponse: AxiosResponseTransformer = (data) =>
+    transformer.snakeToCamelcaseTransform(JSON.parse(data))
+const transformRequest: AxiosRequestTransformer = (data) =>
+    JSON.stringify(transformer.camelToSnakecaseTransform(data))
 
-  const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
+const requestInterceptor = (config: AxiosRequestConfig): AxiosRequestConfig => {
     // const contentTypes = !isEmpty(get(config, 'headers.Content-Type', ''))
     //     ? get(config, 'headers.Content-Type', '')
     //     : 'application/json'
@@ -28,8 +30,8 @@ const transformRequest: AxiosRequestTransformer  = (data) =>
         //     ['Content-Type']: contentTypes,
         // },
     }
-      return configure
-  }
+    return configure
+}
 
 const responseInterceptor = (response: AxiosResponse<IResponse>): any => {
     const successResponse = transformer.response(response)
@@ -55,8 +57,8 @@ axiosInstance.interceptors.request.use(requestInterceptor, handleRequestError)
 axiosInstance.interceptors.response.use(responseInterceptor, handleResponseError)
 
 axiosInstance.defaults.headers.common['Accept'] = 'application/json'
-axiosInstance.defaults.headers.common.token = "U2FsdGVkX18SCQi6NdV6mJYacEMplhMDSbr83ezGJKw=";
-axiosInstance.defaults.headers['Content-Type'] = "application/json";
+axiosInstance.defaults.headers.common.token = 'U2FsdGVkX1/wL3FsoaDkGDWstgA874r0P0vfhZHLvRw='
+axiosInstance.defaults.headers['Content-Type'] = 'application/json'
 
 export const TOKEN_KEY = 'kusec-accesstoken'
 export const setSession = async (accessToken: string | null) => {
