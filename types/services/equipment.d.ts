@@ -141,3 +141,6 @@ interface IV1GetEquipmentMaintenanceRead {
     eqmtnPicCreatedAt: string
     eqmtnPicUpdatedAt: string
 }
+
+type TTypeOfChecked = '' | 'FIXED' | 'DEFAULT' | 'UNCHECK' | 'OPTIONAL'
+type TSubOptionType = '' | 'ONLY_ONE' | 'AT_LEAST_ONE'

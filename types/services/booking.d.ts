@@ -77,7 +77,7 @@ interface IV1EquipmentPrice {
     eqpUnitPer: string
     eqpCreatedAt: string
     eqpUpdatedAt: string
-    eqSubPrice: IV1EquipmentSubPrice[]
+    eqsubPrice: IV1EquipmentSubPrice[]
 }
 
 interface IV1EquipmentSubPrice {
@@ -102,9 +102,34 @@ interface IV1PostBookingPayments {
     payAmount: number
 }
 interface IV1QueyGetBookingMeRead {
-    startTime?: timestamp
-    endTime?: timestamp
+    startTime?: string
+    endTime?: string
     search?: string
     eqId?: number
     bookStatus: string
 }
+
+interface IV1PostBookingCreate {
+    eqId: number
+    eqPrices: IV1BookingEquipmentPrice[]
+    eqRtimDays: string
+    eqRtimTimes: number[]
+    payRemark: string
+    payBillingAddress: string
+    payMethod: TPaymentMethod
+}
+
+interface IV1BookingEquipmentPrice {
+    eqpscheId: number
+    eqpscheIsChecked: boolean
+    eqpQuantity: number
+    eqsubPrice: IV1BookingEquipmentSubPrice[] | null
+}
+
+interface IV1BookingEquipmentSubPrice {
+    eqsubpscheId: number
+    eqsubpIsChecked: boolean
+    eqsubpQuantity: number
+}
+
+type TPaymentMethod = '' | 'CASH__BANK_TRANSFER_QR_CODE' | 'DEBIT_DEPARTMENT'
