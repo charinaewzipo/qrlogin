@@ -1,6 +1,7 @@
 // next
 import { useState, useEffect, useMemo } from 'react'
 // next
+import React from 'react'
 import * as Yup from 'yup'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -44,12 +45,15 @@ import { RHFAutocomplete } from '@sentry/components/hook-form'
 import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
+import uuidv4 from '@sentry/utils/uuidv4'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+
 
 
 const TIME_OPTIONS = [
-  'Ealry morning (7:00 - 12:59)',
-  'Afternoon (13:00 - 22:00)',
-  'Full day (7:00 - 22:00)',
+  { label: 'Ealry morning (7:00 - 12:59)', value: [7, 8, 9, 10, 11, 12] },
+  { label: 'Afternoon (13:00 - 22:00)', value: [13, 14, 15, 16, 17, 18, 19, 20, 21, 22] },
+  { label: 'Full day (7:00 - 22:00)', value: [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22] },
 ];
 const TABLE_HEAD = [
   { id: 'eqName', label: 'Equipment', align: 'left' },
@@ -156,19 +160,12 @@ export default function EquipmentScheduleCreatePage() {
     })
   }
   const PostEquipmentCreate = (data: FormValuesProps) => {
-    const mapTimeToArray = () => {
-      if (data.time === 'Ealry morning (7:00 - 12:59)') {
-        return [7, 8, 9, 10, 11, 12]
-      } else if (data.time === 'Afternoon (13:00 - 22:00)') {
-        return [13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
-      } else return [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
-    }
+    const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
       date: !isNull(data.date) && isValid(data.date) ? formatISO(data.date) : null,
-      times: mapTimeToArray(),
+      times: mapTime.value,
       eqId: ArrayEqID,
-      // status: "PENDING",
     }
 
     fetchPostEquipmentUnavailableCreate(query).then(response => {
@@ -201,7 +198,6 @@ export default function EquipmentScheduleCreatePage() {
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       PostEquipmentCreate(data)
-
     }
   }
 
@@ -209,23 +205,23 @@ export default function EquipmentScheduleCreatePage() {
     return (
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
-        {selected.map((id) => {
+        {selected.map((id, index) => {
           const Data = isSelectAllRows ? tableAllData : tableData
           const findData = Data.find(i => i.eqId === id)
           return (
-            <>
+            <React.Fragment key={index}>
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={get(findData, 'eqPicture[0].eqpicLink', '')} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
                   label={get(findData, 'eqName', '')}
-                  key={id}
+                  key={`${id}`}
                   sx={{ m: 0.5 }}
                   color='primary'
                   onDelete={() => onSelectRow(id)}
                 />
               }
-            </>
+            </React.Fragment>
           )
         })}
       </Box>
@@ -295,12 +291,10 @@ export default function EquipmentScheduleCreatePage() {
                   value={value}
                   disablePortal
                   disableClearable
-                  isOptionEqualToValue={(option, value) => option === value}
-                  options={TIME_OPTIONS.map((option) => option)}
+                  options={TIME_OPTIONS.map((option) => option.label)}
                   onChange={(event, newValue) => {
                     onChange(() => setValue('time', `${newValue}`))
-                  }
-                  }
+                  }}
                   renderInput={(params) => (
                     <TextField {...params}
                       label="Time"
@@ -410,7 +404,7 @@ export default function EquipmentScheduleCreatePage() {
               type="submit"
               variant="contained"
               onClick={() => {
-                if (selected.length === 0) {
+                if (!selected.length) {
                   setIsErrorSelectEquipment(true)
                 }
               }}
