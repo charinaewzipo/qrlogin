@@ -33,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { formatISO, isValid } from 'date-fns'
+import { isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
@@ -43,6 +43,7 @@ import messages from '@ku/constants/response'
 import responseCode from '@ku/constants/responseCode'
 import { AxiosError } from 'axios'
 import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+import { fDateTimeFormatAPI } from '@ku/utils/formatDate'
 const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
@@ -126,8 +127,8 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page + 1,
       limit: rowsPerPage,
-      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? formatISO(filterStartDate) : null,
-      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? formatISO(filterEndDate) : null,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormatAPI(filterStartDate) : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormatAPI(filterEndDate) : null,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
     Object.keys(query).forEach(key => {
