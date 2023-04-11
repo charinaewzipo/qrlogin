@@ -15,6 +15,8 @@ import {
   IconButton,
   TablePagination,
   useTheme,
+  Alert,
+  Stack,
 } from '@mui/material'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -74,6 +76,8 @@ export default function EquipmentList() {
 
   const [filterName, setFilterName] = useState('');
   const [filterRole, setFilterRole] = useState('all');
+  
+  const [isTextAlert, setIsTextAlert] = useState('');
 
   const theme = useTheme()
   const { push } = useRouter()
@@ -100,7 +104,7 @@ export default function EquipmentList() {
         setTotalRecord(response.data.totalRecord || 0)
       }
     }).catch(err => {
-      console.log(err)
+      setIsTextAlert(err.devMessage)
     })
   }
 
@@ -170,6 +174,9 @@ export default function EquipmentList() {
             </NextLink></>
           }
         />
+        { !isEmpty(isTextAlert) && <Stack spacing={3} sx={{mb:3}}>
+          <Alert severity="error" onClose={() => {setIsTextAlert('')}}>{isTextAlert}</Alert>
+        </Stack>}
         <Card>
           <EquipmentToolbar
             filterName={filterName}
@@ -230,7 +237,7 @@ export default function EquipmentList() {
                       }
                       fetchGetEquipmentRead(query).then(response => {
                         if (response.code === 200000) { onSelectAllRows( isChecked, response.data.dataList.map((row) => get(row, 'eqId', '')) ) }
-                      }).catch(err => { console.log(err) })
+                      }).catch(err => { setIsTextAlert(err.devMessage) })
                     }
                     if ( checked || (!checked && !isEmpty(selected) && selected.length!==totalRecord) ) {
                       getEQ2All(true)
