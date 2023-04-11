@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -91,15 +91,26 @@ export default function EquipmentSchedulePage() {
       count: get(scheduleStats, 'finishCount', 0),
     },
   ] as const
+
+
+  const mounted = useRef(false);
   useEffect(() => {
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetUnAvailableScheduleStats()
-        GetUnAvailableSchedule()
-      }, 1000)
-    );
-  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
+    if (!mounted.current) {
+      // do componentDidMount logic
+      mounted.current = true
+      GetUnAvailableScheduleStats()
+      GetUnAvailableSchedule()
+    } else {
+      // do componentDidUpdate logic
+      clearTimeout(countDown);
+      setCountDown(
+        setTimeout(() => {
+          GetUnAvailableScheduleStats()
+          GetUnAvailableSchedule()
+        }, 1000)
+      );
+    }
+  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus]);
 
   const GetUnAvailableScheduleStats = () => {
     fetchGetUnAvailableScheduleStats().then(response => {

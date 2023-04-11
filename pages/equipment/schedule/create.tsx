@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 // next
 import React from 'react'
 import * as Yup from 'yup'
@@ -93,23 +93,29 @@ export default function EquipmentScheduleCreatePage() {
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
+  const mounted = useRef(false);
+  useEffect(() => {
+    if (!mounted.current) {
+      // do componentDidMount logic
+      mounted.current = true
+      GetEquipmentRead()
+    } else {
+      // do componentDidUpdate logic
+      clearTimeout(countDown);
+      setCountDown(
+        setTimeout(() => {
+          GetEquipmentRead()
+        }, 1000)
+      );
+    }
+  }, [page, rowsPerPage, filterSearchEquipment]);
+
   useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
 
-  useEffect(() => {
-
-  }, [])
-  useEffect(() => {
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
-  }, [page, rowsPerPage, filterSearchEquipment])
 
   const EquipmentScheduleScheme = Yup.object().shape({
     date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
