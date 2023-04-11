@@ -37,7 +37,7 @@ import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
 import FormProvider from '@sentry/components/hook-form/FormProvider'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, ErrorOption, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete } from '@sentry/components/hook-form'
@@ -180,11 +180,14 @@ export default function EquipmentScheduleCreatePage() {
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
-      enqueueSnackbar(errorMessage, { variant: 'error' })
+      const errorOptions: ErrorOption = {
+        message: errorMessage
+      }
+      setError('afterSubmit', errorOptions)
     })
   }
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
+    onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setPage(0)
@@ -197,12 +200,8 @@ export default function EquipmentScheduleCreatePage() {
 
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
-      try {
-        PostEquipmentCreate(data)
-      } catch (error) {
-        const errorMessage = get(messages, error.code, messages[0])
-        setError('afterSubmit', errorMessage)
-      }
+      PostEquipmentCreate(data)
+
     }
   }
 
