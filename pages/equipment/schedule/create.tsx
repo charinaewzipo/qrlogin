@@ -47,6 +47,7 @@ import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 import { TIME_OPTIONS } from '@ku/constants/variables'
 import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+import uuidv4 from '@sentry/utils/uuidv4'
 
 
 const TABLE_HEAD = [
@@ -221,7 +222,7 @@ export default function EquipmentScheduleCreatePage() {
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}`} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
                   label={get(findData, 'eqName', '')}
                   key={`${id}`}
                   sx={{ m: 0.5 }}
@@ -342,8 +343,7 @@ export default function EquipmentScheduleCreatePage() {
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {
-                    const callDebounce = debounce((pageToGo: number, limit: number, search: string,) => { GetEquipmentRead(pageToGo, limit, search, order === 'asc') }, 1000)
-                    callDebounce(page, rowsPerPage, filterSearchEquipment)
+                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
                     onSort(id)
                   }
                 }}
