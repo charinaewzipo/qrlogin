@@ -1,4 +1,3 @@
-import { formatToTimeZone } from 'date-fns-timezone'
 export const getTimeOfDay = (timeArray: number[]) => {
     const timeDay = {
         Early_morning: [7, 8, 9, 10, 11, 12],
@@ -12,10 +11,4 @@ export const getTimeOfDay = (timeArray: number[]) => {
     } else if (timeArray.every((i) => timeDay.Full_Day.includes(i))) {
         return 'Full Day'
     } else return 'Early morning'
-}
-export function fDateTimeFormatAPI(date?: Date | string | number) {
-    if (!date) {
-        return ''
-    }
-    return formatToTimeZone(new Date(date), 'YYYY-MM-DDT00:00:00', { timeZone: 'UTC' })
 }

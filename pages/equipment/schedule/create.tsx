@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 // next
 import React from 'react'
 import * as Yup from 'yup'
@@ -45,9 +45,8 @@ import { RHFAutocomplete } from '@sentry/components/hook-form'
 import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
 import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
-import uuidv4 from '@sentry/utils/uuidv4'
-import { fDateTimeFormatAPI } from '@ku/utils/formatDate'
 import { TIME_OPTIONS } from '@ku/constants/variables'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 
 
 const TABLE_HEAD = [
@@ -69,7 +68,6 @@ export default function EquipmentScheduleCreatePage() {
     rowsPerPage,
     setRowsPerPage,
     setPage,
-
     //
     selected,
     setSelected,
@@ -77,8 +75,6 @@ export default function EquipmentScheduleCreatePage() {
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
@@ -172,7 +168,7 @@ export default function EquipmentScheduleCreatePage() {
     const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
-      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormatAPI(data.date) : null,
+      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
       times: mapTime.value,
       eqId: ArrayEqID,
     }
@@ -199,7 +195,6 @@ export default function EquipmentScheduleCreatePage() {
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
-
   }
   const handleOnclickCancel = () => {
     reset()
@@ -210,7 +205,6 @@ export default function EquipmentScheduleCreatePage() {
     setRowsPerPage(limit)
     GetEquipmentRead(0, limit, filterSearchEquipment)
   }
-
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       PostEquipmentCreate(data)
@@ -241,8 +235,6 @@ export default function EquipmentScheduleCreatePage() {
       </Box>
     )
   }, [selected])
-
-
   return (
     <>
       <Head>

@@ -43,7 +43,6 @@ import messages from '@ku/constants/response'
 import responseCode from '@ku/constants/responseCode'
 import { AxiosError } from 'axios'
 import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
-import { fDateTimeFormatAPI } from '@ku/utils/formatDate'
 const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
@@ -127,8 +126,8 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page + 1,
       limit: rowsPerPage,
-      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormatAPI(filterStartDate) : null,
-      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormatAPI(filterEndDate) : null,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormat(filterStartDate, 'YYYY-MM-DDT00:00:00') : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormat(filterEndDate, 'YYYY-MM-DDT00:00:00') : null,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
     Object.keys(query).forEach(key => {
