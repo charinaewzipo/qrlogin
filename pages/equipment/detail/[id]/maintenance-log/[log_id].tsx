@@ -78,7 +78,7 @@ export function MaintenanceLogEdit() {
                     setMaintenanceData({
                         descriptions: get(apiData, 'eqmtnDescription', ''),
                         cost: fNumber(get(apiData, 'eqmtnCost', '')),
-                        date: fDateTimeFormat(get(apiData, 'eqmtnDate', ''), 'dd MMM yyyy'),
+                        date: fDateTimeFormat(get(apiData, 'eqmtnDate', ''), 'DD MMM YYYY'),
                         maintenanceFiles: [],
                     })
                     const maintenanceFiles = await getFileFromUrl(get(apiData, 'eqmtnpicLink', ''))
