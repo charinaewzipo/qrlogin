@@ -86,28 +86,24 @@ export default function EquipmentScheduleCreatePage() {
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
   const [totalRecord, setTotalRecord] = useState<number>(0);
-  const [isSelectAllRows, setIsSelectAllRows] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
-
-
   useEffect(() => {
     GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+    getEQ2All()
     return debouncedCallback.cancel
   }, [])
-
   useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
-
   useEffect(() => {
     callBackTimeout(0, rowsPerPage, filterSearchEquipment)
-
   }, [filterSearchEquipment])
+
   const EquipmentScheduleScheme = Yup.object().shape({
     date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
@@ -158,6 +154,20 @@ export default function EquipmentScheduleCreatePage() {
       enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
+  const getEQ2All = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: 1, limit: 9999999,
+      eqSortName: false, eqSortCode: false,
+    }
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableAllData(get(response, 'data.dataList', []))
+      }
+    }).catch(err => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
   const PostEquipmentCreate = (data: FormValuesProps) => {
     const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
@@ -166,7 +176,6 @@ export default function EquipmentScheduleCreatePage() {
       times: mapTime.value,
       eqId: ArrayEqID,
     }
-
     fetchPostEquipmentUnavailableCreate(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
         reset()
@@ -185,13 +194,12 @@ export default function EquipmentScheduleCreatePage() {
 
   const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
   const callBackTimeout = useCallback(debouncedCallback, [])
-
   const handleViewRow = (id: string) => {
     onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
-
     setFilterSearchEquipment(event.target.value);
+
   }
   const handleOnclickCancel = () => {
     reset()
@@ -208,14 +216,12 @@ export default function EquipmentScheduleCreatePage() {
       PostEquipmentCreate(data)
     }
   }
-
-  const RenderChips = (): JSX.Element => {
+  const RenderChips = useMemo(() => {
     return (
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
         {selected.map((id, index) => {
-          const Data = isSelectAllRows ? tableAllData : tableData
-          const findData = Data.find(i => i.eqId === id)
+          const findData = tableAllData.find(i => i.eqId === id)
           return (
             <React.Fragment key={index}>
               {!isEmpty(findData) &&
@@ -234,7 +240,9 @@ export default function EquipmentScheduleCreatePage() {
         })}
       </Box>
     )
-  }
+  }, [selected])
+
+
   return (
     <>
       <Head>
@@ -313,7 +321,7 @@ export default function EquipmentScheduleCreatePage() {
               )}
             />
           </Stack>
-          <RenderChips />
+          {RenderChips}
           <Box sx={{ px: 4, py: 2 }}>
             <TextField
               fullWidth
@@ -342,29 +350,14 @@ export default function EquipmentScheduleCreatePage() {
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {
-                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
+                    const callDebounce = debounce((pageToGo: number, limit: number, search: string,) => { GetEquipmentRead(pageToGo, limit, search, order === 'asc') }, 1000)
+                    callDebounce(page, rowsPerPage, filterSearchEquipment)
                     onSort(id)
                   }
                 }}
                 onSelectAllRows={(checked) => {
-                  const getEQ2All = (isChecked: boolean) => {
-                    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-                      page: 1, limit: 9999999,
-                      eqSortName: false, eqSortCode: false,
-                    }
-                    fetchGetEquipmentRead(query).then(response => {
-                      if (response.code === responseCode.OK_CODE) {
-                        setIsSelectAllRows(true)
-                        setTableAllData(get(response, 'data.dataList', []))
-                        onSelectAllRows(isChecked, get(response, 'data.dataList', []).map((row) => get(row, 'eqId', '')))
-                      }
-                    }).catch(err => {
-                      const errorMessage = get(messages, err.code, messages[0])
-                      enqueueSnackbar(errorMessage, { variant: 'error' })
-                    })
-                  }
                   if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
-                    getEQ2All(true)
+                    onSelectAllRows(checked, tableAllData.map((row) => get(row, 'eqId', '')))
                   } else {
                     onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
                   }
