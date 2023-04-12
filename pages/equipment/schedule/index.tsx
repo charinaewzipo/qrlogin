@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import NextLink from 'next/link'
 import { useRouter } from 'next/router'
@@ -33,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { formatISO, isValid } from 'date-fns'
+import { isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
@@ -91,15 +91,26 @@ export default function EquipmentSchedulePage() {
       count: get(scheduleStats, 'finishCount', 0),
     },
   ] as const
+
+
+  const mounted = useRef(false);
   useEffect(() => {
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetUnAvailableScheduleStats()
-        GetUnAvailableSchedule()
-      }, 1000)
-    );
-  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus])
+    if (!mounted.current) {
+      // do componentDidMount logic
+      mounted.current = true
+      GetUnAvailableScheduleStats()
+      GetUnAvailableSchedule()
+    } else {
+      // do componentDidUpdate logic
+      clearTimeout(countDown);
+      setCountDown(
+        setTimeout(() => {
+          GetUnAvailableScheduleStats()
+          GetUnAvailableSchedule()
+        }, 1000)
+      );
+    }
+  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus]);
 
   const GetUnAvailableScheduleStats = () => {
     fetchGetUnAvailableScheduleStats().then(response => {
@@ -115,8 +126,8 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page + 1,
       limit: rowsPerPage,
-      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? formatISO(filterStartDate) : null,
-      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? formatISO(filterEndDate) : null,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormat(filterStartDate, 'YYYY-MM-DDT00:00:00') : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormat(filterEndDate, 'YYYY-MM-DDT00:00:00') : null,
       status: filterStatus as IEquipmentUnavailableStatus,
     }
     Object.keys(query).forEach(key => {

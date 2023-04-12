@@ -1,6 +1,7 @@
 // next
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 // next
+import React from 'react'
 import * as Yup from 'yup'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
@@ -32,26 +33,25 @@ import {
   TablePaginationCustom,
 } from '@sentry/components/table'
 import { useSnackbar } from 'notistack'
-import { addDays, formatISO, isValid } from 'date-fns'
+import { addDays, isValid, } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
 import FormProvider from '@sentry/components/hook-form/FormProvider'
-import { Controller, useForm, ErrorOption } from 'react-hook-form'
+import { Controller, ErrorOption, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete } from '@sentry/components/hook-form'
 import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
-import { get, isEmpty, isNull, isUndefined } from 'lodash'
+import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
+import { TIME_OPTIONS } from '@ku/constants/variables'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+import uuidv4 from '@sentry/utils/uuidv4'
 
-const TIME_OPTIONS = [
-  'Ealry morning (7:00 - 12:59)',
-  'Afternoon (13:00 - 22:00)',
-  'Full day (7:00 - 22:00)',
-];
+
 const TABLE_HEAD = [
-  { id: 'name', label: 'Equipment', align: 'left' },
+  { id: 'eqName', label: 'Equipment', align: 'left' },
 ];
 type FormValuesProps = {
   date: Date | null,
@@ -67,6 +67,7 @@ export default function EquipmentScheduleCreatePage() {
     order,
     orderBy,
     rowsPerPage,
+    setRowsPerPage,
     setPage,
     //
     selected,
@@ -75,47 +76,33 @@ export default function EquipmentScheduleCreatePage() {
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
   const [tableAllData, setTableAllData] = useState<IV1PostEquipmentRead[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
   const [totalRecord, setTotalRecord] = useState<number>(0);
-  const [isSelectAllRows, setIsSelectAllRows] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
   useEffect(() => {
+    GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+    getEQ2All()
+    return debouncedCallback.cancel
+  }, [])
+  useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
-
   useEffect(() => {
-    // setPage(0)
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
-  }, [page, rowsPerPage, filterSearchEquipment])
+    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
+  }, [filterSearchEquipment])
 
-  useEffect(() => {
-    if (!isEmpty(tableAllData)) {
-      onSelectAllRows(
-        true,
-        tableAllData.map((row) => get(row, 'eqId', ''))
-      )
-    }
-  }, [tableAllData])
   const EquipmentScheduleScheme = Yup.object().shape({
-    date: Yup.date().nullable().required('Date is require'),
+    date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
   })
   const defaultValues: FormValuesProps = useMemo(
@@ -131,22 +118,21 @@ export default function EquipmentScheduleCreatePage() {
   })
   const {
     reset,
-    watch,
     control,
     setValue,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods
 
-  const GetEquipmentRead = async (isSelectAll: boolean = false) => {
+  const GetEquipmentRead = (pageToGo: number, limit: number, search: string, isSortName: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page + 1,
-      limit: isSelectAll ? 9999 : rowsPerPage,
+      page: pageToGo + 1,
+      limit: limit,
       eqId: '',
       eqStatus: '',
-      eqSearch: filterSearchEquipment,
-      eqSortName: false,
+      eqSearch: search,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
     Object.keys(query).forEach(key => {
@@ -154,52 +140,59 @@ export default function EquipmentScheduleCreatePage() {
         delete query[key]
       }
     })
-    await fetchGetEquipmentRead(query).then(response => {
+    fetchGetEquipmentRead(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
-        if (isSelectAll) {
-          setTableAllData(get(response, 'data.dataList', []))
-        } else {
-
-          setTableData(get(response, 'data.dataList', []))
-        }
+        setTableData(get(response, 'data.dataList', []))
         setTotalRecord(get(response, 'data.totalRecord', 0))
+        setPage(pageToGo)
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
       enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
-  const PostEquipmentCreate = async (data: FormValuesProps) => {
-    const mapTimeToArray = () => {
-      if (data.time === 'Ealry morning (7:00 - 12:59)') {
-        return [7, 8, 9, 10, 11, 12]
-      } else if (data.time === 'Afternoon (13:00 - 22:00)') {
-        return [13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
-      } else return [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22]
+  const getEQ2All = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: 1, limit: 9999999,
+      eqSortName: false, eqSortCode: false,
     }
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableAllData(get(response, 'data.dataList', []))
+      }
+    }).catch(err => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
+  const PostEquipmentCreate = (data: FormValuesProps) => {
+    const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
-      date: !isNull(data.date) && isValid(data.date) ? formatISO(data.date) : null,
-      times: mapTimeToArray(),
+      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
+      times: mapTime.value,
       eqId: ArrayEqID,
-      // status: "PENDING",
     }
-    console.log("selected", selected)
-    console.log("query", query)
-    await fetchPostEquipmentUnavailableCreate(query).then(response => {
+    fetchPostEquipmentUnavailableCreate(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
-        // push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
+        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
         enqueueSnackbar('Create schedule success.')
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
-      enqueueSnackbar(errorMessage, { variant: 'error' })
+      const errorOptions: ErrorOption = {
+        message: errorMessage
+      }
+      setError('afterSubmit', errorOptions)
     })
   }
+
+  const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
+  const callBackTimeout = useCallback(debouncedCallback, [])
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
+    onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
@@ -208,46 +201,41 @@ export default function EquipmentScheduleCreatePage() {
     reset()
     setSelected([])
   }
-  const handleSelectAllRows = () => {
-    GetEquipmentRead(true)
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const limit = parseInt(event.target.value, 10)
+    setRowsPerPage(limit)
+    GetEquipmentRead(0, limit, filterSearchEquipment)
   }
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
-      try {
-        console.log("onSubmit", data)
-        PostEquipmentCreate(data)
-      } catch (error) {
-        const errorMessage = get(messages, error.code, messages[0])
-        setError('afterSubmit', errorMessage)
-      }
+      PostEquipmentCreate(data)
     }
   }
-
-  const RenderChips = (): JSX.Element => {
+  const RenderChips = useMemo(() => {
     return (
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
-        {selected.map((id) => {
-          const findData = tableData.find(i => i.eqId === id)
+        {selected.map((id, index) => {
+          const findData = tableAllData.find(i => i.eqId === id)
           return (
-            <>
+            <React.Fragment key={index}>
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={get(findData, 'eqPicture[0].eqpicLink', '')} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
                   label={get(findData, 'eqName', '')}
-                  key={id}
+                  key={`${id}`}
                   sx={{ m: 0.5 }}
                   color='primary'
                   onDelete={() => onSelectRow(id)}
                 />
               }
-            </>
+            </React.Fragment>
           )
         })}
       </Box>
     )
-  }
+  }, [selected])
   return (
     <>
       <Head>
@@ -312,12 +300,10 @@ export default function EquipmentScheduleCreatePage() {
                   value={value}
                   disablePortal
                   disableClearable
-                  isOptionEqualToValue={(option, value) => option === value}
-                  options={TIME_OPTIONS.map((option) => option)}
+                  options={TIME_OPTIONS.map((option) => option.label)}
                   onChange={(event, newValue) => {
                     onChange(() => setValue('time', `${newValue}`))
-                  }
-                  }
+                  }}
                   renderInput={(params) => (
                     <TextField {...params}
                       label="Time"
@@ -328,7 +314,7 @@ export default function EquipmentScheduleCreatePage() {
               )}
             />
           </Stack>
-          <RenderChips />
+          {RenderChips}
           <Box sx={{ px: 4, py: 2 }}>
             <TextField
               fullWidth
@@ -345,48 +331,46 @@ export default function EquipmentScheduleCreatePage() {
               }}
             />
           </Box>
+
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
             <Table>
               <TableHeadCustom
                 sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
+                order={order}
+                orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
+                rowCount={selected.length}
                 numSelected={selected.length}
-                onSelectAllRows={(checked) => {
-                  console.log("checked", checked)
-                  if (checked) {
-                    handleSelectAllRows()
-                    onSelectAllRows(
-                      checked,
-                      tableAllData.map((row) => get(row, 'eqId', ''))
-                    )
-                  } else {
-                    onSelectAllRows(
-                      checked,
-                      tableData.map((row) => get(row, 'eqId', ''))
-                    )
+                onSort={(id) => {
+                  if (id === 'eqName') {
+                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
+                    onSort(id)
                   }
-                }
-                }
-              />
+                }}
+                onSelectAllRows={(checked) => {
+                  if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
+                    onSelectAllRows(checked, tableAllData.map((row) => get(row, 'eqId', '')))
+                  } else {
+                    onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
+                  }
 
+                }}
+              />
               <TableBody>
                 {!isEmpty(tableData) &&
-                  tableData
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) =>
-                      row ? (
-                        <EquipmentScheduleCreateRow
-                          key={get(row, 'eqId', '')}
-                          row={row}
-                          selected={selected.includes(get(row, 'eqId', ''))}
-                          onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
-                          onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
-                        />
-                      ) : (
-                        !isEmpty(tableData) && <TableSkeleton key={index} />
-                      )
-                    )}
+                  tableData.map((row, index) =>
+                    row ? (
+                      <EquipmentScheduleCreateRow
+                        key={get(row, 'eqId', '')}
+                        row={row}
+                        selected={selected.includes(get(row, 'eqId', ''))}
+                        onSelectRow={() => onSelectRow(get(row, 'eqId', ''))}
+                        onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
+                      />
+                    ) : (
+                      !isEmpty(tableData) && <TableSkeleton key={index} />
+                    )
+                  )}
                 <TableNoData isNotFound={isEmpty(tableData)} />
               </TableBody>
             </Table>
@@ -395,8 +379,8 @@ export default function EquipmentScheduleCreatePage() {
             count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
+            onPageChange={(e, page) => GetEquipmentRead(page, rowsPerPage, filterSearchEquipment)}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
@@ -413,7 +397,7 @@ export default function EquipmentScheduleCreatePage() {
               type="submit"
               variant="contained"
               onClick={() => {
-                if (selected.length === 0) {
+                if (!selected.length) {
                   setIsErrorSelectEquipment(true)
                 }
               }}
