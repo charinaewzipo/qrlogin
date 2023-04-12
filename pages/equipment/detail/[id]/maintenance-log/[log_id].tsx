@@ -11,7 +11,7 @@ import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
 import { CustomFile } from '@sentry/components/upload'
 import { fNumber } from '@sentry/utils/formatNumber'
-import { format, formatISO, parseISO } from 'date-fns'
+import { formatISO } from 'date-fns'
 import axios, { AxiosError } from 'axios'
 import { get } from 'lodash'
 import { fileNameByUrl } from '@sentry/components/file-thumbnail'
@@ -19,6 +19,7 @@ import { fetchGetEquipmentMaintenanceRead, postEquipmentMaintenanceUpdate } from
 import numeral from 'numeral'
 import messages from '@ku/constants/response'
 import codes from '@ku/constants/responseCode'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 
 MaintenanceLogEdit.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
@@ -77,7 +78,7 @@ export function MaintenanceLogEdit() {
                     setMaintenanceData({
                         descriptions: get(apiData, 'eqmtnDescription', ''),
                         cost: fNumber(get(apiData, 'eqmtnCost', '')),
-                        date: format(parseISO(get(apiData, 'eqmtnDate', '').replace('Z', '')), 'dd MMM yyyy'),
+                        date: fDateTimeFormat(get(apiData, 'eqmtnDate', ''), 'dd MMM yyyy'),
                         maintenanceFiles: [],
                     })
                     const maintenanceFiles = await getFileFromUrl(get(apiData, 'eqmtnpicLink', ''))
