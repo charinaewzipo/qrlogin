@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react'
 // next
 import React from 'react'
 import * as Yup from 'yup'
@@ -43,7 +43,7 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete } from '@sentry/components/hook-form'
 import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
-import { get, isEmpty, isNull, isUndefined } from 'lodash'
+import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 import uuidv4 from '@sentry/utils/uuidv4'
 import { fDateTimeFormatAPI } from '@ku/utils/formatDate'
@@ -67,7 +67,9 @@ export default function EquipmentScheduleCreatePage() {
     order,
     orderBy,
     rowsPerPage,
+    setRowsPerPage,
     setPage,
+
     //
     selected,
     setSelected,
@@ -82,7 +84,6 @@ export default function EquipmentScheduleCreatePage() {
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
   const [tableAllData, setTableAllData] = useState<IV1PostEquipmentRead[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
   const [totalRecord, setTotalRecord] = useState<number>(0);
   const [isSelectAllRows, setIsSelectAllRows] = useState(false)
@@ -90,22 +91,12 @@ export default function EquipmentScheduleCreatePage() {
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
-  const mounted = useRef(false);
+
+
   useEffect(() => {
-    if (!mounted.current) {
-      // do componentDidMount logic
-      mounted.current = true
-      GetEquipmentRead()
-    } else {
-      // do componentDidUpdate logic
-      clearTimeout(countDown);
-      setCountDown(
-        setTimeout(() => {
-          GetEquipmentRead()
-        }, 1000)
-      );
-    }
-  }, [page, rowsPerPage, filterSearchEquipment]);
+    GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+    return debouncedCallback.cancel
+  }, [])
 
   useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
@@ -113,7 +104,10 @@ export default function EquipmentScheduleCreatePage() {
     }
   }, [selected])
 
+  useEffect(() => {
+    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
 
+  }, [filterSearchEquipment])
   const EquipmentScheduleScheme = Yup.object().shape({
     date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
@@ -138,13 +132,13 @@ export default function EquipmentScheduleCreatePage() {
     formState: { errors },
   } = methods
 
-  const GetEquipmentRead = (isSortName: boolean = false) => {
+  const GetEquipmentRead = (pageToGo: number, limit: number, search: string, isSortName: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page + 1,
-      limit: rowsPerPage,
+      page: pageToGo + 1,
+      limit: limit,
       eqId: '',
       eqStatus: '',
-      eqSearch: filterSearchEquipment,
+      eqSearch: search,
       eqSortName: isSortName,
       eqSortCode: false,
     }
@@ -157,6 +151,7 @@ export default function EquipmentScheduleCreatePage() {
       if (response.code === responseCode.OK_CODE) {
         setTableData(get(response, 'data.dataList', []))
         setTotalRecord(get(response, 'data.totalRecord', 0))
+        setPage(pageToGo)
       }
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
@@ -187,16 +182,25 @@ export default function EquipmentScheduleCreatePage() {
       setError('afterSubmit', errorOptions)
     })
   }
+
+  const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
+  const callBackTimeout = useCallback(debouncedCallback, [])
+
   const handleViewRow = (id: string) => {
     onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setPage(0)
+
     setFilterSearchEquipment(event.target.value);
   }
   const handleOnclickCancel = () => {
     reset()
     setSelected([])
+  }
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const limit = parseInt(event.target.value, 10)
+    setRowsPerPage(limit)
+    GetEquipmentRead(0, limit, filterSearchEquipment)
   }
 
   const onSubmit = async (data: FormValuesProps) => {
@@ -217,7 +221,7 @@ export default function EquipmentScheduleCreatePage() {
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}`} />}
                   label={get(findData, 'eqName', '')}
                   key={`${id}`}
                   sx={{ m: 0.5 }}
@@ -338,7 +342,7 @@ export default function EquipmentScheduleCreatePage() {
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {
-                    GetEquipmentRead(order === 'asc')
+                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
                     onSort(id)
                   }
                 }}
@@ -390,8 +394,8 @@ export default function EquipmentScheduleCreatePage() {
             count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
+            onPageChange={(e, page) => GetEquipmentRead(page, rowsPerPage, filterSearchEquipment)}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
