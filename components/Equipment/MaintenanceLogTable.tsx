@@ -34,25 +34,15 @@ function MaintenanceLogTable({
     onPageChange,
 }: Props) {
     const TABLE_HEAD = [
-        { id: 'Date', label: 'Date', align: 'left' },
+        { id: 'Date', label: 'Date', align: 'left', width: 140 },
         { id: 'Cost', label: 'Cost', align: 'right' },
         { id: 'File', label: 'File', align: 'center' },
         { id: 'Descriptions', label: 'Descriptions', align: 'left' },
-        { id: 'Create date', label: 'Create date', align: 'left' },
+        { id: 'Create date', label: 'Create date', align: 'left', width: 210 },
     ]
     const {
         page,
-        order,
-        orderBy,
         rowsPerPage,
-        setPage,
-        //
-        selected,
-        setSelected,
-        onSelectRow,
-        onSelectAllRows,
-        //
-        onSort,
         onChangePage,
         onChangeRowsPerPage,
     } = useTable()
@@ -116,7 +106,6 @@ function MaintenanceLogTable({
 
                             <TableBody>
                                 {maintenanceLogsData
-                                    // .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                     .map((row) => {
                                         return (
                                             <MaintenanceLogRow
