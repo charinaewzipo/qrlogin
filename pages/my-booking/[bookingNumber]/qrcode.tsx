@@ -6,16 +6,8 @@ import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { useState } from 'react'
 import BookDetail from '@ku/components/MyBooking/BookDetail'
-import UserPaymentNotice, { PaymentNoticeFormValuesProps } from '@ku/components/MyBooking/UserPaymentNotice'
-import PaymentSummary from '@ku/components/MyBooking/PaymentSummary'
-import EquipmentDetail from '@ku/components/MyBooking/EquipmentDetail'
-import TableView from '@ku/components/MyBooking/TableView'
-import numeral from 'numeral'
-import { formatISO } from 'date-fns'
-import { MY_BOOKING_PATH } from '@ku/constants/routes'
-import BookSummary from '@ku/components/Booking/CreateBooking/BookSummary'
+import { MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
 import QrCodeDetail from '@ku/components/MyBooking/QrCodeDetail'
 
 const mockData: IV1RespGetBookingMeRead = {
@@ -117,10 +109,10 @@ const mockData: IV1RespGetBookingMeRead = {
     eqRtimDays: '2023-03-13T16:21:30.894Z',
     eqRtimTimes: [8, 10, 14],
 };
-MyBookingDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+MyBookingQrCode.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
-export function MyBookingDetail() {
+export function MyBookingQrCode() {
     // const { t } = useTranslation();
     const permission : PERMISSION = 'Admin'
     const { enqueueSnackbar } = useSnackbar();
@@ -136,7 +128,7 @@ export function MyBookingDetail() {
     return (
         <>
             <Head>
-                <title>My Booking: Detail | KU</title>
+                <title>My Booking: QR payment | KU</title>
             </Head>
             <Container>
                 <Box
@@ -151,9 +143,13 @@ export function MyBookingDetail() {
                             <CustomBreadcrumbs
                                 heading="My Booking"
                                 links={[
-                                    { name: 'My Booking', href: '/my-booking' },
-                                    { name: 'List', href: '/my-booking' },
-                                    { name: `Booking: ${bookingNumber}` },
+                                    { name: 'My Booking', href: MY_BOOKING_PATH },
+                                    { name: 'List', href: MY_BOOKING_PATH },
+                                    {
+                                        name: `Booking: ${bookingNumber}`,
+                                        href: MERGE_PATH(MY_BOOKING_PATH, `${bookingNumber}`),
+                                    },
+                                    { name: `QR payment` },
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
@@ -175,4 +171,4 @@ export function MyBookingDetail() {
     )
 }
 
-export default MyBookingDetail
+export default MyBookingQrCode
