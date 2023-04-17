@@ -6,23 +6,23 @@ import { PageNotFoundIllustration } from '@sentry/assets/illustrations'
 import { m } from 'framer-motion'
 import NextLink from 'next/link'
 import Iconify from '@sentry/components/iconify'
-import { EQUIPMENT_PATH } from '@ku/constants/routes'
+import { BOOKING_REPORT_PATH } from '@ku/constants/routes'
 
-NotFoundEquipment.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
+NotFoundBookingReport.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 
 const constant = {
-    bodyText: `The equipment result not found, please recheck form\nyour equipment report list.`,
-    buttonText: `Equipment List`,
+    bodyText: `The booking result not found, please recheck form your\nbooking report list.`,
+    buttonText: `Booking report list`,
     allTheBest: `All the best,`,
-    notFound: `Not Found Equipment!`,
+    notFound: `Not Found Booking!`,
 }
 
-export function NotFoundEquipment() {
+export function NotFoundBookingReport() {
 
     return (
         <>
             <Head>
-                <title> Equipment Not Found </title>
+                <title> Booking Not Found </title>
             </Head>
             <Grid container>
                 <Grid item xs={8} sm={6} md={4} sx={{ margin: '0 auto' }}>
@@ -51,7 +51,7 @@ export function NotFoundEquipment() {
                             </Typography>
                         </m.div>
                         <Divider sx={{ mt: 5, mb: 3 }} />
-                        <NextLink href={EQUIPMENT_PATH} passHref>
+                        <NextLink href={BOOKING_REPORT_PATH} passHref>
                             <Button fullWidth color='inherit' variant="outlined">
                                 <Iconify icon="eva:chevron-left-fill" />{constant.buttonText}
                             </Button>
@@ -63,4 +63,4 @@ export function NotFoundEquipment() {
     )
 }
 
-export default NotFoundEquipment
+export default NotFoundBookingReport
