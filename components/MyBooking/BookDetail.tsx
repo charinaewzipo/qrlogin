@@ -25,10 +25,11 @@ const constant = {
 }
 interface IBookDetailProps {
     bookingData: IV1RespGetBookingMeRead
-    onDownloadQuotation: () => void
-    onDownloadInvoice: () => void
-    onPaymentQRCode: () => void
-    onCancelBooking: () => void
+    onDownloadQuotation?: () => void
+    onDownloadInvoice?: () => void
+    onPaymentQRCode?: () => void
+    onCancelBooking?: () => void
+    noButton?: boolean
 }
 function BookDetail({
     bookingData,
@@ -36,6 +37,7 @@ function BookDetail({
     onDownloadInvoice,
     onPaymentQRCode,
     onCancelBooking,
+    noButton,
 }: IBookDetailProps) {
     const getBookingStatusLabelColor = (): LabelColor => {
         switch (bookingData.bookStatus) {
@@ -164,42 +166,48 @@ function BookDetail({
                         </Typography>
                     </Grid>
                 </Grid>
-                <Divider sx={{ mx: -3, mt: 3 }} />
-                <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
-                    {{
-                        PENDING: (
-                            <>
-                                {renderButtonCancelBooking()}
-                                {renderButtonDownloadQuotation()}
-                            </>
-                        ),
-                        CONFIRM: (
-                            <>
-                                {renderButtonCancelBooking()}
-                                {renderButtonDownloadQuotation()}
-                            </>
-                        ),
-                        WATTING_FOR_PAYMENT: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                                {renderButtonPaymentQRCode()}
-                            </>
-                        ),
-                        WATTING_FOR_PAYMENT_CONFIRM: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                            </>
-                        ),
-                        FINISH: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                            </>
-                        ),
-                    }[bookingData.bookStatus] || <></>}
-                </Stack>
+                {noButton ? (
+                    <></>
+                ) : (
+                    <>
+                        <Divider sx={{ mx: -3, mt: 3 }} />
+                        <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
+                            {{
+                                PENDING: (
+                                    <>
+                                        {renderButtonCancelBooking()}
+                                        {renderButtonDownloadQuotation()}
+                                    </>
+                                ),
+                                CONFIRM: (
+                                    <>
+                                        {renderButtonCancelBooking()}
+                                        {renderButtonDownloadQuotation()}
+                                    </>
+                                ),
+                                WATTING_FOR_PAYMENT: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                        {renderButtonPaymentQRCode()}
+                                    </>
+                                ),
+                                WATTING_FOR_PAYMENT_CONFIRM: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                    </>
+                                ),
+                                FINISH: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                    </>
+                                ),
+                            }[bookingData.bookStatus] || <></>}
+                        </Stack>
+                    </>
+                )}
             </Paper>
         </Stack>
     )
