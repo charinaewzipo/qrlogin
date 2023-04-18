@@ -7,21 +7,7 @@ import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
-export default function InvoicePDF({ invoice }) {
-  const {
-    items,
-    taxes,
-    status,
-    dueDate,
-    discount,
-    invoiceTo,
-    createDate,
-    totalPrice,
-    invoiceFrom,
-    invoiceNumber,
-    subTotalPrice,
-  } = invoice;
-
+export default function InvoicePDF() {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
