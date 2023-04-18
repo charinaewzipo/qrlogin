@@ -16,7 +16,7 @@ import { get } from 'lodash'
 import { AxiosError } from 'axios'
 import messages from '@ku/constants/response'
 import codes from '@ku/constants/responseCode'
-
+import { IEquipmentCreateFormValuesProps } from '@ku/components/Equipment/EquipmentCreateForm'
 EquipmentDetail.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
@@ -29,7 +29,7 @@ export function EquipmentDetail() {
     const [maintenanceLogData, setMintenanceLogData] = useState<IV1GetEquipmentMaintenanceRead[]>([])
     const [totalMaintenanceLogRecord, setTotalMaintenanceLogRecord] = useState(0)
 
-    const onFormSubmit = (data: IAccountFormValuesProps) => {
+    const onFormSubmit = (data: IEquipmentCreateFormValuesProps) => {
         //TODO: api submit
         enqueueSnackbar('Account create success.')
         setErrorMsg('error msg')
