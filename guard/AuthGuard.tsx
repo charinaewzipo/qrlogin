@@ -5,7 +5,12 @@ import { useRouter } from 'next/router'
 import LoadingScreen from '@sentry/components/loading-screen'
 //
 import Login from '@ku/components/Login/Login'
+import PermissionDenied from '@ku/components/PermissionDenied/PermissionDenied'
+
 import { useAuthContext } from '@ku/contexts/useAuthContext'
+import menuConfig from '@ku/layouts/authorized/nav/config'
+import { get, includes, map } from 'lodash'
+import { ROOT_PATH, PROFILE_PATH } from '@ku/constants/routes'
 
 // ----------------------------------------------------------------------
 
@@ -14,7 +19,7 @@ type AuthGuardProps = {
 }
 
 export default function AuthGuard({ children }: AuthGuardProps) {
-    const { isAuthenticated, isInitialized } = useAuthContext()
+    const { isAuthenticated, isInitialized, user } = useAuthContext()
 
     const { pathname, push } = useRouter()
 
@@ -38,6 +43,19 @@ export default function AuthGuard({ children }: AuthGuardProps) {
             setRequestedLocation(pathname)
         }
         return <Login />
+    } else {
+        if (user.authPermission) {
+            const menus = menuConfig(user.authPermission)
+            const pathObjectItems = get(menus, `0.items`, [])
+            const accessiblePathnames = map(pathObjectItems, (pathItem) =>
+                get(pathItem, 'path', '')
+            )
+            const accesspath = [...accessiblePathnames, ROOT_PATH, PROFILE_PATH]
+            if (!includes(accesspath, pathname)) {
+                return <PermissionDenied />
+            }
+        }
+        // TODO: Add else handler when auth permission is null
     }
 
     return <>{children}</>

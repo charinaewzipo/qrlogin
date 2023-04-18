@@ -9,33 +9,30 @@ import CompactLayout from '@ku/layouts/compact'
 // components
 import { MotionContainer, varBounce } from '@sentry/components/animate'
 // assets
-import { PageNotFoundIllustration } from '@sentry/assets/illustrations'
+import { ForbiddenIllustration } from '@sentry/assets/illustrations'
 
-Page404.getLayout = (page: React.ReactElement) => <CompactLayout>{page}</CompactLayout>
-
-export default function Page404() {
+export default function PermissionDenied() {
     return (
-        <>
+        <CompactLayout>
             <Head>
-                <title> 404 Page Not Found </title>
+                <title> Permission Denied </title>
             </Head>
 
             <MotionContainer>
                 <m.div variants={varBounce().in}>
                     <Typography variant="h3" paragraph>
-                        Sorry, page not found!
+                        Sorry, you don't have permission to access.
                     </Typography>
                 </m.div>
 
                 <m.div variants={varBounce().in}>
                     <Typography sx={{ color: 'text.secondary' }}>
-                        Sorry, we couldn’t find the page you’re looking for. Perhaps you’ve mistyped
-                        the URL? Be sure to check your spelling.
+                        Please contact the website administrator if you believe this is in error.
                     </Typography>
                 </m.div>
 
                 <m.div variants={varBounce().in}>
-                    <PageNotFoundIllustration
+                    <ForbiddenIllustration
                         sx={{
                             height: 260,
                             my: { xs: 5, sm: 10 },
@@ -49,6 +46,6 @@ export default function Page404() {
                     </Button>
                 </NextLink>
             </MotionContainer>
-        </>
+        </CompactLayout>
     )
 }

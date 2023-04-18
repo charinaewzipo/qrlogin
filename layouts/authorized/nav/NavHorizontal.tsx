@@ -10,11 +10,13 @@ import { bgBlur } from '@sentry/utils/cssStyles'
 import { NavSectionHorizontal } from '@sentry/components/nav-section'
 //
 import navConfig from './config'
+import { useAuthContext } from '@ku/contexts/useAuthContext'
 
 // ----------------------------------------------------------------------
 
 function NavHorizontal() {
     const theme = useTheme()
+    const { user } = useAuthContext()
 
     return (
         <AppBar
@@ -32,7 +34,7 @@ function NavHorizontal() {
                     }),
                 }}
             >
-                <NavSectionHorizontal data={navConfig} />
+                <NavSectionHorizontal data={navConfig(user.authPermission)} />
             </Toolbar>
 
             <Shadow />

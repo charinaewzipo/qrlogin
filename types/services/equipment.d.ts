@@ -167,3 +167,6 @@ interface IV1PostEquipmentMaintenanceUpdate {
 interface IV1RespPostEquipmentMaintenanceUpdate {
     eqmtnId: number
 }
+
+type TTypeOfChecked = '' | 'FIXED' | 'DEFAULT' | 'UNCHECK' | 'OPTIONAL'
+type TSubOptionType = '' | 'ONLY_ONE' | 'AT_LEAST_ONE'
