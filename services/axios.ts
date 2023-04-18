@@ -5,7 +5,6 @@ import axios, {
     AxiosResponse,
     AxiosResponseTransformer,
     AxiosRequestTransformer,
-    AxiosRequestHeaders,
 } from 'axios'
 import { API_URL } from '@ku/constants/config'
 import transformer from '@ku/utils/transformer'

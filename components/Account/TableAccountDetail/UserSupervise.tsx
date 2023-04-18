@@ -32,7 +32,7 @@ const ROLE_OPTIONS = [
     'User',
 ];
 
-const mockTableData: IAccountUser[] = [
+const mockTableData: any[] = [
     {
       id: "27658a79-ac6c-4003-b927-23b260840208",
       name: "Eleanor PenaEleanor PenaEleanor PenaEleanor Pena",
@@ -99,7 +99,7 @@ const mockTableData: IAccountUser[] = [
 export default function UserSupervise() {
     const { enqueueSnackbar } = useSnackbar()
     const [filterStatus, setFilterStatus] = useState('all')
-    const [tableData, setTableData] = useState<IAccountUser[]>([])
+    const [tableData, setTableData] = useState<any[]>([])
     const { push } = useRouter()
     const [openPleaseContact, setOpenPleaseContact] = useState(false)
     const [detailUser, setDetailUser] = useState(null)
@@ -153,7 +153,7 @@ export default function UserSupervise() {
       const handleViewRow = (id: string) => {
         push(MERGE_PATH(ACCOUNT_PATH, 'detail', id))
       }
-      const handleRemove = (data:IAccountUser)=>{
+      const handleRemove = (data:any)=>{
         setDetailUser(data)
         setOpenPleaseContact(true)
         console.log("data",data);

@@ -85,7 +85,7 @@ const MockData:IBooking[] = [{
 }]
 
 BookingReportPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
-
+declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 export default function BookingReportPage() {
     const theme = useTheme()
     const [filterStatus, setFilterStatus] = useState('all')

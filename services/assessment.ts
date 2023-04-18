@@ -30,6 +30,7 @@ const mockData: IAssessment[] = [
 ]
 
 const fetchGetAssessments = (): Promise<IResponse<IAssessment[]>> => {
+    /* @ts-ignore */
     return Promise.resolve({ code: 200, message: 'OK', data: mockData })
 }
 
@@ -86,6 +87,7 @@ const mockPaticipationData: IAssessmentParticipation[] = [
     },
 ]
 const fetchGetAssessmentPaticipation = (id: string): Promise<IResponse<IAssessmentParticipation[]>> => {
+    /* @ts-ignore */
     return Promise.resolve({ code: 200, message: 'OK', data: mockPaticipationData })
 }
 
