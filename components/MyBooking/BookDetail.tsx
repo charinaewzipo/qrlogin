@@ -1,8 +1,11 @@
 import { LoadingButton } from '@mui/lab'
 import { Stack, Paper, Typography, Divider, Grid } from '@mui/material'
+import { PDFDownloadLink } from '@react-pdf/renderer'
 import Label, { LabelColor } from '@sentry/components/label'
 import { format } from 'date-fns'
 import { lowerCase } from 'lodash'
+import InvoicePDF from '../Invoice/InvoicePDF'
+import { CircularProgress } from '@mui/material'
 
 const constant = {
     bookSummary: 'Book summary',
@@ -71,15 +74,21 @@ function BookDetail({
         </LoadingButton>
     )
     const renderButtonDownloadInvoice = () => (
-        <LoadingButton
-            type="button"
-            variant="contained"
-            size="large"
-            onClick={onDownloadInvoice}
-            color="info"
+        <PDFDownloadLink
+            document={<InvoicePDF />}
+            fileName={'ทดสอบ123'}
+            style={{ textDecoration: 'none' }}
         >
-            {constant.downloadInvoice}
-        </LoadingButton>
+            <LoadingButton
+                type="button"
+                variant="contained"
+                size="large"
+                color="info"
+            >
+                {constant.downloadInvoice}
+            </LoadingButton>
+        </PDFDownloadLink>
+
     )
     const renderButtonPaymentQRCode = () => (
         <LoadingButton
@@ -92,7 +101,7 @@ function BookDetail({
             {constant.paymentQRCode}
         </LoadingButton>
     )
-    
+
     return (
         <Stack spacing={5}>
             <Paper elevation={9} sx={{ borderRadius: 2, p: 3 }}>

@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Typography, IconButton, MenuItem, Stack } from '@mui/material'
+import { TableRow, TableCell, Typography, IconButton, MenuItem, Stack, Box } from '@mui/material'
 import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 import Label, { LabelColor } from '@sentry/components/label'
 import { useState } from 'react'
@@ -7,6 +7,8 @@ import MenuPopover from '@sentry/components/menu-popover'
 import { get, lowerCase, upperFirst } from 'lodash'
 import Image from '@sentry/components/image'
 import { fCurrencyBaht } from '@ku/utils/formatNumber'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import InvoicePDF from '../Invoice/InvoicePDF'
 
 type Props = {
     row: IV1RespGetBookingMeRead
@@ -32,24 +34,33 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
         onViewRow()
     }
     const listMenuPopover = {
-        quotation:{
-            action: ()=>{console.log("Download Quotation");},
+        quotation: {
+            action: () => { console.log("Download Quotation"); },
             label: <><Iconify icon="ic:round-insert-drive-file" />Download Quotation</>,
         },
-        cancelBooking:{
-            action: ()=>{console.log("Cancel Booking");onRemove()},
+        cancelBooking: {
+            action: () => { console.log("Cancel Booking"); onRemove() },
             label: <><Iconify icon="eva:trash-2-outline" />Cancel Booking</>,
         },
-        invoice:{
-            action: ()=>{console.log("Download Invoice");},
-            label: <><Iconify icon="ic:baseline-verified" />Download Invoice</>,
+        invoice: {
+            action: () => { console.log("Download Invoice"); },
+            label:
+                <PDFDownloadLink
+                    document={<InvoicePDF />}
+                    fileName={'ทดสอบ123'}
+                    style={{ textDecoration: 'none' }}
+                >
+                    <Box sx={{ display: 'flex' }}>
+                        <Iconify icon="ic:baseline-verified" /> Download Invoice
+                    </Box>
+                </PDFDownloadLink>,
         },
-        receipt:{
-            action: ()=>{console.log("Download Receipt");},
+        receipt: {
+            action: () => { console.log("Download Receipt"); },
             label: <><Iconify icon="material-symbols:receipt" />Download Receipt</>,
         },
-        qrCode:{
-            action: ()=>{console.log("Payment QR Code");},
+        qrCode: {
+            action: () => { console.log("Payment QR Code"); },
             label: <><Iconify icon="material-symbols:receipt" />Payment QR Code</>,
         },
     }
@@ -83,12 +94,12 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                 return 'default'
         }
     }
-	const renderBookingTime = (times: number[]) =>
-		times.map((time, i) =>
-			<Typography whiteSpace='pre' component='span' variant="body2">
-				{`${time}:00 - ${time}:59${i < times.length - 1 ? `, ` : ''}`}
-			</Typography>
-		)
+    const renderBookingTime = (times: number[]) =>
+        times.map((time, i) =>
+            <Typography whiteSpace='pre' component='span' variant="body2">
+                {`${time}:00 - ${time}:59${i < times.length - 1 ? `, ` : ''}`}
+            </Typography>
+        )
 
     return (
         <>
@@ -118,10 +129,10 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                 </TableCell>
                 <TableCell align="left">{fDateTimeFormat(row.bookCreatedAt, 'DD MMM YYYY')}</TableCell>
                 <TableCell align="left">
-					<Stack direction='row' flexWrap='wrap'>
-						{renderBookingTime(row.eqRtimTimes)}
-					</Stack>
-				</TableCell>
+                    <Stack direction='row' flexWrap='wrap'>
+                        {renderBookingTime(row.eqRtimTimes)}
+                    </Stack>
+                </TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.eqPriceSubTotal)}</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.payTotal)}</TableCell>
                 <TableCell align="left">

@@ -48,17 +48,9 @@ export default function BookingReportRow({ row, selected, onSelectRow, onViewRow
                     fileName={'ทดสอบ123'}
                     style={{ textDecoration: 'none' }}
                 >
-                    {({ loading }) => (
-                        <>
-                            {loading ? (
-                                <CircularProgress size={20} color="inherit" />
-                            ) : (
-                                <Box sx={{ display: 'flex' }}>
-                                    <Iconify icon="ic:baseline-verified" /> Download Invoice
-                                </Box>
-                            )}
-                        </>
-                    )}
+                    <Box sx={{ display: 'flex' }}>
+                        <Iconify icon="ic:baseline-verified" /> Download Invoice
+                    </Box>
                 </PDFDownloadLink>,
         },
         receipt: {
