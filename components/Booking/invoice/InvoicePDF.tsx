@@ -3,7 +3,7 @@ import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 
 import styles from './InvoiceStyle';
-import { fDateTimeFormat } from '@sentry/utils/formatDateTime';
+import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
@@ -30,7 +30,7 @@ export default function InvoicePDF({ invoice }) {
             <Image source="/assets/images/logo/logo-without-text.png" style={{ height: '100%', objectFit: 'contain' }} />
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
-            <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start' }}>
+            <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start', }}>
               <Text style={[styles.body1, { lineHeight: 1 }]}>Scientific Equipment Center (SEC)</Text>
               <Text style={styles.body2}>Faculty of Science, Kasetsart University</Text>
               <Text style={styles.body2}>50 Ngamwongwan Rd</Text>
@@ -40,7 +40,7 @@ export default function InvoicePDF({ invoice }) {
             </View>
             <View style={{ flexDirection: 'column', marginRight: '10px' }}>
               <Text style={styles.h1}>Bill Payment</Text>
-              <Text style={[styles.h2, { marginTop: '-15px' }]}>ใบชำระค่าบริการผ่านธนาคาร</Text>
+              <Text style={[styles.h2,]}>ใบชำระค่าบริการผ่านธนาคาร</Text>
             </View>
           </View>
         </View>
@@ -60,7 +60,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
         </View>
 
-        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', marginTop: '-1px' }]}>
+        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', borderTopWidth: 0 }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', margin: '5px 0', padding: '0 5px' }}>
             <Text style={styles.body1}>ธนาคารทหารไทยธนชาต Comp. Code: 2560</Text>
             <Text style={[styles.body1, { fontWeight: 'normal' }]}>สาขาผู้รับฝาก_____________</Text>
@@ -68,7 +68,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={styles.body2}>รายละเอียดการชำระเงิน</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>รายละเอียดการชำระเงิน</Text>
             </View>
             <View style={styles.tableRow}>
               <View style={styles.tableCell_1}>
@@ -136,7 +136,7 @@ export default function InvoicePDF({ invoice }) {
 
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
-            <Text style={[styles.subtitle2, { lineHeight: 0.9 }]}>ส่วนที่ 1 สำหรับธนาคาร</Text>
+            <Text style={[styles.subtitle2, { lineHeight: 0.9, fontStyle: 'italic' }]}>ส่วนที่ 1 สำหรับธนาคาร</Text>
           </View>
         </View>
 
@@ -157,7 +157,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
         </View>
 
-        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', marginTop: '-1px' }]}>
+        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', borderTopWidth: 0 }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', margin: '5px 0', padding: '0 5px' }}>
             <Text style={styles.body1}>ธนาคารทหารไทยธนชาต Comp. Code: 2560</Text>
             <Text style={[styles.body1, { fontWeight: 'normal' }]}>สาขาผู้รับฝาก_____________</Text>
@@ -165,7 +165,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
           <View style={styles.table}>
             <View style={styles.tableHeader}>
-              <Text style={styles.body2}>รายละเอียดการชำระเงิน</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>รายละเอียดการชำระเงิน</Text>
             </View>
             <View style={styles.tableRow}>
               <View style={styles.tableCell_1}>
@@ -233,11 +233,11 @@ export default function InvoicePDF({ invoice }) {
 
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
-            <Text style={[styles.subtitle2, { lineHeight: 0.9 }]}>ส่วนที่ 2 สำหรับลูกค้า</Text>
+            <Text style={[styles.subtitle2, { lineHeight: 0.9, fontStyle: 'italic' }]}>ส่วนที่ 2 สำหรับลูกค้า</Text>
           </View>
         </View>
 
-        <View style={[styles.borderStyle, styles.footer, { width: '100%' }]}>
+        <View style={[styles.borderStyle, styles.footer, { width: '100%', color: 'black' }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', padding: '5px 0' }}>
             <Text style={styles.body1}>สำหรับผู้ขอรับบริการศูนย์เครื่องมือวิทยาศาสตร์ คณะวิทยาศาสตร์ มก.</Text>
           </View>
@@ -263,7 +263,7 @@ export default function InvoicePDF({ invoice }) {
         </View>
         <View style={styles.footer2}>
           <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: '0px 5px 0px 5px' }}>
-            <Text style={[styles.body1, { fontWeight: 'normal' }]}>Print Date {fDateTimeFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')}</Text>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>Print Date {format(new Date(), 'yyyy-MM-dd HH:mm:ss')}</Text>
           </View>
         </View>
       </Page>
