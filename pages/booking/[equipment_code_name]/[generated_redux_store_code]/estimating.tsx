@@ -54,7 +54,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     bookOwner: 1,
     bookAdvisor: 2,
     bookStatus: "confirmed",
-    eqPrices: [
+    eqprices: [
       {
         eqpId: 1,
         eqpEqId: 1,
@@ -70,7 +70,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpUnitPer: "hour",
         eqpCreatedAt: 1648753212000,
         eqpUpdatedAt: 1648753212000,
-        eqSubPrice: [
+        eqsubprice: [
           {
             eqSubpId: 1,
             eqSubpChecked: "yes",
@@ -109,7 +109,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpUnitPer: "hour",
         eqpCreatedAt: 1648753212000,
         eqpUpdatedAt: 1648753212000,
-        eqSubPrice: [
+        eqsubprice: [
         ]
       }
     ],
@@ -160,7 +160,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     bookOwner: 1,
     bookAdvisor: 2,
     bookStatus: "confirmed",
-    eqPrices: [
+    eqprices: [
       {
         eqpId: 1,
         eqpEqId: 1,
@@ -176,7 +176,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpUnitPer: "hour",
         eqpCreatedAt: 1648753212000,
         eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
+        eqsubprice: []
       }
     ],
     eqpriceSubTotal: 500,
@@ -226,7 +226,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     bookOwner: 1,
     bookAdvisor: 2,
     bookStatus: "confirmed",
-    eqPrices: [
+    eqprices: [
       {
         eqpId: 1,
         eqpEqId: 1,
@@ -242,7 +242,7 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpUnitPer: "hour",
         eqpCreatedAt: 1648753212000,
         eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
+        eqsubprice: []
       }
     ],
     eqpriceSubTotal: 500,

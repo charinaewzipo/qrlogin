@@ -119,10 +119,10 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
                 <TableCell align="left">{fDateTimeFormat(row.bookCreatedAt, 'DD MMM YYYY')}</TableCell>
                 <TableCell align="left">
 					<Stack direction='row' flexWrap='wrap'>
-						{renderBookingTime(row.eqRtimTimes)}
+						{renderBookingTime(row.eqrtimTimes)}
 					</Stack>
 				</TableCell>
-                <TableCell align="right">{fCurrencyBaht(row.eqPriceSubTotal)}</TableCell>
+                <TableCell align="right">{fCurrencyBaht(row.eqpriceSubTotal)}</TableCell>
                 <TableCell align="right">{fCurrencyBaht(row.payTotal)}</TableCell>
                 <TableCell align="left">
                     <Label color={getBookingStatusLabelColor()}>

@@ -47,7 +47,7 @@ const mockData: IV1RespGetBookingMeRead = {
     ],
     eqCreatedAt: '2023-03-13T16:21:30.894Z',
     eqUpdatedAt: '2023-03-16T16:21:30.894Z',
-    eqPrices: [
+    eqprices: [
         {
             eqpId: 1,
             eqpEqId: 1,
@@ -63,7 +63,7 @@ const mockData: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqsubPrice: [
+            eqsubprice: [
                 {
                     eqsubpId: 1,
                     eqsubpChecked: "no",
@@ -93,10 +93,10 @@ const mockData: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqsubPrice: [],
+            eqsubprice: [],
         },
     ],
-    eqPriceSubTotal: 100,
+    eqpriceSubTotal: 100,
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
@@ -106,8 +106,8 @@ const mockData: IV1RespGetBookingMeRead = {
     payFees: 0,
     payTotal: 100,
     bookCreatedAt: '2023-03-13T16:21:30.894Z',
-    eqRtimDays: '2023-03-13T16:21:30.894Z',
-    eqRtimTimes: [8, 10, 14],
+    eqrtimDays: '2023-03-13T16:21:30.894Z',
+    eqrtimTimes: [8, 10, 14],
 };
 MyBookingQrCode.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -156,10 +156,10 @@ export function MyBookingQrCode() {
                             <Stack spacing={5}>
                                 <BookDetail bookingData={mockData} noButton />
                                 <QrCodeDetail
-                                    billerId={'xxxbilleridxxx'}
-                                    totalPayment={'xxxamountxxx'}
-                                    ref1={'xxxref1xxx'}
-                                    ref2={'xxxref2xxx'}
+                                    billerId={'1231321323'}
+                                    totalPayment={'500'}
+                                    ref1={'1231321323'}
+                                    ref2={'1231321323'}
                                     onDownload={handleQrDownload}
                                 />
                             </Stack>

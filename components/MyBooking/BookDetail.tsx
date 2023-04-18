@@ -141,7 +141,7 @@ function BookDetail({
                             {constant.bookingTime}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.map((time) => (
+                            {bookingData.eqrtimTimes.map((time) => (
                                 <Label color="info" sx={{ mr: 1 }}>
                                     {`${time}:00 - ${time}:59`}
                                 </Label>
@@ -153,7 +153,7 @@ function BookDetail({
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.length} Hrs.
+                            {bookingData.eqrtimTimes.length} Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>

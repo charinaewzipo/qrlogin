@@ -65,7 +65,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
               </TableHead>
 
               <TableBody>
-                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row, index) => (
+                {!isEmpty(get(book, 'eqprices', [])) && book.eqprices.map((row, index) => (
                   <React.Fragment key={`key-row-${index}`}>
                     <TableRow
                       key={`rowPrice-${index}`}
@@ -86,7 +86,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                       <TableCell align="right">{`${(get(row, 'eqpTotal', 0)).toLocaleString()} B`}</TableCell>
                     </TableRow>
 
-                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row, index) => (
+                    {!isEmpty(get(row, 'eqsubprice', [])) && row.eqsubprice.map((row, index) => (
                       <TableRow
                         key={`rowSubPrice-${index}`}
                         sx={{
