@@ -72,27 +72,27 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
         eqpUpdatedAt: 1648753212000,
         eqsubprice: [
           {
-            eqSubpId: 1,
-            eqSubpChecked: "yes",
-            eqSubpName: "Laptop",
-            eqSubpDescription: "Macbook Pro 13-inch",
-            eqSubpUnitPrice: 1399.99,
-            eqSubpUnitPer: "piece",
-            eqSubpQuantity: 2,
-            eqSubpTotal: 2799.98,
-            eqSubpCreatedAt: 1649126400,
-            eqSubpUpdatedAt: 1649212800
+            eqsubpId: 1,
+            eqsubpChecked: "yes",
+            eqsubpName: "Laptop",
+            eqsubpDescription: "Macbook Pro 13-inch",
+            eqsubpUnitPrice: 1399.99,
+            eqsubpUnitPer: "piece",
+            eqsubpQuantity: 2,
+            eqsubpTotal: 2799.98,
+            eqsubpCreatedAt: 1649126400,
+            eqsubpUpdatedAt: 1649212800
           }, {
-            eqSubpId: 2,
-            eqSubpChecked: "yes",
-            eqSubpName: "Laptop",
-            eqSubpDescription: "Macbook Pro 13-inch",
-            eqSubpUnitPrice: 1399.99,
-            eqSubpUnitPer: "piece",
-            eqSubpQuantity: 2,
-            eqSubpTotal: 2799.98,
-            eqSubpCreatedAt: 1649126400,
-            eqSubpUpdatedAt: 1649212800
+            eqsubpId: 2,
+            eqsubpChecked: "yes",
+            eqsubpName: "Laptop",
+            eqsubpDescription: "Macbook Pro 13-inch",
+            eqsubpUnitPrice: 1399.99,
+            eqsubpUnitPer: "piece",
+            eqsubpQuantity: 2,
+            eqsubpTotal: 2799.98,
+            eqsubpCreatedAt: 1649126400,
+            eqsubpUpdatedAt: 1649212800
           }]
       }, {
         eqpId: 1,
