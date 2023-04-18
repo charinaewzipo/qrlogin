@@ -31,7 +31,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
             <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start' }}>
-              <Text style={styles.body1}>Scientific Equipment Center (SEC)</Text>
+              <Text style={[styles.body1, { lineHeight: 1 }]}>Scientific Equipment Center (SEC)</Text>
               <Text style={styles.body2}>Faculty of Science, Kasetsart University</Text>
               <Text style={styles.body2}>50 Ngamwongwan Rd</Text>
               <Text style={styles.body2}>Latyaod Chatuchak Bangkok</Text>
@@ -54,7 +54,7 @@ export default function InvoicePDF({ invoice }) {
               <Text style={[styles.body2, { fontWeight: 700 }]}>50 ถนนงามวงศ์วาน แขวงลาดยาว</Text>
               <Text style={[styles.body2, { fontWeight: 700 }]}>เขตจตุจักร กรุงเทพมหานคร 10900</Text>
             </View>
-            <View style={{ height: 90, width: 90, marginRight: '10px' }}>
+            <View style={{ height: 100, width: 100, marginRight: '10px' }}>
               <Image source="/assets/images/logo/logottb.png" style={{ height: '100%', objectFit: 'contain' }} />
             </View>
           </View>
@@ -151,7 +151,7 @@ export default function InvoicePDF({ invoice }) {
               <Text style={[styles.body2, { fontWeight: 700 }]}>50 ถนนงามวงศ์วาน แขวงลาดยาว</Text>
               <Text style={[styles.body2, { fontWeight: 700 }]}>เขตจตุจักร กรุงเทพมหานคร 10900</Text>
             </View>
-            <View style={{ height: 90, width: 90, marginRight: '10px' }}>
+            <View style={{ height: 100, width: 100, marginRight: '10px' }}>
               <Image source="/assets/images/logo/logottb.png" style={{ height: '100%', objectFit: 'contain' }} />
             </View>
           </View>
@@ -237,7 +237,7 @@ export default function InvoicePDF({ invoice }) {
           </View>
         </View>
 
-        <View style={[styles.borderStyle, styles.footer, { width: '100%', marginTop: '5px' }]}>
+        <View style={[styles.borderStyle, styles.footer, { width: '100%' }]}>
           <View style={{ flexDirection: 'row', justifyContent: 'center', padding: '5px 0' }}>
             <Text style={styles.body1}>สำหรับผู้ขอรับบริการศูนย์เครื่องมือวิทยาศาสตร์ คณะวิทยาศาสตร์ มก.</Text>
           </View>
