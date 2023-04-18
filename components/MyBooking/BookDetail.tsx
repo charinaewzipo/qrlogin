@@ -141,11 +141,11 @@ function BookDetail({
                             {constant.bookingTime}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqrtimTimes.map((time) => (
-                                <Label color="info" sx={{ mr: 1 }}>
-                                    {`${time}:00 - ${time}:59`}
-                                </Label>
-                            ))}
+                            <Stack gap={1} direction="row" flexWrap="wrap">
+                                {bookingData.eqrtimTimes.map((time) => (
+                                    <Label color="info">{`${time}:00 - ${time}:59`}</Label>
+                                ))}
+                            </Stack>
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
