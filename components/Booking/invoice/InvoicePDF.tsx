@@ -3,6 +3,7 @@ import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 
 import styles from './InvoiceStyle';
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime';
 
 // ----------------------------------------------------------------------
 
@@ -24,154 +25,245 @@ export default function InvoicePDF({ invoice }) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={[styles.gridContainer, styles.mb40]}>
-          <Image source="/logo/logo_full.jpg" style={{ height: 32 }} />
-          <View style={{ alignItems: 'flex-end', flexDirection: 'column' }}>
-            <Text style={styles.h3}>{status}</Text>
-            <Text> {`INV-${invoiceNumber}`} </Text>
+        <View style={[styles.borderStyle, { flexDirection: 'row', alignItems: 'center' }]}>
+          <View style={{ height: 90, width: 90 }}>
+            <Image source="/assets/images/logo/logo-without-text.png" style={{ height: '100%', objectFit: 'contain' }} />
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start' }}>
+              <Text style={styles.body1}>Scientific Equipment Center (SEC)</Text>
+              <Text style={styles.body2}>Faculty of Science, Kasetsart University</Text>
+              <Text style={styles.body2}>50 Ngamwongwan Rd</Text>
+              <Text style={styles.body2}>Latyaod Chatuchak Bangkok</Text>
+              <Text style={styles.body2}>10900 Thailand</Text>
+              <Text style={styles.body2}>Tel. 02-562-5555 ext 646154-646156</Text>
+            </View>
+            <View style={{ flexDirection: 'column', marginRight: '10px' }}>
+              <Text style={styles.h1}>Bill Payment</Text>
+              <Text style={[styles.h2, { marginTop: '-15px' }]}>ใบชำระค่าบริการผ่านธนาคาร</Text>
+            </View>
+          </View>
+        </View>
+        <View style={[styles.borderStyle, { flexDirection: 'row', alignItems: 'center', marginTop: '5px' }]}>
+          <View style={{ height: 90, width: 90 }}>
+            <Image source="/assets/images/logo/logo-without-text.png" style={{ height: '100%', objectFit: 'contain' }} />
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start' }}>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>คณะวิทยาศาสตร์มหาวิทยาลัยเกษตรศาสตร์</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>50 ถนนงามวงศ์วาน แขวงลาดยาว</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>เขตจตุจักร กรุงเทพมหานคร 10900</Text>
+            </View>
+            <View style={{ height: 90, width: 90, marginRight: '10px' }}>
+              <Image source="/assets/images/logo/logottb.png" style={{ height: '100%', objectFit: 'contain' }} />
+            </View>
           </View>
         </View>
 
-        <View style={[styles.gridContainer, styles.mb40]}>
-          <View style={styles.col6}>
-            <Text style={[styles.overline, styles.mb8]}>Invoice from</Text>
-            <Text style={styles.body1}>{invoiceFrom.name}</Text>
-            <Text style={styles.body1}>{invoiceFrom.address}</Text>
-            <Text style={styles.body1}>{invoiceFrom.phone}</Text>
+        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', marginTop: '-1px' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', margin: '5px 0', padding: '0 5px' }}>
+            <Text style={styles.body1}>ธนาคารทหารไทยธนชาต Comp. Code: 2560</Text>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>สาขาผู้รับฝาก_____________</Text>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>วันที่/Date_______________</Text>
           </View>
-
-          <View style={styles.col6}>
-            <Text style={[styles.overline, styles.mb8]}>Invoice to</Text>
-            <Text style={styles.body1}>{invoiceTo.name}</Text>
-            <Text style={styles.body1}>{invoiceTo.address}</Text>
-            <Text style={styles.body1}>{invoiceTo.phone}</Text>
-          </View>
-        </View>
-
-        <View style={[styles.gridContainer, styles.mb40]}>
-          <View style={styles.col6}>
-            <Text style={[styles.overline, styles.mb8]}>Date create</Text>
-            {/* <Text style={styles.body1}>{(createDate)}</Text> */}
-          </View>
-          <View style={styles.col6}>
-            <Text style={[styles.overline, styles.mb8]}>Due date</Text>
-            {/* <Text style={styles.body1}>{(dueDate)}</Text> */}
-          </View>
-        </View>
-
-        <Text style={[styles.overline, styles.mb8]}>Invoice Details</Text>
-
-        <View style={styles.table}>
-          <View style={styles.tableHeader}>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.body2}>รายละเอียดการชำระเงิน</Text>
+            </View>
             <View style={styles.tableRow}>
               <View style={styles.tableCell_1}>
-                <Text style={styles.subtitle2}>#</Text>
+                <Text style={styles.subtitle3}>ชื่อผู้ชำระ (Customer Name)</Text>
               </View>
-
               <View style={styles.tableCell_2}>
-                <Text style={styles.subtitle2}>Description</Text>
+                <Text style={styles.subtitle2}>Pattanan Nuchan 016471 (Booking)</Text>
               </View>
-
-              <View style={styles.tableCell_3}>
-                <Text style={styles.subtitle2}>Qty</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>รหัสคณะ (Ref. No.1)</Text>
               </View>
-
-              <View style={styles.tableCell_3}>
-                <Text style={styles.subtitle2}>Unit price</Text>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>010-401-0010</Text>
               </View>
-
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text style={styles.subtitle2}>Total</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>รหัสรายได้ (Ref. No.2)</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>101</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>จำนวนเงิน</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>25.00</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>จำนวณเงินตัวอักษร</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>ยี่สินห้า บาทถ้วน</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>หมายเหตุ</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle3}>- กรณีชำระด้วยเช็ค มหาวิทยาลัยฯ จะถือว่าการชำระมีผลสมบูรณ์ต่อเมื่อธนาคารเรียกเก็บเงินตามเช็คได้</Text>
+                <Text style={styles.subtitle3}>- ธนาคารจะรับเช็คที่อยู่ในสำนักหักบัญชีเดียวกันเท่านั้น</Text>
               </View>
             </View>
           </View>
-
-          <View style={styles.tableBody}>
-            {items.map((item, index) => (
-              <View style={styles.tableRow} key={item.id}>
-                <View style={styles.tableCell_1}>
-                  <Text>{index + 1}</Text>
-                </View>
-
-                <View style={styles.tableCell_2}>
-                  <Text style={styles.subtitle2}>{item.title}</Text>
-                  <Text>{item.description}</Text>
-                </View>
-
+          <View style={[styles.table, { flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }]}>
+            <View style={{ flexDirection: 'column', marginLeft: '10px' }}>
+              <Text style={styles.body2}>ชำระค่าบริการ ได้ที่ธนาคารทหารไทยธนชาต ได้ทุกสาขาทั่วประเทศ</Text>
+              <Text style={styles.body2}>ชื่อผู้นำฝาก คณะวิทยาศาสตร์ โทรศัพท์ 02-562-5555</Text>
+            </View>
+            <View style={{ flexDirection: 'column', width: '25%' }}>
+              <View style={[{ flexDirection: 'column', border: '0.5px solid black', }]}>
+                <View style={[styles.tableCell_3, { height: '20px', borderBottom: '0.5px solid black' }]}></View>
                 <View style={styles.tableCell_3}>
-                  <Text>{item.quantity}</Text>
+                  <Text style={styles.subtitle2}>ผู้รับเงิน / Collector</Text>
                 </View>
-
-                <View style={styles.tableCell_3}>
-                  <Text>{item.price}</Text>
-                </View>
-
-                <View style={[styles.tableCell_3, styles.alignRight]}>
-                  <Text>{(item.price * item.quantity)}</Text>
-                </View>
-              </View>
-            ))}
-
-            <View style={[styles.tableRow, styles.noBorder]}>
-              <View style={styles.tableCell_1} />
-              <View style={styles.tableCell_2} />
-              <View style={styles.tableCell_3} />
-              <View style={styles.tableCell_3}>
-                <Text>Subtotal</Text>
-              </View>
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{(subTotalPrice)}</Text>
               </View>
             </View>
 
-            <View style={[styles.tableRow, styles.noBorder]}>
-              <View style={styles.tableCell_1} />
-              <View style={styles.tableCell_2} />
-              <View style={styles.tableCell_3} />
-              <View style={styles.tableCell_3}>
-                <Text>Discount</Text>
-              </View>
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{(-discount)}</Text>
-              </View>
-            </View>
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
+            <Text style={[styles.subtitle2, { lineHeight: 0.9 }]}>ส่วนที่ 1 สำหรับธนาคาร</Text>
+          </View>
+        </View>
 
-            <View style={[styles.tableRow, styles.noBorder]}>
-              <View style={styles.tableCell_1} />
-              <View style={styles.tableCell_2} />
-              <View style={styles.tableCell_3} />
-              <View style={styles.tableCell_3}>
-                <Text>Taxes</Text>
-              </View>
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text>{(taxes)}</Text>
-              </View>
+        <View style={{ border: '0.5px dashed black', marginTop: '5px' }}></View>
+        <View style={[styles.borderStyle, { flexDirection: 'row', alignItems: 'center', marginTop: '5px' }]}>
+          <View style={{ height: 90, width: 90 }}>
+            <Image source="/assets/images/logo/logo-without-text.png" style={{ height: '100%', objectFit: 'contain' }} />
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-between', width: '100%', alignItems: 'center' }}>
+            <View style={{ flexDirection: 'column', marginLeft: '20px', alignItems: 'flex-start' }}>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>คณะวิทยาศาสตร์มหาวิทยาลัยเกษตรศาสตร์</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>50 ถนนงามวงศ์วาน แขวงลาดยาว</Text>
+              <Text style={[styles.body2, { fontWeight: 700 }]}>เขตจตุจักร กรุงเทพมหานคร 10900</Text>
             </View>
-
-            <View style={[styles.tableRow, styles.noBorder]}>
-              <View style={styles.tableCell_1} />
-              <View style={styles.tableCell_2} />
-              <View style={styles.tableCell_3} />
-              <View style={styles.tableCell_3}>
-                <Text style={styles.h4}>Total</Text>
-              </View>
-              <View style={[styles.tableCell_3, styles.alignRight]}>
-                <Text style={styles.h4}>{(totalPrice)}</Text>
-              </View>
+            <View style={{ height: 90, width: 90, marginRight: '10px' }}>
+              <Image source="/assets/images/logo/logottb.png" style={{ height: '100%', objectFit: 'contain' }} />
             </View>
           </View>
         </View>
 
-        <View style={[styles.gridContainer, styles.footer]}>
-          <View style={styles.col8}>
-            <Text style={styles.subtitle2}>NOTES</Text>
-            <Text>
-              We appreciate your business. Should you need us to add VAT or extra notes let us know!
-            </Text>
+        <View style={[styles.borderStyle, { flexDirection: 'column', alignItems: 'center', marginTop: '-1px' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'space-around', width: '100%', margin: '5px 0', padding: '0 5px' }}>
+            <Text style={styles.body1}>ธนาคารทหารไทยธนชาต Comp. Code: 2560</Text>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>สาขาผู้รับฝาก_____________</Text>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>วันที่/Date_______________</Text>
           </View>
-          <View style={[styles.col4, styles.alignRight]}>
-            <Text style={styles.subtitle2}>Have a Question?</Text>
-            <Text>support@abcapp.com</Text>
+          <View style={styles.table}>
+            <View style={styles.tableHeader}>
+              <Text style={styles.body2}>รายละเอียดการชำระเงิน</Text>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>ชื่อผู้ชำระ (Customer Name)</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>Pattanan Nuchan 016471 (Booking)</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>รหัสคณะ (Ref. No.1)</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>010-401-0010</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>รหัสรายได้ (Ref. No.2)</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>101</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>จำนวนเงิน</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>25.00</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>จำนวณเงินตัวอักษร</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle2}>ยี่สินห้า บาทถ้วน</Text>
+              </View>
+            </View>
+            <View style={styles.tableRow}>
+              <View style={styles.tableCell_1}>
+                <Text style={styles.subtitle3}>หมายเหตุ</Text>
+              </View>
+              <View style={styles.tableCell_2}>
+                <Text style={styles.subtitle3}>- กรณีชำระด้วยเช็ค มหาวิทยาลัยฯ จะถือว่าการชำระมีผลสมบูรณ์ต่อเมื่อธนาคารเรียกเก็บเงินตามเช็คได้</Text>
+                <Text style={styles.subtitle3}>- ธนาคารจะรับเช็คที่อยู่ในสำนักหักบัญชีเดียวกันเท่านั้น</Text>
+              </View>
+            </View>
+          </View>
+          <View style={[styles.table, { flexDirection: 'row', justifyContent: 'space-between', marginTop: '10px' }]}>
+            <View style={{ flexDirection: 'column', marginLeft: '10px' }}>
+              <Text style={styles.body2}>ชำระค่าบริการ ได้ที่ธนาคารทหารไทยธนชาต ได้ทุกสาขาทั่วประเทศ</Text>
+              <Text style={styles.body2}>ชื่อผู้นำฝาก คณะวิทยาศาสตร์ โทรศัพท์ 02-562-5555</Text>
+            </View>
+            <View style={{ flexDirection: 'column', width: '25%' }}>
+              <View style={[{ flexDirection: 'column', border: '0.5px solid black', }]}>
+                <View style={[styles.tableCell_3, { height: '20px', borderBottom: '0.5px solid black' }]}></View>
+                <View style={styles.tableCell_3}>
+                  <Text style={styles.subtitle2}>ผู้รับเงิน / Collector</Text>
+                </View>
+              </View>
+            </View>
+
+          </View>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-start', width: '100%' }}>
+            <Text style={[styles.subtitle2, { lineHeight: 0.9 }]}>ส่วนที่ 2 สำหรับลูกค้า</Text>
+          </View>
+        </View>
+
+        <View style={[styles.borderStyle, styles.footer, { width: '100%', marginTop: '5px' }]}>
+          <View style={{ flexDirection: 'row', justifyContent: 'center', padding: '5px 0' }}>
+            <Text style={styles.body1}>สำหรับผู้ขอรับบริการศูนย์เครื่องมือวิทยาศาสตร์ คณะวิทยาศาสตร์ มก.</Text>
+          </View>
+          <View style={styles.tableRow2}>
+            <View style={styles.tableCell_1}>
+              <Text style={styles.subtitle3}>ชื่อผู้ขอรับบริการ</Text>
+            </View>
+            <View style={styles.tableCell_4}>
+              <Text style={styles.subtitle2}>Pattanan Nuchan 016471 (Booking)</Text>
+            </View>
+          </View>
+          <View style={styles.tableRow2}>
+            <View style={styles.tableCell_1}>
+              <Text style={styles.subtitle3}>ต้องการออกใบเสร็จในนาม</Text>
+            </View>
+            <View style={styles.tableCell_4}>
+              <Text style={styles.subtitle2}>__________________________</Text>
+            </View>
+          </View>
+          <View style={[{ margin: '5px 0 0 -5px' }]}>
+            <Text style={styles.subtitle3}>*** ชื่อผู้นำฝากควรเป็นชื่อเดียวกับ ชื่อผู้ขอรับบริการ ***</Text>
+          </View>
+        </View>
+        <View style={styles.footer2}>
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', padding: '0px 5px 0px 5px' }}>
+            <Text style={[styles.body1, { fontWeight: 'normal' }]}>Print Date {fDateTimeFormat(new Date(), 'YYYY-MM-DD HH:mm:ss')}</Text>
           </View>
         </View>
       </Page>

@@ -26,206 +26,7 @@ import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer';
 import Iconify from '@sentry/components/iconify/Iconify'
 import { CircularProgress } from '@mui/material'
 import InvoicePDF from '@ku/components/Booking/invoice/InvoicePDF'
-const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
-  {
-    eqId: 1,
-    eqCreateBy: 1,
-    eqStatus: "Available",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
-    eqPictures: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
-    eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
-      }
-    ],
-    eqpriceSubTotal: 500,
-    payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 4700,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }, {
-    eqId: 3,
-    eqCreateBy: 1,
-    eqStatus: "Available",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
-    eqPictures: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
-    eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
-      }
-    ],
-    eqpriceSubTotal: 500,
-    payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 4700,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }, {
-    eqId: 2,
-    eqCreateBy: 1,
-    eqStatus: "Unavailable",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
-    eqPictures: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
-    eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
-      }
-    ],
-    eqpriceSubTotal: 500,
-    payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 470,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }]
+
 
 const BOOKING_OPTION = ['Coating Material (CM1)', 'Coating Material (CM2)', 'Coating Material (CM3)']
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
@@ -261,7 +62,7 @@ export default function BookingPage() {
         // if (isEmpty(nextData)) {
         //   setShowLoadMore(false)
         // }
-        setTableData(mockTableData)
+        setTableData([])
         setPage(() => page + 1)
       }
     }).catch(err => {
@@ -287,9 +88,6 @@ export default function BookingPage() {
   };
   const handleLoadMore = () => {
     GetBookingMeRead()
-  }
-  const handlePDF = () => {
-
   }
   const invoice = {
     id: "INV-001",
@@ -351,20 +149,7 @@ export default function BookingPage() {
           ]}
 
         />
-        <Stack direction={'row'} alignItems={'center'} justifyContent={'space-between'} sx={{ mb: 4 }}>
-          <Autocomplete
-            disablePortal
-            id="search-equipment"
-            onInputChange={handleSearchEquipment}
-            options={BOOKING_OPTION.map(option => option)}
-            renderInput={(params) => <TextField {...params} label="Search equipment" />}
-            sx={{ width: 400 }}
-          />
-          <BookingSort
-            filterSort={filterSort}
-            onFilterSort={setFilterSort}
-          />
-        </Stack>
+
         {/* <Button variant='contained' onClick={handlePDF}>PDF</Button> */}
         <PDFDownloadLink
           document={<InvoicePDF invoice={invoice} />}
@@ -413,7 +198,13 @@ export default function BookingPage() {
             </Box>
           </Box>
         </Dialog>
+        <Box sx={{ flexGrow: 1, height: '600px', overflow: 'hidden' }}>
 
+          <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+            <InvoicePDF invoice={invoice} />
+
+          </PDFViewer>
+        </Box>
         {/* <BookingList data={tableData} loading={!tableData.length} onLoadmore={handleLoadMore} showLoadMore={showLoadMore} /> */}
       </Container>
     </>
