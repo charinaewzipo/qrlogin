@@ -29,8 +29,19 @@ export function AccountCreate() {
                 enqueueSnackbar('Account create success.')
                 push({ pathname: ACCOUNT_PATH })
             })
-            .catch((err: AxiosError) => {
-                setErrorMsg(get(err, 'devMessage', messages[0]))
+            .catch((err) => {
+                if (
+                    err.code === 401001 &&
+                    get(err, 'devMessage', messages[0]) === 'Duplicate data'
+                ) {
+                    if (get(err, 'data', messages[0]) === 'Email already registed')
+                        setErrorMsg('Email already registered')
+                    else if (get(err, 'data', messages[0]) === 'u_iphone_number already registered')
+                        setErrorMsg('Phone number already registered')
+                    else setErrorMsg(get(err, 'devMessage', messages[0]))
+                } else {
+                    setErrorMsg(get(err, 'devMessage', messages[0]))
+                }
             })
     }
 
