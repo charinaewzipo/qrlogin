@@ -15,7 +15,7 @@ interface IV1PostMemberCreate {
     uiPosition: string | null;
     uiAdvisorCode: string | null;
     uiStudentId: string | null;
-    uiCardExpireDate: number | null;
+    uiCardExpireDate: string | null;
     uiCreditLimit: number;
     uiBookingLimit: number;
   }
