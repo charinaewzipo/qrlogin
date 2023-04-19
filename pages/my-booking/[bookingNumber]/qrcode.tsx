@@ -4,7 +4,6 @@ import { Box, Container, Stack } from '@mui/material'
 import AuthorizedLayout from '@ku/layouts/authorized'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
-import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
 import BookDetail from '@ku/components/MyBooking/BookDetail'
 import { MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
@@ -110,15 +109,11 @@ const mockData: IV1RespGetBookingMeRead = {
     eqrtimTimes: [8, 10, 14],
 };
 MyBookingQrCode.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function MyBookingQrCode() {
     // const { t } = useTranslation();
-    const permission : PERMISSION = 'Admin'
-    const { enqueueSnackbar } = useSnackbar();
     const {
         query: { bookingNumber },
-        push,
     } = useRouter()
 
     const handleQrDownload = () => {
@@ -156,10 +151,10 @@ export function MyBookingQrCode() {
                             <Stack spacing={5}>
                                 <BookDetail bookingData={mockData} noButton />
                                 <QrCodeDetail
-                                    billerId={'1231321323'}
-                                    totalPayment={'500'}
-                                    ref1={'1231321323'}
-                                    ref2={'1231321323'}
+                                    billerId={'|099400015938248'}
+                                    totalPayment={'1'}
+                                    ref1={'0104010010'}
+                                    ref2={'1001'}
                                     onDownload={handleQrDownload}
                                 />
                             </Stack>

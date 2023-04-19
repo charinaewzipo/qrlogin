@@ -1,9 +1,6 @@
-import { LoadingButton } from '@mui/lab'
-import { Stack, Paper, Typography, Divider, Grid, Button } from '@mui/material'
+import { Stack, Paper, Typography, Grid, Button } from '@mui/material'
 import Iconify from '@sentry/components/iconify'
-import Label, { LabelColor } from '@sentry/components/label'
-import { format } from 'date-fns'
-import { lowerCase } from 'lodash'
+import { fNumber } from '@sentry/utils/formatNumber'
 import QRCode from 'react-qr-code'
 
 const constant = {
@@ -20,7 +17,7 @@ interface IQrCodeDetailProps {
     onDownload: () => void
 }
 function QrCodeDetail({ billerId, totalPayment, ref1, ref2, onDownload }: IQrCodeDetailProps) {
-    const qrValue = `${billerId}\n${totalPayment}\n${ref1}\n${ref2}`
+    const qrValue = `${billerId}\n${ref1}\n${ref2}\n${totalPayment}`
     return (
         <Stack width="34%" minWidth="300px" alignSelf="center">
             <Paper elevation={9} sx={{ borderRadius: 2, p: 3 }}>
@@ -40,7 +37,7 @@ function QrCodeDetail({ billerId, totalPayment, ref1, ref2, onDownload }: IQrCod
                             {constant.totalPayment}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {totalPayment}
+                            {fNumber(totalPayment)} Baht
                         </Typography>
                     </Grid>
                     <Grid item xs={12}>
