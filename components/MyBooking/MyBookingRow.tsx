@@ -8,7 +8,7 @@ import { get, lowerCase, upperFirst } from 'lodash'
 import Image from '@sentry/components/image'
 import { fCurrencyBaht } from '@ku/utils/formatNumber'
 import { PDFDownloadLink } from '@react-pdf/renderer'
-import InvoicePDF from '../Invoice/InvoicePDF'
+import InvoicePDF from '../Invoice/InvoicePaymentPDF'
 
 type Props = {
     row: IV1RespGetBookingMeRead

@@ -6,7 +6,7 @@ import Iconify from '@sentry/components/iconify'
 import MenuPopover from '@sentry/components/menu-popover'
 import { get } from 'lodash'
 import { PDFDownloadLink } from '@react-pdf/renderer'
-import InvoicePDF from '@ku/components/Invoice/InvoicePDF'
+import InvoicePDF from '@ku/components/Invoice/InvoicePaymentPDF'
 
 
 type Props = {

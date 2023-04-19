@@ -2,7 +2,7 @@
 import { Page, View, Text, Image, Document } from '@react-pdf/renderer';
 // utils
 
-import styles from './InvoiceStyle';
+import styles from './InvoicePaymentStyle';
 import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------

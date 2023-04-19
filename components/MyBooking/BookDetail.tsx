@@ -4,8 +4,8 @@ import { PDFDownloadLink } from '@react-pdf/renderer'
 import Label, { LabelColor } from '@sentry/components/label'
 import { format } from 'date-fns'
 import { lowerCase } from 'lodash'
-import InvoicePDF from '../Invoice/InvoicePDF'
-import { CircularProgress } from '@mui/material'
+import InvoicePDF from '../Invoice/InvoicePaymentPDF'
+
 
 const constant = {
     bookSummary: 'Book summary',
