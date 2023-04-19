@@ -109,6 +109,7 @@ export function Index() {
                                         <AnalyticsWidgetSummary
                                             title="Waiting for payment"
                                             total={12}
+                                            /* @ts-ignore */
                                             color="grey"
                                             icon={'ant-design:credit-card-filled'}
                                             units="Booking"

@@ -95,6 +95,7 @@ export function AccountDetail() {
         },
     }
     const permissionTab = ():PERMISSION => {
+       // @ts-ignore
         if ( permissionMe === 'Supervisor' ) {
             return 'Admin'
         } else {

@@ -4,13 +4,13 @@ import { Card, Typography, CardProps } from '@mui/material';
 // utils
 import { fShortenNumber } from '@sentry/utils/formatNumber';
 // theme
-import { ColorSchema } from '@sentry/theme/palette';
+
 // components
 import Iconify from '@sentry/components/iconify'
 
 
 // ----------------------------------------------------------------------
-
+export type ColorSchema = 'primary' | 'secondary' | 'info' | 'success' | 'warning' | 'error' | 'grey'
 const IconWrapperStyle = styled('div')(({ theme }) => ({
   margin: 'auto',
   display: 'flex',

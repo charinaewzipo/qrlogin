@@ -14,7 +14,8 @@ import { CustomFile, MultiFilePreview, RejectionFiles } from '@sentry/components
 import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
-import axios from '@ku/services/axios'
+import { fNumber } from '@sentry/utils/formatNumber'
+import axios from 'axios'
 import { NumberFormatCustom } from '@ku/utils/numberFormatCustom'
 
 export interface IMaintenanceLogFormValuesProps {
@@ -57,7 +58,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const defaultValues = props.defaultValue || {
         descriptions: '',
         cost: '',
-        date: '',
+        date: null,
         maintenanceFiles: [],
     }
 
@@ -91,8 +92,6 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
 
     const onSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const submitData = cloneDeep(data)
-        //TODO: แปลง submitdata.date เป็น timestamp
-        //TODO: ต่อ api อัพไฟล์
         props.onSubmit(submitData)
     }
 

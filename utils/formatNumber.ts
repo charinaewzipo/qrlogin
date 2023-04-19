@@ -6,6 +6,11 @@ export function fCurrency(number: string | number) {
   return numeral(number).format(Number.isInteger(number) ? '$0,0' : '$0,0.00');
 }
 
+export function fCurrencyBaht(number: string | number) {
+  const formatted = numeral(number).format(Number.isInteger(number) ? '0,0' : '0,0.00')
+  return `${formatted} B`;
+}
+
 export function fPercent(number: number) {
   return numeral(number / 100).format('0.0%');
 }

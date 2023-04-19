@@ -1,16 +1,15 @@
 // next
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 // next
+import React from 'react'
 import * as Yup from 'yup'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import {
-  Card,
   Table,
   TableBody,
   Container,
   TableContainer,
-  TablePagination,
   Box,
   useTheme,
   Stack,
@@ -20,6 +19,7 @@ import {
   Alert,
   FormHelperText,
 } from '@mui/material'
+import responseCode from '@ku/constants/responseCode'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
@@ -27,185 +27,31 @@ import Iconify from '@sentry/components/iconify'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSkeleton,
+  TablePaginationCustom,
 } from '@sentry/components/table'
-import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
-import { addDays } from 'date-fns'
+import { addDays, isValid, } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
 import FormProvider from '@sentry/components/hook-form/FormProvider'
-import { Controller, useForm, ErrorOption } from 'react-hook-form'
+import { Controller, ErrorOption, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
-import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
-import { fetchGetEquipmentRead, fetchGetEquipmentUnavailable, fetchGetUnAvailableSchedule, fetchPostEquipmentCreate, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
-import { get, isEmpty } from 'lodash'
+import { RHFAutocomplete } from '@sentry/components/hook-form'
+import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
+import messages from '@ku/constants/response'
+import { TIME_OPTIONS } from '@ku/constants/variables'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
+import uuidv4 from '@sentry/utils/uuidv4'
 
-
-const mockTableData: IV1PostEquipmentRead[] =
-  [{
-    eqId: "ABC123",
-    eqStatus: "available",
-    eqCode: "EQ001",
-    eqName: "Power Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1548435200, // April 26, 2022
-    eqUpdatedAt: 1949577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC124",
-    eqStatus: "Unavailable",
-    eqCode: "EQ001",
-    eqName: "DeWalt",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1448435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC125",
-    eqStatus: "Temporary Unavailable",
-    eqCode: "EQ001",
-    eqName: "ABC124 Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.Temporary UnavailableTemporary Unavailable",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }]
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Equipment', align: 'left' },
+  { id: 'eqName', label: 'Equipment', align: 'left' },
 ];
 type FormValuesProps = {
   date: Date | null,
@@ -221,6 +67,7 @@ export default function EquipmentScheduleCreatePage() {
     order,
     orderBy,
     rowsPerPage,
+    setRowsPerPage,
     setPage,
     //
     selected,
@@ -229,27 +76,33 @@ export default function EquipmentScheduleCreatePage() {
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
+  const [tableAllData, setTableAllData] = useState<IV1PostEquipmentRead[]>([])
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
-
+  const [totalRecord, setTotalRecord] = useState<number>(0);
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
 
   useEffect(() => {
+    GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+    getEQ2All()
+    return debouncedCallback.cancel
+  }, [])
+  useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
+  useEffect(() => {
+    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
+  }, [filterSearchEquipment])
 
   const EquipmentScheduleScheme = Yup.object().shape({
-    date: Yup.date().nullable().required('Date is require'),
+    date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
   })
   const defaultValues: FormValuesProps = useMemo(
@@ -265,125 +118,124 @@ export default function EquipmentScheduleCreatePage() {
   })
   const {
     reset,
-    watch,
     control,
     setValue,
     handleSubmit,
     setError,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods
 
-
-
-  const TIME_OPTIONS = [
-    'Ealry morning (7:00 - 12:59)',
-    'Afternoon (13:00 - 22:00)',
-    'Full day (7:00 - 22:00)',
-  ];
-
-  useEffect(() => {
-    GetEquipmentRead()
-  }, [])
-
-  const GetEquipmentRead = async () => {
+  const GetEquipmentRead = (pageToGo: number, limit: number, search: string, isSortName: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page,
-      limit: rowsPerPage,
+      page: pageToGo + 1,
+      limit: limit,
       eqId: '',
       eqStatus: '',
-      eqSearch: filterSearchEquipment,
-      eqSortName: false,
+      eqSearch: search,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
-    await fetchGetEquipmentRead(query).then(response => {
-      if (response.code === 200) {
-        setTableData(mockTableData)
-        // setStatusStat(response.data)
+    Object.keys(query).forEach(key => {
+      if (isNull(query[key]) || isUndefined(query[key]) || query[key] === "") {
+        delete query[key]
+      }
+    })
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableData(get(response, 'data.dataList', []))
+        setTotalRecord(get(response, 'data.totalRecord', 0))
+        setPage(pageToGo)
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
-  const PostEquipmentCreate = async () => {
-    const ArrayNumber = selected.map(numString => parseInt(numString))
-    const query: IV1PostEquipmentUnavailableCreate = {
-      date: Date.now(),
-      times: [],
-      eqId: ArrayNumber,
-      status: ''
+  const getEQ2All = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: 1, limit: 9999999,
+      eqSortName: false, eqSortCode: false,
     }
-    console.log("selected", selected)
-    console.log("query", query)
-    await fetchPostEquipmentUnavailableCreate(query).then(response => {
-      if (response.code === 200) {
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableAllData(get(response, 'data.dataList', []))
+      }
+    }).catch(err => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
+  const PostEquipmentCreate = (data: FormValuesProps) => {
+    const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
+    const ArrayEqID = selected.map(numString => parseInt(numString))
+    const query: IV1PostEquipmentUnavailableCreate = {
+      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
+      times: mapTime.value,
+      eqId: ArrayEqID,
+    }
+    fetchPostEquipmentUnavailableCreate(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
         push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
         enqueueSnackbar('Create schedule success.')
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      const errorOptions: ErrorOption = {
+        message: errorMessage
+      }
+      setError('afterSubmit', errorOptions)
     })
   }
+
+  const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
+  const callBackTimeout = useCallback(debouncedCallback, [])
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
+    onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
   }
   const handleOnclickCancel = () => {
     reset()
     setSelected([])
   }
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const limit = parseInt(event.target.value, 10)
+    setRowsPerPage(limit)
+    GetEquipmentRead(0, limit, filterSearchEquipment)
+  }
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
-      console.log("onSubmit", data)
-      try {
-        PostEquipmentCreate()
-
-      } catch (error) {
-        // console.error(error)
-        const errorOptions: ErrorOption = {
-          message: 'errorResponse.data || errorResponse.devMessage',
-        }
-        setError('afterSubmit', errorOptions)
-      }
+      PostEquipmentCreate(data)
     }
   }
-
-  const isNotFound = (!tableData.length)
-
-  const RenderChips = (): JSX.Element => {
+  const RenderChips = useMemo(() => {
     return (
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
-        {selected.map((id) => {
-          const findData = tableData.find(i => i.eqId === id)
+        {selected.map((id, index) => {
+          const findData = tableAllData.find(i => i.eqId === id)
           return (
-            <>
+            <React.Fragment key={index}>
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={get(findData, 'eqPicture[0].eqpicLink', '')} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
                   label={get(findData, 'eqName', '')}
-                  key={id}
+                  key={`${id}`}
                   sx={{ m: 0.5 }}
                   color='primary'
                   onDelete={() => onSelectRow(id)}
                 />
               }
-            </>
+            </React.Fragment>
           )
         })}
       </Box>
     )
-  }
+  }, [selected])
   return (
     <>
       <Head>
@@ -448,11 +300,10 @@ export default function EquipmentScheduleCreatePage() {
                   value={value}
                   disablePortal
                   disableClearable
-                  options={TIME_OPTIONS.map((option) => option)}
+                  options={TIME_OPTIONS.map((option) => option.label)}
                   onChange={(event, newValue) => {
                     onChange(() => setValue('time', `${newValue}`))
-                  }
-                  }
+                  }}
                   renderInput={(params) => (
                     <TextField {...params}
                       label="Time"
@@ -463,7 +314,7 @@ export default function EquipmentScheduleCreatePage() {
               )}
             />
           </Stack>
-          <RenderChips />
+          {RenderChips}
           <Box sx={{ px: 4, py: 2 }}>
             <TextField
               fullWidth
@@ -480,25 +331,34 @@ export default function EquipmentScheduleCreatePage() {
               }}
             />
           </Box>
+
           <TableContainer sx={{ minWidth: 960, position: 'relative' }}>
             <Table>
               <TableHeadCustom
                 sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
+                order={order}
+                orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
+                rowCount={selected.length}
                 numSelected={selected.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => get(row, 'eqId', ''))
-                  )
-                }
-              />
+                onSort={(id) => {
+                  if (id === 'eqName') {
+                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
+                    onSort(id)
+                  }
+                }}
+                onSelectAllRows={(checked) => {
+                  if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
+                    onSelectAllRows(checked, tableAllData.map((row) => get(row, 'eqId', '')))
+                  } else {
+                    onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
+                  }
 
+                }}
+              />
               <TableBody>
-                {tableData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
+                {!isEmpty(tableData) &&
+                  tableData.map((row, index) =>
                     row ? (
                       <EquipmentScheduleCreateRow
                         key={get(row, 'eqId', '')}
@@ -508,23 +368,19 @@ export default function EquipmentScheduleCreatePage() {
                         onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
                       />
                     ) : (
-                      !isNotFound && <TableSkeleton key={index} />
+                      !isEmpty(tableData) && <TableSkeleton key={index} />
                     )
                   )}
-
-
-                <TableNoData isNotFound={isNotFound} />
+                <TableNoData isNotFound={isEmpty(tableData)} />
               </TableBody>
             </Table>
           </TableContainer>
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 25]}
-            component="div"
-            count={tableData.length}
+          <TablePaginationCustom
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
+            onPageChange={(e, page) => GetEquipmentRead(page, rowsPerPage, filterSearchEquipment)}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
@@ -541,7 +397,7 @@ export default function EquipmentScheduleCreatePage() {
               type="submit"
               variant="contained"
               onClick={() => {
-                if (selected.length === 0) {
+                if (!selected.length) {
                   setIsErrorSelectEquipment(true)
                 }
               }}

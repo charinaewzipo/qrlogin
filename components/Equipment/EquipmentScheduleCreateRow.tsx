@@ -1,13 +1,8 @@
-import { useState } from 'react';
-import { sentenceCase } from 'change-case';
 // @mui
-import { useTheme } from '@mui/material/styles';
 import { TableRow, Checkbox, TableCell, Typography, MenuItem, Box } from '@mui/material';
-import Image from '@sentry/components/image/Image';
-import Label from '@sentry/components/label/Label';
 // utils
-import { format } from 'date-fns'
-import { get, isEmpty } from 'lodash';
+import { get } from 'lodash';
+import { ImageComponent } from '../Image';
 
 // ----------------------------------------------------------------------
 
@@ -27,17 +22,6 @@ export default function EquipmentScheduleCreateRow({
   onViewRow,
 
 }: Props) {
-  const theme = useTheme();
-
-  // const [openMenu, setOpenMenuActions] = useState<HTMLElement | null>(null);
-
-  // const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
-  //   setOpenMenuActions(event.currentTarget);
-  // };
-
-  // const handleCloseMenu = () => {
-  //   setOpenMenuActions(null);
-  // };
 
   return (
     <TableRow hover selected={selected} key={get(row, 'eqId', '-1')} onClick={onViewRow} sx={{ cursor: 'pointer' }}>
@@ -49,9 +33,7 @@ export default function EquipmentScheduleCreateRow({
         <Box
           sx={{ display: 'flex', justifyContent: 'center' }}
         >
-          <Image
-            disabledEffect
-            alt={get(row, 'eqName', '')}
+          <ImageComponent
             src={get(row, 'eqPicture[0].eqpicLink', '')}
             sx={{ borderRadius: 1.5, width: 64, height: 64, mr: 2 }}
           />
