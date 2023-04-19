@@ -6,7 +6,13 @@ Font.register({
   family: 'Roboto',
   fonts: [{ src: '/fonts/Roboto-Regular.ttf' }, { src: '/fonts/Roboto-Bold.ttf' }],
 });
-
+Font.register({
+  family: 'THSarabunNew',
+  fonts: [{ src: '/fonts/THSarabunNew.ttf' },
+    , { src: '/fonts/THSarabunNew Bold.ttf' },
+  { src: '/fonts/THSarabunNew Italic.ttf', fontStyle: 'italic' }, { src: '/fonts/THSarabunNew BoldItalic.ttf', fontStyle: 'italic', }
+  ],
+});
 const styles = StyleSheet.create({
   col4: { width: '25%' },
   col8: { width: '75%' },
@@ -22,6 +28,9 @@ const styles = StyleSheet.create({
   h3: { fontSize: 16, fontWeight: 700 },
   h4: { fontSize: 13, fontWeight: 700 },
   body1: { fontSize: 10 },
+  body2: { fontSize: 9, color: '#637381' },
+  body2_Thai: { fontSize: 13, fontFamily: 'THSarabunNew', lineHeight: 1 },
+  subtitle2_Thai: { fontSize: 13, fontWeight: 700, fontFamily: 'THSarabunNew', lineHeight: 1 },
   subtitle2: { fontSize: 9, fontWeight: 700 },
   subtitle2_header: { fontSize: 9, fontWeight: 700, color: '#637381' },
   alignRight: { textAlign: 'right' },
@@ -32,6 +41,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Roboto',
     backgroundColor: '#fff',
     textTransform: 'capitalize',
+    color: '#212B36'
   },
   footer: {
     left: 0,
