@@ -99,7 +99,7 @@ const typeOfPerson = [
     { value: 'GOVN_OFFICE', label: 'Government office' },
     { value: 'PRIVATE_COMPANY', label: 'Private company' },
 ]
-const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU Student & Staff')
+const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU_STUDENT_STAFF')
 const position = [
     { value: 'Lecturer', label: 'Lecturer' },
     { value: 'Researcher', label: 'Researcher' },
@@ -148,13 +148,11 @@ const privillege = [
     { value: 'SUPERVISOR', label: 'Supervisor' },
     { value: 'USER', label: 'User' },
 ]
-
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
     onSubmit: (data: IAccountFormValuesProps) => void
     onCancel: () => void
     updateMode? : boolean
-    permission? : PERMISSION
+    permission? : TPermission
     errorMsg: string
 }
 function AccountForm(props: AccountFormProps) {
@@ -162,7 +160,7 @@ function AccountForm(props: AccountFormProps) {
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
 
     const checkIsKuPerson = (typeOfPerson: string) =>
-        ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
+        ['KU_STUDENT_STAFF', 'SCIKU_STUDENT_STAFF'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
     const checkIsStaff = (position: string) => ['Lecturer', 'Researcher'].includes(position)
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
@@ -216,15 +214,15 @@ function AccountForm(props: AccountFormProps) {
                 then: Yup.string().nullable().required('Department is require'),
             }),
         universityName: Yup.string().when('typeOfPerson', {
-            is: 'Other University',
+            is: 'OTHER_UNIVERSITY',
             then: Yup.string().required('University name is require'),
         }),
         governmentName: Yup.string().when('typeOfPerson', {
-            is: 'Government office',
+            is: 'GOVN_OFFICE',
             then: Yup.string().required('Government name is require'),
         }),
         companyName: Yup.string().when('typeOfPerson', {
-            is: 'Private company',
+            is: 'PRIVATE_COMPANY',
             then: Yup.string().required('Company name is require'),
         }),
         position: Yup.string()
@@ -348,7 +346,7 @@ function AccountForm(props: AccountFormProps) {
     ])
     
     useEffect(() => {
-        if(props.permission && props.permission === 'User'){
+        if(props.permission && props.permission === 'USER'){
             fetchSupervisorData('123456')
         }
         clearTimeout(supervisorTimeout);
@@ -588,14 +586,14 @@ function AccountForm(props: AccountFormProps) {
                                 )}
                             </RHFSelect>
                             {{
-                                'Other University': (
+                                'OTHER_UNIVERSITY': (
                                     <RHFTextField
                                         name="universityName"
                                         label={isRequire(constant.universityName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'KU Student & Staff': (
+                                'KU_STUDENT_STAFF': (
                                     <RHFTextField
                                         name="department"
                                         key={'department-textfield'}
@@ -603,7 +601,7 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'SciKU Student & Staff': (
+                                'SCIKU_STUDENT_STAFF': (
                                     <Controller
                                         name="department"
                                         control={control}
@@ -635,7 +633,7 @@ function AccountForm(props: AccountFormProps) {
                                         )}
                                     />
                                 ),
-                                'Government office': (
+                                'GOVN_OFFICE': (
                                     <RHFTextField
                                         name="governmentName"
                                         key={'governmentName-textfield'}
@@ -643,7 +641,7 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'Private company': (
+                                'PRIVATE_COMPANY': (
                                     <RHFTextField
                                         name="companyName"
                                         key={'companyName-textfield'}
@@ -911,7 +909,7 @@ function AccountForm(props: AccountFormProps) {
                     <></>
                 )}
 
-                {props.permission && props.permission === 'User' ? (
+                {props.permission && props.permission === 'USER' ? (
                     <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                         <Stack spacing={2} textAlign={'left'}>
                             <Typography variant="h4">{constant.supervisorDetail}</Typography>

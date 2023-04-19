@@ -73,7 +73,7 @@ export function AccountDetail() {
           value: 'Account-detail',
           label: 'Account detail',
           icon: <Iconify icon="ic:round-account-box" />,
-          component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'User'}/>,
+          component: <AccountForm errorMsg='' onSubmit={onFormSubmit} onCancel={onFormCancel} updateMode={true} permission={'USER'}/>,
         },
         user:{
           value: 'User-Supervise',
