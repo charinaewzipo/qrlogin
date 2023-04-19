@@ -30,244 +30,272 @@ import BookingEstimatingInvoice from '@ku/components/Booking/BookingEstimatingIn
 import BookingEstimatingSummary from '@ku/components/Booking/BookingEstimatingSummary'
 const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
   {
-    eqId: 1,
-    eqCreateBy: 1,
-    eqStatus: "Available",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
+    bookId: 35,
+    eqId: 7,
+    eqStatus: "AVAILABLE",
+    eqCode: "111",
+    eqName: "funnel",
+    eqBrand: "CP",
+    eqModel: "1001",
+    eqDescription: "hello is",
+    eqCreateBy: 123,
     eqPictures: [
       {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
+        eqpicLink: "http://bestzpic03.jpg",
+        eqpicSort: 4
+      },
+      {
+        eqpicLink: "http://bestzpic03.jpg",
         eqpicSort: 1
       },
       {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
+        eqpicLink: "http://bestzpic03.jpg",
+        eqpicSort: 2
+      },
+      {
+        eqpicLink: "http://bestzpic03.jpg",
+        eqpicSort: 3
+      }
+    ],
+    eqCreatedAt: "2023-03-22T14:51:18.136Z",
+    eqUpdatedAt: "2023-03-27T16:10:00.823Z",
+    bookOwner: 13,
+    bookAdvisor: null,
+    bookStatus: "CONFIRM",
+    bookCreatedAt: "2023-04-18T15:15:17.912Z",
+    eqRtimDays: "2023-04-20T01:00:00.000Z",
+    eqRtimTimes: [
+      9,
+      10
+    ],
+    eqPrices:
+      [
+        {
+          eqpId: 7,
+          eqpName: "SCI_KU bestz1",
+          eqpEqId: 7,
+          eqpTotal: 40,
+          eqsubPrice: [{
+            eqsubpId: 3,
+            eqsubpName: "Sub SCI_KU bestz 1",
+            eqsubpTotal: 40,
+            eqsubpChecked: "DEFAULT",
+            eqsubpUnitPer: "Bath",
+            eqsubpCreatedAt: "2023-04-18T15:15:17.912252+00:00",
+            eqsubpUnitPrice: 20,
+            eqsubpUpdatedAt: "2023-04-18T15:15:17.912252+00:00",
+            eqsubpDescription: "Sub test 001",
+            eqsubpQuantity: 123
+          },] as IV1EquipmentSubPrice[],
+          eqpChecked: "FIXED",
+          eqpQuantity: 0,
+          eqpUnitPer: null,
+          eqpCreatedAt: "2023-04-18T15:15:17.912252+00:00",
+          eqpUpdatedAt: "2023-04-18T15:15:17.912252+00:00",
+          eqpIsChecked: true,
+          eqpSubOption: "AT_LEAST_ONE",
+          eqpUnitPrice: null,
+          eqpDescription: "bestz test 001",
+          eqpTypePerson: "SCIKU_STUDENT_STAFF"
+        }
+      ]
+    ,
+    eqPriceSubTotal: 40,
+    payOt: 0,
+    payDiscount: 0,
+    payFees: 0,
+    payTotal: 40,
+    payId: 1,
+    payBookId: 35,
+    payQuotationPicture: "http://bestzpic03.jpg",
+    payInvoicePicture: "http://bestzpic03.jpg",
+    payReceiptPicture: "http://bestzpic03.jpg",
+    paySlipPicture: "http://bestzpic03.jpg",
+    payQrPicture: "http://bestzpic03.jpg",
+    payQrExpiry: "2023-04-25T01:00:00.000Z",
+    payQrRef1: "123456",
+    payQrRef2: "654321",
+    payRemark: "Payment received",
+    payBillingAddress: "123 Main St, Anytown, USA",
+    payReceiptNumber: "R123456",
+    payDateTime: "2023-04-19T13:00:00.000Z",
+    payAmount: 40,
+    payCreatedAt: "2023-04-19T13:00:00.000Z",
+    payUpdatedAt: "2023-04-19T13:00:00.000Z",
+  }, {
+    bookId: 36,
+    eqId: 8,
+    eqStatus: "AVAILABLE",
+    eqCode: "222",
+    eqName: "screwdriver",
+    eqBrand: "Stanley",
+    eqModel: "12345",
+    eqDescription: "This is a screwdriver",
+    eqCreateBy: 456,
+    eqPictures: [
+      {
+        eqpicLink: "http://bestzpic01.jpg",
+        eqpicSort: 1
+      },
+      {
+        eqpicLink: "http://bestzpic02.jpg",
         eqpicSort: 2
       }
     ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
+    eqCreatedAt: "2023-04-19T13:00:00.000Z",
+    eqUpdatedAt: "2023-04-19T13:00:00.000Z",
+    bookOwner: 14,
+    bookAdvisor: null,
+    bookStatus: "CONFIRM",
+    bookCreatedAt: "2023-04-19T13:00:00.000Z",
+    eqRtimDays: "2023-04-25T01:00:00.000Z",
+    eqRtimTimes: [
+      11,
+      12
+    ],
     eqPrices: [
       {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "StarndardStarndard optionsStarndard optionsStarndard optionsStarndard options options",
-        eqpQuantity: 3,
-        eqpTotal: 15000,
-        eqpUnitPrice: 5000,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: [
+        eqpId: 8,
+        eqpName: "Stanley Screwdriver",
+        eqpEqId: 8,
+        eqpTotal: 20,
+        eqsubPrice: [
           {
-            eqSubpId: 1,
-            eqSubpChecked: "yes",
-            eqSubpName: "Laptop",
-            eqSubpDescription: "Macbook Pro 13-inch",
-            eqSubpUnitPrice: 1399.99,
-            eqSubpUnitPer: "piece",
-            eqSubpQuantity: 2,
-            eqSubpTotal: 2799.98,
-            eqSubpCreatedAt: 1649126400,
-            eqSubpUpdatedAt: 1649212800
-          }, {
-            eqSubpId: 2,
-            eqSubpChecked: "yes",
-            eqSubpName: "Laptop",
-            eqSubpDescription: "Macbook Pro 13-inch",
-            eqSubpUnitPrice: 1399.99,
-            eqSubpUnitPer: "piece",
-            eqSubpQuantity: 2,
-            eqSubpTotal: 2799.98,
-            eqSubpCreatedAt: 1649126400,
-            eqSubpUpdatedAt: 1649212800
-          }]
-      }, {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
+            eqsubpId: 4,
+            eqsubpName: "Screwdriver Bit",
+            eqsubpTotal: 20,
+            eqsubpChecked: "DEFAULT",
+            eqsubpUnitPer: "Piece",
+            eqsubpCreatedAt: "2023-04-19T13:00:00.000Z",
+            eqsubpUnitPrice: 5,
+            eqsubpUpdatedAt: "2023-04-19T13:00:00.000Z",
+            eqsubpDescription: "Extra Screwdriver Bit",
+            eqsubpQuantity: 4
+          }
+        ],
+        eqpChecked: "FIXED",
+        eqpQuantity: 5,
+        eqpUnitPer: "Booking",
+        eqpCreatedAt: "2023-04-19T13:00:00.000Z",
+        eqpUpdatedAt: "2023-04-19T13:00:00.000Z",
         eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "StarndardStarndard optionsStarndard optionsStarndard optionsStarndard options options",
-        eqpQuantity: 3,
-        eqpTotal: 5000,
-        eqpUnitPrice: 5010,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: [
-        ]
+        eqpSubOption: "AT_LEAST_ONE",
+        eqpUnitPrice: 1000,
+        eqpDescription: "Standard Screwdriver",
+        eqpTypePerson: "PUBLIC"
       }
     ],
-    eqpriceSubTotal: 500,
+    eqPriceSubTotal: 20,
     payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 4700,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }, {
-    eqId: 3,
-    eqCreateBy: 1,
-    eqStatus: "Available",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
-    eqPictures: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
-    eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
-      }
-    ],
-    eqpriceSubTotal: 500,
-    payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 470,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }, {
-    eqId: 2,
-    eqCreateBy: 1,
-    eqStatus: "Unavailable",
-    eqCode: "EQ0001",
-    eqName: "Excavator",
-    eqBrand: "Caterpillar",
-    eqModel: "CAT320",
-    eqDescription: "A heavy equipment machine used in construction",
-    eqPictures: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648753212000,
-    eqUpdatedAt: 1648753212000,
-    bookId: 1,
-    bookOwner: 1,
-    bookAdvisor: 2,
-    bookStatus: "confirmed",
-    eqPrices: [
-      {
-        eqpId: 1,
-        eqpEqId: 1,
-        eqpTypePerson: "operator",
-        eqpSubOption: "",
-        eqpChecked: "",
-        eqpIsChecked: true,
-        eqpName: "Rental fee",
-        eqpDescription: "",
-        eqpQuantity: 1,
-        eqpTotal: 500,
-        eqpUnitPrice: 500,
-        eqpUnitPer: "hour",
-        eqpCreatedAt: 1648753212000,
-        eqpUpdatedAt: 1648753212000,
-        eqSubPrice: []
-      }
-    ],
-    eqpriceSubTotal: 500,
-    payOt: 0,
-    payDiscount: 50,
-    payFees: 20,
-    payTotal: 470,
-    payId: 1,
-    payBookId: 1,
-    payQuotationPicture: "https://example.com/quotation.jpg",
-    payInvoicePicture: "https://example.com/invoice.jpg",
-    payReceiptPicture: "https://example.com/receipt.jpg",
-    paySlipPicture: "",
-    payQrPicture: "",
-    payQrExpiry: 1648753212000,
-    payQrRef1: "ABC123",
-    payQrRef2: "",
-    payRemark: "Paid in full",
-    payBillingAddress: "123 Main Street, Anytown, USA",
-    payReceiptNumber: "R-0001",
-    payDateTime: 1648753212000,
-    payAmount: 470,
-    payCreatedAt: 1648753212000,
-    payUpdatedAt: 1648753212000
-  }]
+    payDiscount: 0,
+    payFees: 0,
+    payTotal: 1120,
+    payId: 2,
+    payBookId: 36,
+    payQuotationPicture: "http://bestzpic01.jpg",
+    payInvoicePicture: "http://bestzpic01.jpg",
+    payReceiptPicture: "http://bestzpic01.jpg",
+    paySlipPicture: "http://bestzpic01.jpg",
+    payQrPicture: "http://bestzpic01.jpg",
+    payQrExpiry: "2023-04-25T01:00:00.000Z",
+    payQrRef1: "123456",
+    payQrRef2: "654321",
+    payRemark: "Payment received",
+    payBillingAddress: "123 Main St, Anytown, USA",
+    payReceiptNumber: "R123456",
+    payDateTime: "2023-04-19T13:00:00.000Z",
+    payAmount: 40,
+    payCreatedAt: "2023-04-19T13:00:00.000Z",
+    payUpdatedAt: "2023-04-19T13:00:00.000Z",
+  }
+]
+// const newEquipment = {
+//   bookId: 36,
+//   eqId: 8,
+//   eqStatus: "AVAILABLE",
+//   eqCode: "222",
+//   eqName: "screwdriver",
+//   eqBrand: "Stanley",
+//   eqModel: "12345",
+//   eqDescription: "This is a screwdriver",
+//   eqCreateBy: 456,
+//   eqPictures: [
+//     {
+//       eqpicLink: "http://bestzpic01.jpg",
+//       eqpicSort: 1
+//     },
+//     {
+//       eqpicLink: "http://bestzpic02.jpg",
+//       eqpicSort: 2
+//     }
+//   ],
+//   eqCreatedAt: "2023-04-19T13:00:00.000Z",
+//   eqUpdatedAt: "2023-04-19T13:00:00.000Z",
+//   bookOwner: 14,
+//   bookAdvisor: null,
+//   bookStatus: "CONFIRM",
+//   bookCreatedAt: "2023-04-19T13:00:00.000Z",
+//   eqRtimDays: "2023-04-25T01:00:00.000Z",
+//   eqRtimTimes: [
+//     11,
+//     12
+//   ],
+//   eqPrices: [
+//     {
+//       eqpId: 8,
+//       eqpName: "Stanley Screwdriver",
+//       eqpEqId: 8,
+//       eqpTotal: 20,
+//       eqsubPrice: [
+//         {
+//           eqsubpId: 4,
+//           eqsubpName: "Screwdriver Bit",
+//           eqsubpTotal: 20,
+//           eqsubpChecked: "DEFAULT",
+//           eqsubpUnitPer: "Piece",
+//           eqsubpCreatedAt: "2023-04-19T13:00:00.000Z",
+//           eqsubpUnitPrice: 5,
+//           eqsubpUpdatedAt: "2023-04-19T13:00:00.000Z",
+//           eqsubpDescription: "Extra Screwdriver Bit",
+//           eqsubpQuantity: 4
+//         }
+//       ],
+//       eqpChecked: "FIXED",
+//       eqpQuantity: 0,
+//       eqpUnitPer: null,
+//       eqpCreatedAt: "2023-04-19T13:00:00.000Z",
+//       eqpUpdatedAt: "2023-04-19T13:00:00.000Z",
+//       eqpIsChecked: true,
+//       eqpSubOption: "AT_LEAST_ONE",
+//       eqpUnitPrice: null,
+//       eqpDescription: "Standard Screwdriver",
+//       eqpTypePerson: "PUBLIC"
+//     }
+//   ],
+//   eqPriceSubTotal: 20,
+//   payOt: 0,
+//   payDiscount: 0,
+//   payFees: 0,
+//   payTotal: 20,
+//   payId: 2,
+//   payBookId: 36,
+//   payQuotationPicture: "http://bestzpic01.jpg",
+//   payInvoicePicture: "http://bestzpic01.jpg",
+//   payReceiptPicture: "http://bestzpic01.jpg",
+//   paySlipPicture: "http://bestzpic01.jpg",
+//   payQrPicture: "http://bestzpic01.jpg",
+//   payQrExpiry: "2023-04-25T01:00:00.000Z",
+//   payQrRef1: "123456",
+//   payQrRef2: "654321",
+//   payRemark: "Payment received",
+//   payBillingAddress: "123 Main St, Anytown, USA",
+//   payReceiptNumber: "R123456",
+//   payDateTime: "2023-04-19T13:00:00.000Z",
+//   payAmount: 40,
+//   payCreatedAt: "2023-04-19T13:00:00.000Z",
+//   payUpdatedAt: "2023-04-19T13:00:00.000Z",
+// }
+
 
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
@@ -292,7 +320,7 @@ export default function BookingPage() {
     }
     await fetchGetBookingMeRead(query).then(response => {
       if (response.code === 200) {
-        setBookDetail(mockTableData[0])
+        setBookDetail(mockTableData[1])
       }
     }).catch(err => {
       console.log(err)

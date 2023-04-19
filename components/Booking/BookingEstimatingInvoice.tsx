@@ -1,7 +1,7 @@
 // @mui
 import React from 'react'
 import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
-import { get, isEmpty } from "lodash";
+import { get, isEmpty, isNull } from "lodash";
 import Label from "@sentry/components/label/Label";
 import { format } from "date-fns";
 import Scrollbar from "@sentry/components/scrollbar/Scrollbar";
@@ -82,11 +82,11 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                         </Box>
                       </TableCell>
                       <TableCell align="left">{get(row, 'eqpQuantity', 0).toLocaleString()}</TableCell>
-                      <TableCell align="right">{`${get(row, 'eqpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqpUnitPer', '')}`}</TableCell>
+                      <TableCell align="right">{`${isNull(get(row, 'eqpUnitPrice', 0)) ? 0 : get(row, 'eqpUnitPrice', 0).toLocaleString()} B/${isNull(get(row, 'eqpUnitPer', '')) ? '' : get(row, 'eqpUnitPer', '')}`}</TableCell>
                       <TableCell align="right">{`${(get(row, 'eqpTotal', 0)).toLocaleString()} B`}</TableCell>
                     </TableRow>
 
-                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row, index) => (
+                    {!isEmpty(get(row, 'eqsubPrice', [])) && row.eqsubPrice.map((row, index) => (
                       <TableRow
                         key={`rowSubPrice-${index}`}
                         sx={{
@@ -96,15 +96,16 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                       >
                         <TableCell align="left" sx={{ pl: 5 }}>
                           <Box sx={{ width: 460 }}>
-                            <Typography variant="subtitle2">{get(row, 'eqSubpName', '')}</Typography>
+                            <Typography variant="subtitle2">{get(row, 'eqsubpName', '')}</Typography>
                             <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                              {get(row, 'eqSubpDescription', '')}
+
+                              {get(row, 'eqsubpDescription', '')}
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell align="left">{get(row, 'eqSubpQuantity', 0).toLocaleString()}</TableCell>
-                        <TableCell align="right">{`${get(row, 'eqSubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqSubpUnitPer', '')}`}</TableCell>
-                        <TableCell align="right">{`${(get(row, 'eqSubpTotal', 0)).toLocaleString()} B`}</TableCell>
+                        <TableCell align="left">{get(row, 'eqsubpQuantity', 0).toLocaleString()}</TableCell>
+                        <TableCell align="right">{`${get(row, 'eqsubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqsubpUnitPer', '')}`}</TableCell>
+                        <TableCell align="right">{`${(get(row, 'eqsubpTotal', 0)).toLocaleString()} B`}</TableCell>
                       </TableRow>
 
                     ))}
@@ -120,7 +121,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                   </TableCell>
                   <TableCell align="right" width={120} sx={{ typography: 'body1' }}>
                     <Box sx={{ mt: 1 }} />
-                    {`${get(book, 'eqpriceSubTotal', 0).toLocaleString()} B`}
+                    {`${get(book, 'eqPriceSubTotal', 0).toLocaleString()} B`}
                   </TableCell>
                 </StyledRowResult>
                 <StyledRowResult>
