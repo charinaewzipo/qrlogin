@@ -11,6 +11,10 @@ import {
   Grid,
   Typography,
   Box,
+  Dialog,
+  DialogActions,
+  Tooltip,
+  IconButton,
 } from '@mui/material'
 import { BOOKING_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
@@ -28,6 +32,9 @@ import BookingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
 import BookingEstimatingForm from '@ku/components/Booking/BookingEstimatingForm'
 import BookingEstimatingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
 import BookingEstimatingSummary from '@ku/components/Booking/BookingEstimatingSummary'
+import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer'
+import InvoiceDetailPDF from '@ku/components/Invoice/InvoiceDetailPDF'
+import Iconify from '@sentry/components/iconify/Iconify'
 const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
   {
     bookId: 35,
@@ -296,11 +303,10 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
 //   payUpdatedAt: "2023-04-19T13:00:00.000Z",
 // }
 
-
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
   const [bookDeatail, setBookDetail] = useState<IV1RespGetBookingMeRead & IV1TablePayments>(null)
-
+  const [open, setOpen] = useState(true);
   //receive from prev page
   const generated_redux_store_code = 123456
 
@@ -326,9 +332,7 @@ export default function BookingPage() {
       console.log(err)
     })
   }
-  const handleDownloadPDF = () => {
-    //handleDownloadPDF
-  }
+
   return (
     <>
       <Head>
@@ -355,8 +359,31 @@ export default function BookingPage() {
             },
           ]}
         />
+
+        <Dialog fullScreen open={open}>
+          <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+            <DialogActions
+              sx={{
+                zIndex: 9,
+                padding: '12px !important',
+                boxShadow: (theme) => theme.customShadows.z8,
+              }}
+            >
+              <Tooltip title="Close">
+                <IconButton color="inherit" onClick={() => setOpen(false)}>
+                  <Iconify icon="eva:close-fill" />
+                </IconButton>
+              </Tooltip>
+            </DialogActions>
+            <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
+              <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+                <InvoiceDetailPDF invoice={bookDeatail} />
+              </PDFViewer>
+            </Box>
+          </Box>
+        </Dialog>
         <BookingEstimatingSummary book={bookDeatail} />
-        <BookingEstimatingInvoice book={bookDeatail} onDownloadPDF={handleDownloadPDF} />
+        <BookingEstimatingInvoice book={bookDeatail} />
         <BookingEstimatingForm book={bookDeatail} reduxCode={generated_redux_store_code} />
       </Container>
     </>

@@ -7,7 +7,7 @@ import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
-export default function InvoicePDF() {
+export default function InvoicePaymentPDF() {
   return (
     <Document>
       <Page size="A4" style={styles.page}>

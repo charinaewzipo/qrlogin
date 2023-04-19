@@ -9,21 +9,20 @@ import { styled } from "@mui/material";
 import { Divider } from "@mui/material";
 import LogoOnlyLayout from "@ku/layouts/LogoOnlyLayout";
 import Iconify from "@sentry/components/iconify/Iconify";
+import { PDFDownloadLink } from '@react-pdf/renderer';
+import InvoiceDetailPDF from '../Invoice/InvoiceDetailPDF';
 
 type Props = {
   book: IV1RespGetBookingMeRead & IV1TablePayments;
-  // loading: boolean;
-  // showLoadMore: boolean;
-  // onLoadmore: () => void;
-  onDownloadPDF: () => void;
 };
+
 const StyledRowResult = styled(TableRow)(({ theme }) => ({
   '& td': {
     paddingTop: theme.spacing(1),
     paddingBottom: theme.spacing(1),
   },
 }));
-export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props) {
+export default function BookingEstimatingInvoice({ book }: Props) {
   const theme = useTheme()
   return (
     <>
@@ -32,16 +31,22 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
           <LogoOnlyLayout />
           <Box></Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-            <Button
-              fullWidth
-              color="info"
-              size="small"
-              variant='text'
-              startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
-              onClick={onDownloadPDF}
+            {/* <PDFDownloadLink
+              document={<InvoiceDetailPDF invoice={invoice} />}
+              fileName={"เทส123"}
+              style={{ textDecoration: 'none' }}
             >
-              Download as PDF
-            </Button>
+              <Button
+                fullWidth
+                color="info"
+                size="small"
+                variant='text'
+                startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
+              >
+                Download as PDF
+              </Button>
+            </PDFDownloadLink> */}
+
             <Label color={'warning'} >{get(book, 'bookStatus', '').toLocaleUpperCase()}</Label>
           </Box>
         </Stack>
@@ -104,7 +109,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                           </Box>
                         </TableCell>
                         <TableCell align="left">{get(row, 'eqsubpQuantity', 0).toLocaleString()}</TableCell>
-                        <TableCell align="right">{`${get(row, 'eqsubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqsubpUnitPer', '')}`}</TableCell>
+                        <TableCell align="right">{`${isNull(get(row, 'eqsubpUnitPrice', 0)) ? 0 : get(row, 'eqsubpUnitPrice', 0).toLocaleString()} B/${isNull(get(row, 'eqsubpUnitPer', '')) ? '' : get(row, 'eqsubpUnitPer', '')}`}</TableCell>
                         <TableCell align="right">{`${(get(row, 'eqsubpTotal', 0)).toLocaleString()} B`}</TableCell>
                       </TableRow>
 
