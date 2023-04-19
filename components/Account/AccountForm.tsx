@@ -27,14 +27,15 @@ import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 
 export interface IAccountFormValuesProps {
-    privillege: string
+    privillege: TPermission
     email: string
     password: string
-    accountStatus: string
+    accountStatus: TAccountStatus
     accountExpiryDate: string
-    typeOfPerson: string
+    typeOfPerson: TTypeOfPerson
     avatar: string
     department: string
+    universityName: string
     governmentName: string
     companyName: string
     position: string
@@ -92,11 +93,11 @@ const constant = {
     approve: 'Approve',
 }
 const typeOfPerson = [
-    { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
-    { value: 'KU Student & Staff', label: 'KU Student & Staff' },
-    { value: 'Other University', label: 'Other University' },
-    { value: 'Government office', label: 'Government office' },
-    { value: 'Private company', label: 'Private company' },
+    { value: 'SCIKU_STUDENT_STAFF', label: 'SciKU Student & Staff' },
+    { value: 'KU_STUDENT_STAFF', label: 'KU Student & Staff' },
+    { value: 'OTHER_UNIVERSITY', label: 'Other University' },
+    { value: 'GOVN_OFFICE', label: 'Government office' },
+    { value: 'PRIVATE_COMPANY', label: 'Private company' },
 ]
 const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU Student & Staff')
 const position = [
@@ -137,15 +138,15 @@ const title = [
     { value: 'Other', label: 'Other' },
 ]
 const accountStatus = [
-    { value: 'Active', label: 'Active' },
-    { value: 'Inactive', label: 'Inactive' },
-    { value: 'Lock', label: 'Lock' },
+    { value: 'ACTIVE', label: 'Active' },
+    { value: 'INACTIVE', label: 'Inactive' },
+    { value: 'LOCKED', label: 'Lock' },
 ]
 const privillege = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Supervisor', label: 'Supervisor' },
-    { value: 'User', label: 'User' },
+    { value: 'ADMIN', label: 'Admin' },
+    { value: 'FINANCE', label: 'Finance' },
+    { value: 'SUPERVISOR', label: 'Supervisor' },
+    { value: 'USER', label: 'User' },
 ]
 
 declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
@@ -155,9 +156,6 @@ interface AccountFormProps {
     updateMode? : boolean
     permission? : PERMISSION
     errorMsg: string
-}
-interface IIdImageUpload {
-    index: number
 }
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
@@ -170,10 +168,10 @@ function AccountForm(props: AccountFormProps) {
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
         checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
     const checkIsOther = (check: string) => check === 'Other'
-    const checkIsUser = (privillege: string) => privillege === 'User'
-    const checkIsFinance = (privillege: string) => privillege === 'Finance'
-    const checkIsAdmin = (privillege: string) => privillege === 'Admin'
-    const checkIsSupervisor = (privillege: string) => privillege === 'Supervisor'
+    const checkIsUser = (privillege: TPermission) => privillege === 'USER'
+    const checkIsFinance = (privillege: TPermission) => privillege === 'FINANCE'
+    const checkIsAdmin = (privillege: TPermission) => privillege === 'ADMIN'
+    const checkIsSupervisor = (privillege: TPermission) => privillege === 'SUPERVISOR'
     const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
 
@@ -287,12 +285,12 @@ function AccountForm(props: AccountFormProps) {
         }),
     })
 
-    const defaultValues = {
-        privillege: 'User',
+    const defaultValues: IAccountFormValuesProps = {
+        privillege: 'USER',
         avatar: '',
         email: '',
         password: '',
-        accountStatus: 'Active',
+        accountStatus: 'ACTIVE',
         accountExpiryDate: null,
         typeOfPerson: '',
         department: '',
@@ -313,6 +311,7 @@ function AccountForm(props: AccountFormProps) {
         bookingLimit: '5',
         supervisorCode: '',
         supervisorStatus: null,
+        governmentName: '',
     }
 
     const methods = useForm<IAccountFormValuesProps>({
@@ -364,13 +363,13 @@ function AccountForm(props: AccountFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
-        if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
+        if (getValues('typeOfPerson') === 'SCIKU_STUDENT_STAFF') {
             if (isPositionOther) setValue('position', '')
             if (!department.map((d) => d.value).includes(getValues('department')))
                 setValue('department', '')
         }
         if (isFinance) {
-            if (getValues('typeOfPerson') !== 'KU Student & Staff') setValue('typeOfPerson', '')
+            if (getValues('typeOfPerson') !== 'KU_STUDENT_STAFF') setValue('typeOfPerson', '')
             //ตอนปรับ privillege เป็น finance
             //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
@@ -675,7 +674,7 @@ function AccountForm(props: AccountFormProps) {
                                     ></option>
                                     {position.map(({ value, label }) => {
                                         if (
-                                            watchTypeOfPerson === 'SciKU Student & Staff' &&
+                                            watchTypeOfPerson === 'SCIKU_STUDENT_STAFF' &&
                                             value === 'Other'
                                         )
                                             return

@@ -6,9 +6,9 @@ interface IV1PostMemberCreate {
     uPhoneNumber: string;
     authEmail: string;
     authPassword: string;
-    authAccountStatus: string;
-    authPermission: string;
-    uiTypePerson: string;
+    authAccountStatus: TAccountStatus;
+    authPermission: TPermission;
+    uiTypePerson: TTypeOfPerson;
     uiDepartment: string | null;
     uiCardPicture: string | null;
     uiPersonPicture: string | null;
