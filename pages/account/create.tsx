@@ -9,26 +9,33 @@ import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
 import { ACCOUNT_PATH } from '@ku/constants/routes'
 import { useState } from 'react'
+import { postMemberCreate } from '@ku/services/account'
+import { get } from 'lodash'
+import { AxiosError } from 'axios'
+import messages from '@ku/constants/response'
 
 AccountCreate.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function AccountCreate() {
     // const { t } = useTranslation();
-    const permission : PERMISSION = 'Admin'
-    const { enqueueSnackbar } = useSnackbar();
-    const router = useRouter()
+    const { enqueueSnackbar } = useSnackbar()
+    const { push } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
 
-    const onFormSubmit = (data: IAccountFormValuesProps) => {
-        //TODO: api submit
-        enqueueSnackbar('Account create success.')
-        setErrorMsg('error msg')
-        console.log('submit', data)
+    const onFormSubmit = (data: IV1PostMemberCreate) => {
+        setErrorMsg('')
+        postMemberCreate(data)
+            .then(async (res) => {
+                enqueueSnackbar('Account create success.')
+                push({ pathname: ACCOUNT_PATH })
+            })
+            .catch((err: AxiosError) => {
+                setErrorMsg(get(err, 'devMessage', messages[0]))
+            })
     }
 
     const onFormCancel = () => {
-        router.push(ACCOUNT_PATH)
+        push(ACCOUNT_PATH)
     }
 
     return (

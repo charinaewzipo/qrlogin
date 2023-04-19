@@ -25,6 +25,9 @@ import { fData, fNumber } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
+import { formatISO } from 'date-fns'
+import numeral from 'numeral'
+import transformer from '@ku/utils/transformer'
 
 export interface IAccountFormValuesProps {
     privillege: TPermission
@@ -84,7 +87,7 @@ const constant = {
     bookingLimit: 'Booking limit',
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code',
+    supervisorCode: 'Supervisor code (โค้ด mock รอ api คือ 123456)',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 
     updateAccount:'Update Account',
@@ -149,7 +152,7 @@ const privillege = [
     { value: 'USER', label: 'User' },
 ]
 interface AccountFormProps {
-    onSubmit: (data: IAccountFormValuesProps) => void
+    onSubmit: (data: IV1PostMemberCreate) => void
     onCancel: () => void
     updateMode? : boolean
     permission? : TPermission
@@ -165,6 +168,8 @@ function AccountForm(props: AccountFormProps) {
     const checkIsStaff = (position: string) => ['Lecturer', 'Researcher'].includes(position)
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
         checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+    const checkIsKuStaff = (position: string, typeOfPerson: string) =>
+        checkIsKuPerson(typeOfPerson) && checkIsStaff(position)
     const checkIsOther = (check: string) => check === 'Other'
     const checkIsUser = (privillege: TPermission) => privillege === 'USER'
     const checkIsFinance = (privillege: TPermission) => privillege === 'FINANCE'
@@ -409,13 +414,80 @@ function AccountForm(props: AccountFormProps) {
         trigger('supervisorCode')
     }
 
+    const transformDataToPostCreate = (data: IAccountFormValuesProps) => {
+        const getDepartmentField = () => {
+            switch (data.typeOfPerson) {
+                case 'GOVN_OFFICE':
+                    return data.governmentName
+                case 'PRIVATE_COMPANY':
+                    return data.companyName
+                case 'OTHER_UNIVERSITY':
+                    return data.universityName
+            
+                default:
+                    return data.department
+            }
+        }
+        const getPositionField = () => {
+            if (checkIsOther(data.position)) {
+                return data.positionName
+            }
+            return data.position
+        }
+        const getStudentIdField = () => {
+            if (checkIsKuStudent(data.position, data.typeOfPerson)) {
+                return data.studentId
+            } else if (checkIsKuStaff(data.position, data.typeOfPerson)) {
+                return data.staffId
+            }
+            return null
+        }
+        const getSupervisorCode = () => {
+            if (checkIsKuStudent(data.position, data.typeOfPerson) && checkIsUser(data.privillege)) {
+                return data.supervisorCode
+            }
+            return null
+        }
+        const getPasswordField = () => {
+            if (data.password === '') {
+                return transformer.random(10)
+            }
+            return data.password
+        }
+        
+        //รอ Api รูป
+        const formattedData: IV1PostMemberCreate = {
+            uTitle: data.title,
+            uFirstname: data.firstName,
+            uSurname: data.surName,
+            uAddress: data.address,
+            uPhoneNumber: data.phoneNumber,
+            authEmail: data.email,
+            authPassword: getPasswordField(),
+            authAccountStatus: data.accountStatus,
+            authPermission: data.privillege,
+            uiTypePerson: data.typeOfPerson,
+            uiDepartment: getDepartmentField(),
+            uiCardPicture: 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
+            uiPersonPicture: 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
+            uiPosition: getPositionField(),
+            uiAdvisorCode: getSupervisorCode(),
+            uiStudentId: getStudentIdField(),
+            uiCardExpireDate: formatISO(new Date(data.accountExpiryDate)),
+            uiCreditLimit: numeral(data.creditLimit).value(),
+            uiBookingLimit: numeral(data.bookingLimit).value(),
+        }
+        return formattedData
+    }
+
     const onSubmit = async (data: IAccountFormValuesProps) => {
         const submitData = cloneDeep(data)
         if (checkIsFinance(submitData.privillege)) {
             submitData.creditLimit = '0'
             submitData.bookingLimit = '0'
         }
-        props.onSubmit(submitData)
+        const formattedSubmitData = transformDataToPostCreate(submitData)
+        props.onSubmit(formattedSubmitData)
     }
 
     const handleChangeNumber = (
@@ -692,24 +764,28 @@ function AccountForm(props: AccountFormProps) {
                                     {isKuStudent ? (
                                         <RHFTextField
                                             name="studentId"
+                                            key="field-studentId"
                                             label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isKu && isStaff ? (
                                         <RHFTextField
                                             name="staffId"
+                                            key="field-staffId"
                                             label={constant.staffId}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isPositionOther ? (
                                         <RHFTextField
                                             name="positionName"
+                                            key="field-positionName"
                                             label={isRequire(constant.positionName)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : (
                                         <RHFTextField
                                             name="studentId"
+                                            key="field-studentId"
                                             label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />

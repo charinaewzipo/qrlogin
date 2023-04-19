@@ -62,27 +62,9 @@ interface IV1PostMemberCreate {
     uiBookingLimit: number;
     uiBookingUsed: number;
   }
-  interface IV1PostMemberUpdate {
+  interface IV1PostMemberUpdate extends IV1PostMemberCreate {
     uId: number;
-    uTitle: string;
-    uFirstName: string;
-    uSurname: string;
-    uAddress: string;
-    uPhoneNumber: string;
-    authEmail: string;
-    authPassword: string;
-    authAccountStatus: string;
-    authPermission: string;
-    uiTypePerson: string;
-    uiDepartment: string | null;
-    uiCardPicture: string | null;
-    uiCardExpireDate: Date | null;
-    uiStudentId: string | null;
-    uiPersonPicture: string | null;
-    uiPosition: string | null;
     uiAdvisorCode?: string | null;
-    uiCreditLimit: number;
-    uiBookingLimit: number;
   }
   interface IV1RespPostMemberUpdate{
     uId: number;
