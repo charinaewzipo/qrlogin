@@ -4,37 +4,17 @@ import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import {
   Container,
-  Autocomplete,
-  TextField,
-  Stack,
-  Card,
-  Grid,
-  Typography,
-  Box,
-  Dialog,
-  DialogActions,
-  Tooltip,
-  IconButton,
 } from '@mui/material'
 import { BOOKING_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
-import BookingSort from '@ku/components/Booking/BookingSort'
-import BookingList from '@ku/components/Booking/BookingList'
 import { fetchGetBookingMeRead } from '@ku/services/booking'
-import { get, isEmpty } from 'lodash'
-import { format } from 'date-fns'
-import Label from '@sentry/components/label/Label'
-import BookingSummary from '@ku/components/Booking/BookingEstimatingSummary'
-import { useRouter } from 'next/router'
-import BookingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
+import { get } from 'lodash'
 import BookingEstimatingForm from '@ku/components/Booking/BookingEstimatingForm'
 import BookingEstimatingInvoice from '@ku/components/Booking/BookingEstimatingInvoice'
 import BookingEstimatingSummary from '@ku/components/Booking/BookingEstimatingSummary'
-import { PDFDownloadLink, PDFViewer } from '@react-pdf/renderer'
-import InvoiceDetailPDF from '@ku/components/Invoice/InvoiceDetailPDF'
-import Iconify from '@sentry/components/iconify/Iconify'
+
 const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
   {
     bookId: 35,
@@ -246,97 +226,11 @@ const mockTableData: Array<IV1RespGetBookingMeRead & IV1TablePayments> = [
     payUpdatedAt: "2023-04-19T13:00:00.000Z",
   }
 ]
-// const newEquipment = {
-//   bookId: 36,
-//   eqId: 8,
-//   eqStatus: "AVAILABLE",
-//   eqCode: "222",
-//   eqName: "screwdriver",
-//   eqBrand: "Stanley",
-//   eqModel: "12345",
-//   eqDescription: "This is a screwdriver",
-//   eqCreateBy: 456,
-//   eqPictures: [
-//     {
-//       eqpicLink: "http://bestzpic01.jpg",
-//       eqpicSort: 1
-//     },
-//     {
-//       eqpicLink: "http://bestzpic02.jpg",
-//       eqpicSort: 2
-//     }
-//   ],
-//   eqCreatedAt: "2023-04-19T13:00:00.000Z",
-//   eqUpdatedAt: "2023-04-19T13:00:00.000Z",
-//   bookOwner: 14,
-//   bookAdvisor: null,
-//   bookStatus: "CONFIRM",
-//   bookCreatedAt: "2023-04-19T13:00:00.000Z",
-//   eqRtimDays: "2023-04-25T01:00:00.000Z",
-//   eqRtimTimes: [
-//     11,
-//     12
-//   ],
-//   eqPrices: [
-//     {
-//       eqpId: 8,
-//       eqpName: "Stanley Screwdriver",
-//       eqpEqId: 8,
-//       eqpTotal: 20,
-//       eqsubPrice: [
-//         {
-//           eqsubpId: 4,
-//           eqsubpName: "Screwdriver Bit",
-//           eqsubpTotal: 20,
-//           eqsubpChecked: "DEFAULT",
-//           eqsubpUnitPer: "Piece",
-//           eqsubpCreatedAt: "2023-04-19T13:00:00.000Z",
-//           eqsubpUnitPrice: 5,
-//           eqsubpUpdatedAt: "2023-04-19T13:00:00.000Z",
-//           eqsubpDescription: "Extra Screwdriver Bit",
-//           eqsubpQuantity: 4
-//         }
-//       ],
-//       eqpChecked: "FIXED",
-//       eqpQuantity: 0,
-//       eqpUnitPer: null,
-//       eqpCreatedAt: "2023-04-19T13:00:00.000Z",
-//       eqpUpdatedAt: "2023-04-19T13:00:00.000Z",
-//       eqpIsChecked: true,
-//       eqpSubOption: "AT_LEAST_ONE",
-//       eqpUnitPrice: null,
-//       eqpDescription: "Standard Screwdriver",
-//       eqpTypePerson: "PUBLIC"
-//     }
-//   ],
-//   eqPriceSubTotal: 20,
-//   payOt: 0,
-//   payDiscount: 0,
-//   payFees: 0,
-//   payTotal: 20,
-//   payId: 2,
-//   payBookId: 36,
-//   payQuotationPicture: "http://bestzpic01.jpg",
-//   payInvoicePicture: "http://bestzpic01.jpg",
-//   payReceiptPicture: "http://bestzpic01.jpg",
-//   paySlipPicture: "http://bestzpic01.jpg",
-//   payQrPicture: "http://bestzpic01.jpg",
-//   payQrExpiry: "2023-04-25T01:00:00.000Z",
-//   payQrRef1: "123456",
-//   payQrRef2: "654321",
-//   payRemark: "Payment received",
-//   payBillingAddress: "123 Main St, Anytown, USA",
-//   payReceiptNumber: "R123456",
-//   payDateTime: "2023-04-19T13:00:00.000Z",
-//   payAmount: 40,
-//   payCreatedAt: "2023-04-19T13:00:00.000Z",
-//   payUpdatedAt: "2023-04-19T13:00:00.000Z",
-// }
+
 
 BookingPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 export default function BookingPage() {
   const [bookDeatail, setBookDetail] = useState<IV1RespGetBookingMeRead & IV1TablePayments>(null)
-  const [open, setOpen] = useState(true);
   //receive from prev page
   const generated_redux_store_code = 123456
 
@@ -389,29 +283,6 @@ export default function BookingPage() {
             },
           ]}
         />
-
-        <Dialog fullScreen open={open}>
-          <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-            <DialogActions
-              sx={{
-                zIndex: 9,
-                padding: '12px !important',
-                boxShadow: (theme) => theme.customShadows.z8,
-              }}
-            >
-              <Tooltip title="Close">
-                <IconButton color="inherit" onClick={() => setOpen(false)}>
-                  <Iconify icon="eva:close-fill" />
-                </IconButton>
-              </Tooltip>
-            </DialogActions>
-            <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
-              <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
-                <InvoiceDetailPDF invoice={bookDeatail} />
-              </PDFViewer>
-            </Box>
-          </Box>
-        </Dialog>
         <BookingEstimatingSummary book={bookDeatail} />
         <BookingEstimatingInvoice book={bookDeatail} />
         <BookingEstimatingForm book={bookDeatail} reduxCode={generated_redux_store_code} />

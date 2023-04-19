@@ -3,7 +3,6 @@ import React from 'react'
 import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
 import { get, isEmpty, isNull } from "lodash";
 import Label from "@sentry/components/label/Label";
-import { format } from "date-fns";
 import Scrollbar from "@sentry/components/scrollbar/Scrollbar";
 import { styled } from "@mui/material";
 import { Divider } from "@mui/material";
@@ -31,8 +30,8 @@ export default function BookingEstimatingInvoice({ book }: Props) {
           <LogoOnlyLayout />
           <Box></Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-            {/* <PDFDownloadLink
-              document={<InvoiceDetailPDF invoice={invoice} />}
+            <PDFDownloadLink
+              document={<InvoiceDetailPDF invoice={book} />}
               fileName={"เทส123"}
               style={{ textDecoration: 'none' }}
             >
@@ -45,8 +44,7 @@ export default function BookingEstimatingInvoice({ book }: Props) {
               >
                 Download as PDF
               </Button>
-            </PDFDownloadLink> */}
-
+            </PDFDownloadLink>
             <Label color={'warning'} >{get(book, 'bookStatus', '').toLocaleUpperCase()}</Label>
           </Box>
         </Stack>
