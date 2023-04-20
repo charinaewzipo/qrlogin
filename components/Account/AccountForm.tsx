@@ -1,7 +1,7 @@
-import { ChangeEvent, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -21,10 +21,11 @@ import {
 import Image from '@sentry/components/image'
 import FormProvider, { RHFSelect, RHFTextField } from '@sentry/components/hook-form'
 import { Upload, UploadAvatar } from '@sentry/components/upload'
-import { fData, fNumber } from '@sentry/utils/formatNumber'
+import { fData } from '@sentry/utils/formatNumber'
 import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
+import { NumberFormatCustom, NumberFormatCustomNoComma } from '@ku/utils/numberFormatCustom'
 
 export interface IAccountFormValuesProps {
     privillege: string
@@ -156,9 +157,6 @@ interface AccountFormProps {
     permission? : PERMISSION
     errorMsg: string
 }
-interface IIdImageUpload {
-    index: number
-}
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
@@ -197,7 +195,7 @@ function AccountForm(props: AccountFormProps) {
         password: Yup.string(),
         accountStatus: Yup.string().required('Account Status is require'),
         accountExpiryDate: Yup.date()
-            .typeError('Expected date format is dd/mmm/yyyy. Example: "1 jan 1970".')
+            .typeError('Expected date format is dd mmm yyyy. Example: "1 jan 1970".')
             .nullable()
             .test({
                 name: 'accountExpiryDate',
@@ -347,7 +345,7 @@ function AccountForm(props: AccountFormProps) {
         'supervisorStatus',
         'privillege',
     ])
-    
+
     useEffect(() => {
         if(props.permission && props.permission === 'User'){
             fetchSupervisorData('123456')
@@ -380,7 +378,7 @@ function AccountForm(props: AccountFormProps) {
         if (props.errorMsg !== '')
             window.scrollTo(0, 0)
     }, [props.errorMsg])
-    
+
     const isKu = checkIsKuPerson(watchTypeOfPerson)
     const isStudent = checkIsStudent(watchPosition)
     const isStaff = checkIsStaff(watchPosition)
@@ -389,7 +387,7 @@ function AccountForm(props: AccountFormProps) {
     const isTitleOther = checkIsOther(watchTitle)
     const isUser = checkIsUser(watchPrivillege)
     const isFinance = checkIsFinance(watchPrivillege)
-    
+
 
     const fetchSupervisorData = async (code: string) => {
         setValue('supervisorStatus', null)
@@ -419,40 +417,6 @@ function AccountForm(props: AccountFormProps) {
             submitData.bookingLimit = '0'
         }
         props.onSubmit(submitData)
-    }
-
-    const handleChangeNumber = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        fieldName: keyof IAccountFormValuesProps,
-        option?: 'comma'
-    ) => {
-        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
-        const oldValue = getValues(fieldName)
-        let newValue = e.target.value
-        if (option === 'comma'){
-            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
-            for (let i = 0; i < oldValue.length; i++) {
-                if (
-                    oldValue[i] === ',' &&
-                    oldValue[i] !== newValue[i] &&
-                    oldValue.length - 1 === newValue.length
-                ) {
-                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
-                    break
-                }
-            }
-        }
-        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
-        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
-            const formattedValue = option === 'comma' ? fNumber(newValueNoComma) : newValueNoComma
-            setValue(fieldName, formattedValue)
-            if (isSubmitted) trigger()
-            setTimeout(() => {
-                //set text cursor at same position after setValue
-                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
-                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
-            }, 0)
-        }
     }
 
     const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
@@ -762,21 +726,19 @@ function AccountForm(props: AccountFormProps) {
                             name="phoneNumber"
                             label={isRequire(constant.phoneNumber)}
                             inputProps={{ maxLength: 10 }}
-                            onChange={(e) => handleChangeNumber(e, 'phoneNumber')}
+                            InputProps={{ inputComponent: NumberFormatCustomNoComma }}
                         />
                         {!isFinance ? (
                             <Stack flexDirection={'row'} gap={3}>
                                 <RHFTextField
                                     name="creditLimit"
                                     label={isRequire(constant.creditLimit)}
-                                    onChange={(e) => handleChangeNumber(e, 'creditLimit', 'comma')}
-                                    inputProps={{ maxLength: 20 }}
+                                    InputProps={{ inputComponent: NumberFormatCustom }}
                                 />
                                 <RHFTextField
                                     name="bookingLimit"
                                     label={isRequire(constant.bookingLimit)}
-                                    onChange={(e) => handleChangeNumber(e, 'bookingLimit', 'comma')}
-                                    inputProps={{ maxLength: 20 }}
+                                    InputProps={{ inputComponent: NumberFormatCustom }}
                                 />
                             </Stack>
                         ) : (
@@ -937,16 +899,16 @@ function AccountForm(props: AccountFormProps) {
                                         </Typography>
                                     </Stack>
                                     </Box>
-                                   
+
                                     <Box sx={{ flexShrink: 0}}>
                                             <Button
                                                 variant="contained"
-                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>} 
+                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>}
                                                 sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
                                                 disableElevation
                                             >
                                                 {constant.approve}
-                                            </Button>     
+                                            </Button>
                                     </Box>
                                 </Stack>
                             ) : (
