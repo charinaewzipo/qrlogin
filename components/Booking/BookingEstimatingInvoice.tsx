@@ -1,6 +1,6 @@
 // @mui
-import React from 'react'
-import { Box, Button, Card, Grid, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography, useTheme } from "@mui/material";
+import React, { useState } from 'react'
+import { Box, Button, Card, Dialog, DialogActions, Grid, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Tooltip, Typography, useTheme } from "@mui/material";
 import { get, isEmpty, isNull } from "lodash";
 import Label from "@sentry/components/label/Label";
 import Scrollbar from "@sentry/components/scrollbar/Scrollbar";
@@ -8,7 +8,7 @@ import { styled } from "@mui/material";
 import { Divider } from "@mui/material";
 import LogoOnlyLayout from "@ku/layouts/LogoOnlyLayout";
 import Iconify from "@sentry/components/iconify/Iconify";
-import { PDFDownloadLink } from '@react-pdf/renderer';
+import { PDFViewer } from '@react-pdf/renderer';
 import InvoiceDetailPDF from '../Invoice/InvoiceDetailPDF';
 
 type Props = {
@@ -23,28 +23,47 @@ const StyledRowResult = styled(TableRow)(({ theme }) => ({
 }));
 export default function BookingEstimatingInvoice({ book }: Props) {
   const theme = useTheme()
+  const [open, setOpen] = useState(false);
   return (
     <>
+      <Dialog fullScreen open={open}>
+        <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+          <DialogActions
+            sx={{
+              zIndex: 9,
+              padding: '12px !important',
+              boxShadow: (theme) => theme.customShadows.z8,
+            }}
+          >
+            <Tooltip title="Close">
+              <IconButton color="inherit" onClick={() => setOpen(false)}>
+                <Iconify icon="eva:close-fill" />
+              </IconButton>
+            </Tooltip>
+          </DialogActions>
+          <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
+            <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+              <InvoiceDetailPDF invoice={book} />
+            </PDFViewer>
+          </Box>
+        </Box>
+      </Dialog>
       <Card sx={{ pt: 5, px: 5, mt: 5 }}>
+
         <Stack direction={'row'} display={'flex'} justifyContent={'space-between'} height={100}>
           <LogoOnlyLayout />
           <Box></Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 1 }}>
-            <PDFDownloadLink
-              document={<InvoiceDetailPDF invoice={book} />}
-              fileName={"เทส123"}
-              style={{ textDecoration: 'none' }}
+            <Button
+              fullWidth
+              color="info"
+              size="small"
+              variant='text'
+              onClick={() => setOpen(true)}
+              startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
             >
-              <Button
-                fullWidth
-                color="info"
-                size="small"
-                variant='text'
-                startIcon={<Iconify icon="ant-design:file-pdf-filled" />}
-              >
-                Download as PDF
-              </Button>
-            </PDFDownloadLink>
+              Download as PDF
+            </Button>
             <Label color={'warning'} >{get(book, 'bookStatus', '').toLocaleUpperCase()}</Label>
           </Box>
         </Stack>

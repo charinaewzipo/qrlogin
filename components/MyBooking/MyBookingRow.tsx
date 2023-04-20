@@ -1,4 +1,4 @@
-import { TableRow, TableCell, Typography, IconButton, MenuItem, Stack, Box } from '@mui/material'
+import { TableRow, TableCell, Typography, IconButton, MenuItem, Stack, Box, Dialog, DialogActions, Tooltip } from '@mui/material'
 import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 import Label, { LabelColor } from '@sentry/components/label'
 import { useState } from 'react'
@@ -7,8 +7,8 @@ import MenuPopover from '@sentry/components/menu-popover'
 import { get, lowerCase, upperFirst } from 'lodash'
 import Image from '@sentry/components/image'
 import { fCurrencyBaht } from '@ku/utils/formatNumber'
-import { PDFDownloadLink } from '@react-pdf/renderer'
-import InvoicePDF from '../Invoice/InvoicePaymentPDF'
+import { PDFViewer } from '@react-pdf/renderer'
+import InvoicePaymentPDF from '../Invoice/InvoicePaymentPDF'
 
 type Props = {
     row: IV1RespGetBookingMeRead
@@ -22,6 +22,7 @@ const styledTextOverFlow = {
 
 export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
     const [openPopover, setOpenPopover] = useState<HTMLElement | null>(null);
+    const [openPayment, setOpenPayment] = useState(false);
     const handleOpenPopover = (event: React.MouseEvent<HTMLElement>) => {
         setOpenPopover(event.currentTarget)
     };
@@ -43,17 +44,9 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
             label: <><Iconify icon="eva:trash-2-outline" />Cancel Booking</>,
         },
         invoice: {
-            action: () => { console.log("Download Invoice"); },
+            action: () => { setOpenPayment(true) },
             label:
-                <PDFDownloadLink
-                    document={<InvoicePDF />}
-                    fileName={'ทดสอบ123'}
-                    style={{ textDecoration: 'none' }}
-                >
-                    <Box sx={{ display: 'flex' }}>
-                        <Iconify icon="ic:baseline-verified" /> Download Invoice
-                    </Box>
-                </PDFDownloadLink>,
+                <><Iconify icon="ic:baseline-verified" /> Download Invoice</>
         },
         receipt: {
             action: () => { console.log("Download Receipt"); },
@@ -103,6 +96,28 @@ export default function MyBookingRow({ row, onViewRow, onRemove }: Props) {
 
     return (
         <>
+            <Dialog fullScreen open={openPayment}>
+                <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
+                    <DialogActions
+                        sx={{
+                            zIndex: 9,
+                            padding: '12px !important',
+                            boxShadow: (theme) => theme.customShadows.z8,
+                        }}
+                    >
+                        <Tooltip title="Close">
+                            <IconButton color="inherit" onClick={() => setOpenPayment(false)}>
+                                <Iconify icon="eva:close-fill" />
+                            </IconButton>
+                        </Tooltip>
+                    </DialogActions>
+                    <Box sx={{ flexGrow: 1, height: '100%', overflow: 'hidden' }}>
+                        <PDFViewer width="100%" height="100%" style={{ border: 'none' }}>
+                            <InvoicePaymentPDF />
+                        </PDFViewer>
+                    </Box>
+                </Box>
+            </Dialog>
             <TableRow
                 hover
                 tabIndex={-1}
