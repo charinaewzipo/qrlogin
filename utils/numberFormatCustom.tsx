@@ -28,6 +28,7 @@ function NumberFormatCustomNoComma(props) {
     return (
         <NumericFormat
             {...other}
+            allowLeadingZeros
             getInputRef={inputRef}
             allowNegative={false}
             decimalScale={0}
