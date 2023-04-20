@@ -15,17 +15,17 @@ export default function InvoiceDetailPDF({ invoice }: Props) {
   return (
     <Document>
       <Page size="A4" style={styles.page}>
-        <View style={[styles.gridContainer, styles.mb40]}>
+        <View style={[styles.gridContainer, styles.mb40]} fixed>
           <Image source="/assets/images/logo/logo.png" style={{ height: 32 }} />
 
         </View>
 
         <View style={styles.table}>
-          <View style={styles.tableHeader}>
+          <View style={styles.tableHeader} fixed>
             <View style={styles.tableRow}>
 
               <View style={styles.tableCell_2}>
-                <Text style={[styles.subtitle2_header]}>Description</Text>
+                <Text style={[styles.subtitle2_header]} >Description</Text>
               </View>
 
               <View style={[styles.tableCell_3, { paddingLeft: '16px' }]}>

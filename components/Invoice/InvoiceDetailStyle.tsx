@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
   subtitle2_header: { fontSize: 9, fontWeight: 700, color: '#637381' },
   alignRight: { textAlign: 'right' },
   page: {
-    padding: '40px 24px 0 24px',
+    padding: '40px 24px 40px 24px',
     fontSize: 9,
     lineHeight: 1.6,
     fontFamily: 'Roboto',
@@ -69,6 +69,7 @@ const styles = StyleSheet.create({
   tableCell_1: { width: '5%' },
   tableCell_2: { width: '50%', paddingLeft: 16 },
   tableCell_3: { width: '15%' },
+
 });
 
 export default styles;
