@@ -415,6 +415,12 @@ function AccountForm(props: AccountFormProps) {
     }
 
     const transformDataToPostCreate = (data: IAccountFormValuesProps) => {
+        const getTitleField = () => {
+            if (checkIsOther(data.title)) {
+                return data.otherTitle
+            }
+            return data.title
+        }
         const getDepartmentField = () => {
             switch (data.typeOfPerson) {
                 case 'GOVN_OFFICE':
@@ -475,7 +481,7 @@ function AccountForm(props: AccountFormProps) {
         
         //รอ Api รูป
         const formattedData: IV1PostMemberCreate = {
-            uTitle: data.title,
+            uTitle: getTitleField(),
             uFirstname: data.firstName,
             uSurname: data.surName,
             uAddress: data.address,
