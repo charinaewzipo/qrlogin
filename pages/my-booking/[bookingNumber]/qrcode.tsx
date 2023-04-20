@@ -8,6 +8,7 @@ import { useRouter } from 'next/router'
 import BookDetail from '@ku/components/MyBooking/BookDetail'
 import { MERGE_PATH, MY_BOOKING_PATH } from '@ku/constants/routes'
 import QrCodeDetail from '@ku/components/MyBooking/QrCodeDetail'
+import { PAYMENT_BILLER_ID, PAYMENT_REF_1, PAYMENT_REF_2 } from '@ku/constants/config'
 
 const mockData: IV1RespGetBookingMeRead = {
     eqId: 1,
@@ -117,7 +118,6 @@ export function MyBookingQrCode() {
     } = useRouter()
 
     const handleQrDownload = () => {
-
     }
 
     return (
@@ -151,10 +151,10 @@ export function MyBookingQrCode() {
                             <Stack spacing={5}>
                                 <BookDetail bookingData={mockData} noButton />
                                 <QrCodeDetail
-                                    billerId={'|099400015938248'}
+                                    billerId={PAYMENT_BILLER_ID}
                                     totalPayment={'1'}
-                                    ref1={'0104010010'}
-                                    ref2={'1001'}
+                                    ref1={PAYMENT_REF_1}
+                                    ref2={PAYMENT_REF_2}
                                     onDownload={handleQrDownload}
                                 />
                             </Stack>
