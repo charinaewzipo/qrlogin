@@ -1,3 +1,4 @@
+type IEquipmentUnavailableStatus = 'PENDING' | 'FINISH'
 interface IV1PostEquipmentCreate {
     eqStatus: string
     eqCode: string
@@ -74,9 +75,9 @@ interface IV1QueryGetEquipmentRead {
     eqSortCode?: boolean
 }
 interface IV1QueryGetEquipmentUnavailableSchedule {
-    startTime?: timestamp
-    endTime?: timestamp
-    status?: string
+    startTime?: string
+    endTime?: string
+    status?: IEquipmentUnavailableStatus
 }
 
 interface IV1RespGetEquipmentUnavailableSchedule {
@@ -137,9 +138,34 @@ interface IV1GetEquipmentMaintenanceRead {
     eqmtnDate: string
     eqmtnCreatedAt: string
     eqmtnUpdatedAt: string
-    eqmtnPicLink: string
-    eqmtnPicCreatedAt: string
-    eqmtnPicUpdatedAt: string
+    eqmtnpicLink: string
+    eqmtnpicCreatedAt: string
+    eqmtnpicUpdatedAt: string
+}
+
+interface IV1PostEquipmentMaintenanceCreate {
+    eqId: number
+    eqmtnDescription: string
+    eqmtnCost: number
+    eqmtnDate: string
+    eqmtnFileLink: string
+}
+
+interface IV1RespPostEquipmentMaintenanceCreate {
+    eqId: number
+    eqmtnId: number
+}
+
+interface IV1PostEquipmentMaintenanceUpdate {
+    eqmtnId: number
+    eqmtnDescription: string
+    eqmtnCost: number
+    eqmtnDate: string
+    eqmtnpicLink: string
+}
+
+interface IV1RespPostEquipmentMaintenanceUpdate {
+    eqmtnId: number
 }
 
 type TTypeOfChecked = '' | 'FIXED' | 'DEFAULT' | 'UNCHECK' | 'OPTIONAL'

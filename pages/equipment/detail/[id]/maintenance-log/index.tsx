@@ -6,30 +6,75 @@ import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 // import { useTranslation } from "next-i18next";
 import { useSnackbar } from '@sentry/components/snackbar'
 import { useRouter } from 'next/router'
-import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
-import { useState } from 'react'
+import { EQUIPMENT_PATH, MERGE_PATH, NOTFOUND_PATH } from '@ku/constants/routes'
+import { useEffect, useState } from 'react'
 import MaintenanceLogForm, { IMaintenanceLogFormValuesProps } from '@ku/components/Equipment/MaintenanceLogForm'
+import { fetchGetEquipmentRead, postEquipmentMaintenanceCreate } from '@ku/services/equipment'
+import { get, isFinite } from 'lodash'
+import numeral from 'numeral'
+import { formatISO, startOfDay } from 'date-fns'
+import messages from '@ku/constants/response'
+import { AxiosError } from 'axios'
+import codes from '@ku/constants/responseCode'
 
 MaintenanceLog.getLayout = (page: React.ReactElement) => <AuthorizedLayout> {page} </AuthorizedLayout>
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 
 export function MaintenanceLog() {
     // const { t } = useTranslation()
     const { enqueueSnackbar } = useSnackbar()
-    const router = useRouter()
+    const { push, query: { id }, isReady } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
-    const pathData = router.query
 
-    const handleFormSubmit = (data: IMaintenanceLogFormValuesProps) => {
-        //TODO: api submit
-        enqueueSnackbar('Added maintenance log.')
-        setErrorMsg('error msg')
-        console.log('submit', data)
-        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: pathData.id }})
+    useEffect(() => {
+        if (!isReady) return
+        checkEquipmentExist()
+    }, [isReady])
+    
+
+    const checkEquipmentExist = () => {
+        if (!isFinite(+id)) push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
+        fetchGetEquipmentRead({ eqId: `${id}`, limit: 1, page: 1 })
+            .then((res) => {
+                if (res.code === codes.OK_CODE) {
+                    const dataLength = get(res, 'data.dataList', []).length
+                    if (dataLength) {
+                        return
+                    } else {
+                        push(MERGE_PATH(NOTFOUND_PATH, 'equipment'))
+                    }
+                }
+            })
+            .catch((err: AxiosError) => {
+                const errorMessage = get(err, 'devMessage', messages[0])
+                enqueueSnackbar(errorMessage, { variant: 'error' })
+            })
+    }
+
+    const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
+        const mtnDate = data.date ? formatISO(new Date(get(data, 'date', ''))) : formatISO(startOfDay(new Date()))
+        setErrorMsg('')
+        await postEquipmentMaintenanceCreate({
+            eqId: Number(id),
+            eqmtnDescription: get(data, 'descriptions', ''),
+            eqmtnCost: numeral(get(data, 'cost', 0)).value() || 0,
+            eqmtnDate: mtnDate,
+            eqmtnFileLink:
+                'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
+            // รอ api รูป
+        })
+            .then(async (res) => {
+                if (res.code === codes.OK_CODE) {
+                    enqueueSnackbar('Added maintenance log.')
+                    push({ pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail', `${id}`)}` })
+                }
+            })
+            .catch((err: AxiosError) => {
+                setErrorMsg(get(err, 'devMessage', messages[0]))
+            })
     }
 
     const handleFormCancel = () => {
-        router.push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: pathData.id }})
+        push({pathname: `${MERGE_PATH(EQUIPMENT_PATH, 'detail/[id]')}`, query: { id: id }})
     }
 
     return (
@@ -54,7 +99,7 @@ export function MaintenanceLog() {
                                     { name: 'List', href: '/equipment' },
                                     {
                                         name: 'Coating Material (CM1)',
-                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail${pathData.id}`)}`,
+                                        href: `${MERGE_PATH(EQUIPMENT_PATH, `detail`, `${id}`)}`,
                                     },
                                     { name: 'Create Maintenance Log' },
                                 ]}

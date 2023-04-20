@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import * as Yup from 'yup'
 import { LoadingButton } from '@mui/lab'
-import { Controller, useForm } from 'react-hook-form'
+import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
     Stack,
@@ -15,7 +15,8 @@ import { cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { useDropzone } from 'react-dropzone'
 import { fNumber } from '@sentry/utils/formatNumber'
-import axios from '@ku/services/axios'
+import axios from 'axios'
+import { NumberFormatCustom } from '@ku/utils/numberFormatCustom'
 
 export interface IMaintenanceLogFormValuesProps {
   descriptions: string
@@ -57,7 +58,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const defaultValues = props.defaultValue || {
         descriptions: '',
         cost: '',
-        date: '',
+        date: null,
         maintenanceFiles: [],
     }
 
@@ -85,14 +86,12 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         return () => {
             if (allObjectUrl) allObjectUrl.map((blob) => URL.revokeObjectURL(blob))
         }
-    }, [])  
+    }, [])
 
     const watchMaintenanceFiles = watch('maintenanceFiles')
 
     const onSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const submitData = cloneDeep(data)
-        //TODO: แปลง submitdata.date เป็น timestamp
-        //TODO: ต่อ api อัพไฟล์
         props.onSubmit(submitData)
     }
 
@@ -143,7 +142,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         link.href = fileURL
         link.download = get(file, 'name', '')
         link.target = "_blank"
-        
+
         link.click()
         link.remove()
     }
@@ -152,46 +151,6 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         onDrop: handleDrop,
         multiple: false,
     })
-    
-    const handleChangeNumber = (
-        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-        fieldName: keyof IMaintenanceLogFormValuesProps,
-        option?: 'comma' | 'commaNotRequired'
-    ) => {
-        const typingIndexFromEnd = e.target.selectionStart - e.target.value.length
-        const oldValue = getValues(fieldName)
-        let newValue = e.target.value
-        if (option.includes('comma')){
-            //เช็คว่าลบ comma ก็จะไปลบตัวหน้า comma แทน
-            for (let i = 0; i < oldValue.length; i++) {
-                if (
-                    oldValue[i] === ',' &&
-                    oldValue[i] !== newValue[i] &&
-                    oldValue.length - 1 === newValue.length
-                ) {
-                    newValue = newValue.substring(0, i - 1) + newValue.substring(i)
-                    break
-                }
-            }
-        }
-        
-        const numberOnlyRegex = /^[0-9\b]+$/
-        const newValueNoComma = newValue.replace(new RegExp(',', 'g'), '') || ''
-        if (newValue === '' || new RegExp(numberOnlyRegex).test(newValueNoComma)) {
-            if (newValue === '' && option === 'commaNotRequired') {
-                setValue(fieldName, newValue)
-                return
-            }
-            const formattedValue = option.includes('comma') ? fNumber(newValueNoComma) : newValueNoComma
-            setValue(fieldName, formattedValue)
-            if (isSubmitted) trigger()
-            setTimeout(() => {
-                //set text cursor at same position after setValue
-                const typingIndexFromStart = formattedValue.length + typingIndexFromEnd;
-                e.target.setSelectionRange(typingIndexFromStart, typingIndexFromStart)
-            }, 0)
-        }
-    }
 
     return (
         <FormProvider methods={methods} onSubmit={handleSubmit(onSubmit)}>
@@ -206,8 +165,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         <RHFTextField
                             name="cost"
                             label={constant.cost}
-                            onChange={(e) => handleChangeNumber(e, 'cost', 'commaNotRequired')}
-                            inputProps={{ maxLength: 20 }}
+                            InputProps={{ inputComponent: NumberFormatCustom }}
                         />
                         <Controller
                             name="date"

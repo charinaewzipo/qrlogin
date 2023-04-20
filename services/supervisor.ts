@@ -34,8 +34,10 @@ const fetchGetSupervisor = (code: string): Promise<IResponse<ISupervisor>> => {
     }
   }
   return new Promise((resolve) =>
+  
       setTimeout(
           () =>
+          /* @ts-ignore */
               resolve(output),
           1000
       )
