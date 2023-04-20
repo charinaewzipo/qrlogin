@@ -231,10 +231,9 @@ function AccountForm(props: AccountFormProps) {
             then: Yup.string().required('Company name is require'),
         }),
         position: Yup.string()
-            .required('Position is require')
             .when('privillege', {
-                is: (privillege) => checkIsFinance(privillege),
-                then: Yup.string(),
+                is: (privillege) => !checkIsFinance(privillege),
+                then: Yup.string().required('Position is require'),
             }),
         studentId: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
@@ -429,6 +428,9 @@ function AccountForm(props: AccountFormProps) {
             }
         }
         const getPositionField = () => {
+            if (checkIsFinance(data.privillege)) {
+                return null
+            }
             if (checkIsOther(data.position)) {
                 return data.positionName
             }
@@ -438,7 +440,7 @@ function AccountForm(props: AccountFormProps) {
             if (checkIsKuStudent(data.position, data.typeOfPerson)) {
                 return data.studentId
             } else if (checkIsKuStaff(data.position, data.typeOfPerson)) {
-                return data.staffId
+                return data.staffId || null
             }
             return null
         }
@@ -454,6 +456,21 @@ function AccountForm(props: AccountFormProps) {
             }
             return data.password
         }
+        const getExpiryDate = () => {
+            return data.accountExpiryDate ? formatISO(new Date(data.accountExpiryDate)) : null
+        }
+        const getIdImages = () => {
+            if (idImageWithoutEmpty.length) {
+                return 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg'
+            }
+            return null
+        }
+        const getAvatar = () => {
+            if (data.avatar !== '') {
+                return 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg'
+            }
+            return null
+        }
         
         //รอ Api รูป
         const formattedData: IV1PostMemberCreate = {
@@ -468,12 +485,12 @@ function AccountForm(props: AccountFormProps) {
             authPermission: data.privillege,
             uiTypePerson: data.typeOfPerson,
             uiDepartment: getDepartmentField(),
-            uiCardPicture: 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
-            uiPersonPicture: 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg',
+            uiCardPicture: getAvatar(),
+            uiPersonPicture: getIdImages(),
             uiPosition: getPositionField(),
             uiAdvisorCode: getSupervisorCode(),
             uiStudentId: getStudentIdField(),
-            uiCardExpireDate: formatISO(new Date(data.accountExpiryDate)),
+            uiCardExpireDate: getExpiryDate(),
             uiCreditLimit: numeral(data.creditLimit).value(),
             uiBookingLimit: numeral(data.bookingLimit).value(),
         }
