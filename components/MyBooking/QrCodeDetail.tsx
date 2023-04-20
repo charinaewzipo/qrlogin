@@ -17,7 +17,7 @@ interface IQrCodeDetailProps {
     onDownload: () => void
 }
 function QrCodeDetail({ billerId, totalPayment, ref1, ref2, onDownload }: IQrCodeDetailProps) {
-    const qrValue = `${billerId}\n${ref1}\n${ref2}\n${totalPayment}`
+    const qrValue = `|${billerId} ${ref1} ${ref2} ${totalPayment}`
     return (
         <Stack width="34%" minWidth="300px" alignSelf="center">
             <Paper elevation={9} sx={{ borderRadius: 2, p: 3 }}>
