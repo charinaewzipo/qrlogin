@@ -398,7 +398,6 @@ function RegisterForm(props: RegisterFormProps) {
                 <RHFTextField
                     name="email"
                     label={isRequire(constant.email)}
-                    inputProps={{ maxLength: 100 }}
                 />
                 <RHFTextField
                     name="password"
@@ -581,7 +580,7 @@ function RegisterForm(props: RegisterFormProps) {
                         name={isTitleOther ? 'otherTitle' : ''}
                         label={isRequire(constant.otherTitle, isTitleOther)}
                         disabled={!isTitleOther}
-                        inputProps={{ maxLength: 30 }}
+                        inputProps={{ maxLength: 100 }}
                     />
                 </Stack>
                 <Stack flexDirection={'row'} gap={3}>

@@ -552,7 +552,6 @@ function AccountForm(props: AccountFormProps) {
                         <RHFTextField
                             name="email"
                             label={isRequire(constant.email)}
-                            inputProps={{ maxLength: 100 }}
                         />
                         <RHFTextField
                             name="password"
@@ -802,7 +801,7 @@ function AccountForm(props: AccountFormProps) {
                                 name={isTitleOther ? 'otherTitle' : ''}
                                 label={isRequire(constant.otherTitle, isTitleOther)}
                                 disabled={!isTitleOther}
-                                inputProps={{ maxLength: 30 }}
+                                inputProps={{ maxLength: 100 }}
                             />
                             <RHFTextField
                                 name="firstName"
