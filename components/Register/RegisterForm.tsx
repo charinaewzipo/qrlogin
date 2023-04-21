@@ -685,6 +685,7 @@ function RegisterForm(props: RegisterFormProps) {
                             label={isRequire(constant.supervisorCode)}
                             error={!!errors.supervisorCode}
                             helperText={get(errors?.supervisorCode, 'message', '')}
+                            inputProps={{ maxLength: 6 }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">
