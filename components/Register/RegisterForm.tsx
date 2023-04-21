@@ -395,17 +395,18 @@ function RegisterForm(props: RegisterFormProps) {
                         </Stack>
                     )}
                 />
-                <RHFTextField name="email" label={isRequire(constant.email)} />
+                <RHFTextField
+                    name="email"
+                    label={isRequire(constant.email)}
+                    inputProps={{ maxLength: 100 }}
+                />
                 <RHFTextField
                     name="password"
                     label={isRequire(constant.password)}
                     inputProps={{ maxLength: 100 }}
                 />
                 <Stack flexDirection={'row'} gap={3}>
-                    <RHFSelect
-                        name="typeOfPerson"
-                        label={isRequire(constant.typeOfPerson)}
-                    >
+                    <RHFSelect name="typeOfPerson" label={isRequire(constant.typeOfPerson)}>
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
                         {typeOfPerson.map(({ value, label }) => (
                             <option value={value} key={`${value}-typeOfPerson-option`}>
@@ -415,7 +416,10 @@ function RegisterForm(props: RegisterFormProps) {
                     </RHFSelect>
                     {{
                         'Other University': (
-                            <RHFTextField name="universityName" label={isRequire(constant.universityName)} />
+                            <RHFTextField
+                                name="universityName"
+                                label={isRequire(constant.universityName)}
+                            />
                         ),
                         'KU Student & Staff': (
                             <RHFTextField
@@ -434,14 +438,14 @@ function RegisterForm(props: RegisterFormProps) {
                                         {...field}
                                         clearOnBlur
                                         fullWidth
-                                        isOptionEqualToValue={(option, value) => 
+                                        isOptionEqualToValue={(option, value) =>
                                             option.value === value.value
                                         }
                                         value={{ value: field.value, label: field.value }}
-                                        onChange={(event, newValue) =>{
+                                        onChange={(event, newValue) => {
                                             const newVal = get(newValue, 'value', '')
-                                            field.onChange(newVal)}
-                                        }
+                                            field.onChange(newVal)
+                                        }}
                                         popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                         options={department}
                                         key={'department-auto'}
@@ -449,11 +453,7 @@ function RegisterForm(props: RegisterFormProps) {
                                             <TextField
                                                 {...param}
                                                 error={!!errors?.department}
-                                                helperText={get(
-                                                    errors?.department,
-                                                    'message',
-                                                    ''
-                                                )}
+                                                helperText={get(errors?.department, 'message', '')}
                                                 label={isRequire(constant.department)}
                                             />
                                         )}

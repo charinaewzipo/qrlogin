@@ -549,7 +549,11 @@ function AccountForm(props: AccountFormProps) {
                                 </option>
                             ))}
                         </RHFSelect>
-                        <RHFTextField name="email" label={isRequire(constant.email)} />
+                        <RHFTextField
+                            name="email"
+                            label={isRequire(constant.email)}
+                            inputProps={{ maxLength: 100 }}
+                        />
                         <RHFTextField
                             name="password"
                             label={constant.password}
@@ -629,10 +633,7 @@ function AccountForm(props: AccountFormProps) {
                             )}
                         />
                         <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="typeOfPerson"
-                                label={isRequire(constant.typeOfPerson)}
-                            >
+                            <RHFSelect name="typeOfPerson" label={isRequire(constant.typeOfPerson)}>
                                 <option
                                     value={''}
                                     key={`${''}-typeOfPerson-option`}
@@ -647,14 +648,14 @@ function AccountForm(props: AccountFormProps) {
                                 )}
                             </RHFSelect>
                             {{
-                                'OTHER_UNIVERSITY': (
+                                OTHER_UNIVERSITY: (
                                     <RHFTextField
                                         name="universityName"
                                         label={isRequire(constant.universityName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'KU_STUDENT_STAFF': (
+                                KU_STUDENT_STAFF: (
                                     <RHFTextField
                                         name="department"
                                         key={'department-textfield'}
@@ -662,7 +663,7 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'SCIKU_STUDENT_STAFF': (
+                                SCIKU_STUDENT_STAFF: (
                                     <Controller
                                         name="department"
                                         control={control}
@@ -671,14 +672,14 @@ function AccountForm(props: AccountFormProps) {
                                                 {...field}
                                                 clearOnBlur
                                                 fullWidth
-                                                isOptionEqualToValue={(option, value) => 
+                                                isOptionEqualToValue={(option, value) =>
                                                     option.value === value.value
                                                 }
                                                 value={{ value: field.value, label: field.value }}
-                                                onChange={(event, newValue) =>{
+                                                onChange={(event, newValue) => {
                                                     const newVal = get(newValue, 'value', '')
-                                                    field.onChange(newVal)}
-                                                }
+                                                    field.onChange(newVal)
+                                                }}
                                                 popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                                 options={department}
                                                 key={'department-auto'}
@@ -698,7 +699,7 @@ function AccountForm(props: AccountFormProps) {
                                         )}
                                     />
                                 ),
-                                'GOVN_OFFICE': (
+                                GOVN_OFFICE: (
                                     <RHFTextField
                                         name="governmentName"
                                         key={'governmentName-textfield'}
@@ -706,7 +707,7 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'PRIVATE_COMPANY': (
+                                PRIVATE_COMPANY: (
                                     <RHFTextField
                                         name="companyName"
                                         key={'companyName-textfield'}
@@ -789,10 +790,7 @@ function AccountForm(props: AccountFormProps) {
                             <></>
                         )}
                         <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="title"
-                                label={isRequire(constant.title)}
-                            >
+                            <RHFSelect name="title" label={isRequire(constant.title)}>
                                 <option value={''} key={`${''}-title-option`} hidden></option>
                                 {title.map(({ value, label }) => (
                                     <option value={value} key={`${value}-title-option`}>
@@ -991,26 +989,30 @@ function AccountForm(props: AccountFormProps) {
                                         sx={{ height: 64, width: 64, borderRadius: 1 }}
                                         disabledEffect
                                     />
-                                     <Box sx={{ flexGrow: 1 }}>
-                                    <Stack>
-                                        <Typography variant="h6">
-                                            {`${supervisor.name} (${supervisor.code})`}
-                                        </Typography>
-                                        <Typography variant="body1" whiteSpace={'pre-line'}>
-                                            {supervisor.email}
-                                        </Typography>
-                                    </Stack>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Stack>
+                                            <Typography variant="h6">
+                                                {`${supervisor.name} (${supervisor.code})`}
+                                            </Typography>
+                                            <Typography variant="body1" whiteSpace={'pre-line'}>
+                                                {supervisor.email}
+                                            </Typography>
+                                        </Stack>
                                     </Box>
 
-                                    <Box sx={{ flexShrink: 0}}>
-                                            <Button
-                                                variant="contained"
-                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>}
-                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
-                                                disableElevation
-                                            >
-                                                {constant.approve}
-                                            </Button>
+                                    <Box sx={{ flexShrink: 0 }}>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<Iconify icon="ic:round-mark-email-read" />}
+                                            sx={{
+                                                borderRadius: '50px',
+                                                height: '24px',
+                                                width: '99px',
+                                            }}
+                                            disableElevation
+                                        >
+                                            {constant.approve}
+                                        </Button>
                                     </Box>
                                 </Stack>
                             ) : (
