@@ -408,7 +408,6 @@ function AccountForm(props: AccountFormProps) {
                 setValue('supervisorStatus', 'notFound')
             }
         } catch (error) {
-            console.log(error);
             setValue('supervisorStatus', null)
         }
         trigger('supervisorCode')
@@ -556,7 +555,7 @@ function AccountForm(props: AccountFormProps) {
                             label={constant.password}
                             placeholder={constant.passwordPlaceholder}
                             InputLabelProps={{ shrink: true }}
-                            inputProps={{ maxLength: 100 }}
+                            disabled
                         />
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
@@ -619,7 +618,7 @@ function AccountForm(props: AccountFormProps) {
                                                 sx={{ mt: 1, color: 'text.secondary' }}
                                             >
                                                 Allowed *.jpeg, *.jpg, *.png, *.gif
-                                                <br /> max size of {fData(200000)}
+                                                <br /> Max size of {fData(200000)}
                                             </Typography>
                                         }
                                     />
@@ -866,7 +865,7 @@ function AccountForm(props: AccountFormProps) {
                                                         variant="body2"
                                                         component="p"
                                                         whiteSpace="pre-line"
-                                                        sx={{ ml: -2 }}
+                                                        sx={{ ml: -2, color: 'text.secondary' }}
                                                     >
                                                         Drop files here or click
                                                         <Typography

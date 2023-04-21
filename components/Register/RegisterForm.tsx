@@ -385,7 +385,7 @@ function RegisterForm(props: RegisterFormProps) {
                                         sx={{ mt: 1, color: 'text.secondary' }}
                                     >
                                         Allowed *.jpeg, *.jpg, *.png, *.gif
-                                        <br /> max size of {fData(200000)}
+                                        <br /> Max size of {fData(200000)}
                                     </Typography>
                                 }
                             />
@@ -615,7 +615,7 @@ function RegisterForm(props: RegisterFormProps) {
                                                 variant="body2"
                                                 component="p"
                                                 whiteSpace="pre-line"
-                                                sx={{ ml: -2 }}
+                                                sx={{ ml: -2, color: 'text.secondary' }}
                                             >
                                                 Drop files here or click
                                                 <Typography
