@@ -617,7 +617,7 @@ function AccountForm(props: AccountFormProps) {
                                                 variant="caption"
                                                 sx={{ mt: 1, color: 'text.secondary' }}
                                             >
-                                                Allowed *.jpeg, *.jpg, *.png, *.gif
+                                                Allowed *.jpeg, *.jpg, *.png
                                                 <br /> Max size of {fData(200000)}
                                             </Typography>
                                         }
