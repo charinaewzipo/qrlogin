@@ -422,6 +422,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 name="department"
                                 key={'department-textfield'}
                                 label={isRequire(constant.department)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                         'SciKU Student & Staff': (
@@ -465,6 +466,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 name="governmentName"
                                 key={'governmentName-textfield'}
                                 label={isRequire(constant.governmentName)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                         'Private company': (
@@ -472,6 +474,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 name="companyName"
                                 key={'companyName-textfield'}
                                 label={isRequire(constant.companyName)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                     }[watchTypeOfPerson] || (
@@ -479,6 +482,7 @@ function RegisterForm(props: RegisterFormProps) {
                             name="department"
                             key={'department-textfield'}
                             label={isRequire(constant.department)}
+                            inputProps={{ maxLength: 100 }}
                             disabled
                         />
                     )}
@@ -577,7 +581,7 @@ function RegisterForm(props: RegisterFormProps) {
                         name={isTitleOther ? 'otherTitle' : ''}
                         label={isRequire(constant.otherTitle, isTitleOther)}
                         disabled={!isTitleOther}
-                        inputProps={{ maxLength: 100 }}
+                        inputProps={{ maxLength: 30 }}
                     />
                 </Stack>
                 <Stack flexDirection={'row'} gap={3}>

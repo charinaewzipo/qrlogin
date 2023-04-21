@@ -804,7 +804,7 @@ function AccountForm(props: AccountFormProps) {
                                 name={isTitleOther ? 'otherTitle' : ''}
                                 label={isRequire(constant.otherTitle, isTitleOther)}
                                 disabled={!isTitleOther}
-                                inputProps={{ maxLength: 100 }}
+                                inputProps={{ maxLength: 30 }}
                             />
                             <RHFTextField
                                 name="firstName"
