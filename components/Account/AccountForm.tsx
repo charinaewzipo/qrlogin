@@ -669,13 +669,17 @@ function AccountForm(props: AccountFormProps) {
                                         render={({ field }) => (
                                             <Autocomplete
                                                 {...field}
-                                                freeSolo
                                                 clearOnBlur
                                                 fullWidth
-                                                onChange={(event, newValue) =>{
-                                                    console.log(newValue)
-                                                    field.onChange(get(newValue, 'value', newValue))}
+                                                isOptionEqualToValue={(option, value) => 
+                                                    option.value === value.value
                                                 }
+                                                value={{ value: field.value, label: field.value }}
+                                                onChange={(event, newValue) =>{
+                                                    const newVal = get(newValue, 'value', '')
+                                                    field.onChange(newVal)}
+                                                }
+                                                popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                                 options={department}
                                                 key={'department-auto'}
                                                 renderInput={(param) => (
