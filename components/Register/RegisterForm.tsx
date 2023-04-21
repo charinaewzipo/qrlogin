@@ -431,19 +431,28 @@ function RegisterForm(props: RegisterFormProps) {
                                 render={({ field }) => (
                                     <Autocomplete
                                         {...field}
-                                        freeSolo
-                                        fullWidth
                                         clearOnBlur
-                                        onChange={(event, newValue) =>
-                                            field.onChange(get(newValue, 'value', newValue))
+                                        fullWidth
+                                        isOptionEqualToValue={(option, value) => 
+                                            option.value === value.value
                                         }
+                                        value={{ value: field.value, label: field.value }}
+                                        onChange={(event, newValue) =>{
+                                            const newVal = get(newValue, 'value', '')
+                                            field.onChange(newVal)}
+                                        }
+                                        popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                         options={department}
                                         key={'department-auto'}
                                         renderInput={(param) => (
                                             <TextField
                                                 {...param}
                                                 error={!!errors?.department}
-                                                helperText={get(errors?.department, 'message', '')}
+                                                helperText={get(
+                                                    errors?.department,
+                                                    'message',
+                                                    ''
+                                                )}
                                                 label={isRequire(constant.department)}
                                             />
                                         )}
