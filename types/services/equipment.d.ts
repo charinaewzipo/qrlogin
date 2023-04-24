@@ -119,9 +119,19 @@ interface IV1RespPostEquipmentUnavailableCreate {
 interface IV1PostEquipmentUnavailableDelete {
     equnavascheId: number
 }
+interface IV1PostEquipmentUnavailableUpdate{
+    equnavascheId:number
+    date:timestamp
+    times:Array<number>
+    eqId:Array<number>
+    status?:string
+}
 
 interface IV1RespPostEquipmentUnavailableDelete {
     equnavascheId: number
+}
+interface IV1RespPostEquipmentUnavailableUpdate{
+    equnavascheId:number
 }
 
 interface IV1QueryGetEquipmentMaintenanceRead {

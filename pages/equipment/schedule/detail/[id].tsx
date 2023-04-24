@@ -5,12 +5,10 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { getTimeOfDay } from '@ku/utils/formatDate'
 import {
-  Card,
   Table,
   TableBody,
   Container,
   TableContainer,
-  TablePagination,
   Box,
   useTheme,
   Stack,
@@ -28,26 +26,23 @@ import Iconify from '@sentry/components/iconify'
 import CustomBreadcrumbs from '@sentry/components/custom-breadcrumbs'
 import {
   useTable,
-  emptyRows,
   TableNoData,
-  TableEmptyRows,
   TableHeadCustom,
   TableSkeleton,
   TablePaginationCustom,
 } from '@sentry/components/table'
-import { fetchGetAssessments } from '@ku/services/assessment'
 import { useSnackbar } from 'notistack'
-import { addDays, format } from 'date-fns'
+import { addDays, format, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
 import FormProvider from '@sentry/components/hook-form/FormProvider'
-import { Controller, useForm, ErrorOption } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
-import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
+import { RHFAutocomplete } from '@sentry/components/hook-form'
 import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
-import { fetchGetEquipmentRead, fetchGetUnAvailableSchedule, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import { fetchGetEquipmentRead, fetchGetUnAvailableSchedule, fetchPostEquipmentUnavailableUpdate } from '@ku/services/equipment'
 import messages from '@ku/constants/response'
 import uuidv4 from '@sentry/utils/uuidv4'
 import { TIME_OPTIONS } from '@ku/constants/variables'
@@ -72,7 +67,6 @@ type FormValuesProps = {
 }
 
 EquipmentScheduleDetailPage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
-
 export default function EquipmentScheduleDetailPage() {
   const {
     page,
@@ -88,8 +82,6 @@ export default function EquipmentScheduleDetailPage() {
     onSelectAllRows,
     //
     onSort,
-    onChangePage,
-    onChangeRowsPerPage,
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
@@ -126,8 +118,6 @@ export default function EquipmentScheduleDetailPage() {
     if (!isEmpty(router.query.id)) {
       GetUnAvailableSchedule()
       GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
-      //get detail selected Equipment
-      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment, false, true)
       getEQ2All()
       return debouncedCallback.cancel
     }
@@ -137,31 +127,27 @@ export default function EquipmentScheduleDetailPage() {
   const callBackTimeout = useCallback(debouncedCallback, [])
 
   const mapTime = TIME_OPTIONS.find(i => i.title === getTimeOfDay(get(dataScheduleDetail, 'equnavascheTimes', [])))
-  const mapDate = fDateTimeFormat(get(dataScheduleDetail, 'equnavascheCreatedAt', new Date()), 'DD MMM YYYY')
+  const mapDate = fDateTimeFormat(get(dataScheduleDetail, 'equnavascheDays', new Date()), 'DD MMM YYYY')
 
   const EquipmentScheduleScheme = Yup.object().shape({
     date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
   })
 
-  const defaultValues: FormValuesProps = useMemo(() => (
-    {
-      date: null,
-      time: ''
-    }
-  ), [])
+  const defaultValues: FormValuesProps = useMemo(() => ({
+    date: null,
+    time: ''
+  }), [])
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(EquipmentScheduleScheme),
     defaultValues,
   })
   const {
     reset,
-    watch,
     control,
     setValue,
     handleSubmit,
-    setError,
-    formState: { isSubmitting, errors },
+    formState: { errors },
   } = methods
 
   const GetUnAvailableSchedule = () => {
@@ -201,7 +187,6 @@ export default function EquipmentScheduleDetailPage() {
     })
     fetchGetEquipmentRead(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
-
         if (isQuery) {
           const data = get(response, 'data.dataList', [])
           const ArrayNumber = data.map(i => i.eqId)
@@ -230,29 +215,32 @@ export default function EquipmentScheduleDetailPage() {
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
       enqueueSnackbar(errorMessage, { variant: 'error' })
+    }).finally(() => {
+      //get detail selected Equipment
+      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment, false, true)
     })
   }
-  // const PostEquipmentCreate = async (data: FormValuesProps) => {
-  //   const ArrayNumber = selected.map(numString => parseInt(numString))
-  //   const query: IV1PostEquipmentUnavailableCreate = {
-  //     date: Date.now(),
-  //     times: [],
-  //     eqId: ArrayNumber,
-  //     status: ''
-  //   }
-  //   console.log("selected", selected)
-  //   console.log("query", query)
-  //   await fetchPostEquipmentUnavailableCreate(query).then(response => {
-  //     if (response.code === 200) {
-  //       reset()
-  //       setSelected([])
-  //       push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
-  //       enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
-  //     }
-  //   }).catch(err => {
-  //     console.log(err)
-  //   })
-  // }
+  const PostEquipmentUpdate = (data: FormValuesProps) => {
+    const mapTimePost = TIME_OPTIONS.find(i => i.label === data.time)
+    const ArrayEqID = selected.map(numString => parseInt(numString))
+    const query: IV1PostEquipmentUnavailableUpdate = {
+      equnavascheId: Number(get(router, 'query.id', -1)),
+      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
+      times: mapTimePost.value,
+      eqId: ArrayEqID,
+    }
+    fetchPostEquipmentUnavailableUpdate(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        reset()
+        setSelected([])
+        push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
+        enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
+      }
+    }).catch(err => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
   const handleViewRow = (id: string) => {
     onSelectRow(id)
   };
@@ -261,7 +249,6 @@ export default function EquipmentScheduleDetailPage() {
     callBackTimeout(0, rowsPerPage, filterSearchEquipment)
   }
   const handleOnclickRemove = () => {
-    // reset()
     setSelected([])
   }
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -270,10 +257,8 @@ export default function EquipmentScheduleDetailPage() {
     GetEquipmentRead(0, limit, filterSearchEquipment)
   }
   const onSubmit = async (data: FormValuesProps) => {
-    console.log("data", data)
-    console.log("selected", selected)
     if (!isErrorSelectEquipment) {
-      // PostEquipmentCreate(data)
+      PostEquipmentUpdate(data)
     }
   }
   const RenderChips = useMemo(() => {
@@ -368,9 +353,6 @@ export default function EquipmentScheduleDetailPage() {
                   disableClearable
                   options={TIME_OPTIONS.map((option) => option.label)}
                   onChange={(event, newValue) => {
-                    if (isEmpty(newValue)) {
-                      console.log("helooooooooooo")
-                    }
                     setValue('time', `${newValue}`)
                   }}
                   renderInput={(params) => (

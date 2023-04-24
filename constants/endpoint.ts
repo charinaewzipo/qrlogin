@@ -4,6 +4,7 @@ const endpoint = {
     equipmentUnAvailableScheduleStats: '/api/v1/equipment/unavailable/schedule/stats',
     equipmentUnAvailableDelete: '/api/v1/equipment/unavailable/delete',
     equipmentUnAvailableCreate: '/api/v1/equipment/unavailable/create',
+    equipmentUnAvailableUpdate: 'api/v1/equipment/unavailable/update',
 
     // EQ 5
     equipmentMaintenanceCreate: '/api/v1/equipment/maintenance/create',

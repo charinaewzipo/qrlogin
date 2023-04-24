@@ -77,6 +77,13 @@ const fetchGetUnAvailableScheduleStats = (): Promise<
 > => {
     return axios.get(`${endpoint.equipmentUnAvailableScheduleStats}`)
 }
+
+//EQ14.POST: api/v1/equipment/unavailable/update
+const fetchPostEquipmentUnavailableUpdate = (
+    query: IV1PostEquipmentUnavailableUpdate
+): Promise<IAPIResponse<IV1RespPostEquipmentUnavailableUpdate>> => {
+    return axios.post(`${endpoint.equipmentUnAvailableUpdate}`, query)
+}
 export {
     fetchPostEquipmentCreate,
     fetchGetEquipmentRead,
@@ -90,4 +97,5 @@ export {
     fetchGetEquipmentUnavailable,
     fetchPostEquipmentUnavailableCreate,
     fetchPostEquipmentUnavailableDelete,
+    fetchPostEquipmentUnavailableUpdate,
 }
