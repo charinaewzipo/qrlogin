@@ -28,6 +28,7 @@ import { NumberFormatCustom, NumberFormatCustomNoComma } from '@ku/utils/numberF
 import { formatISO } from 'date-fns'
 import numeral from 'numeral'
 import transformer from '@ku/utils/transformer'
+import { LoadingButton } from '@mui/lab'
 
 export interface IAccountFormValuesProps {
     privillege: TPermission
@@ -1043,7 +1044,7 @@ function AccountForm(props: AccountFormProps) {
                     <></>
                 )}
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
-                    <Button
+                    <LoadingButton
                         type="button"
                         variant="contained"
                         size="large"
@@ -1051,15 +1052,14 @@ function AccountForm(props: AccountFormProps) {
                         color="inherit"
                     >
                         {props.updateMode ? constant.reset : constant.cancel}
-                    </Button>
-                    <Button
+                    </LoadingButton>
+                    <LoadingButton
                         type="submit"
                         variant="contained"
                         size="large"
-                        // loading={authenticationStore.isFetching}
                     >
                         {props.updateMode ? constant.updateAccount : constant.createAccount}
-                    </Button>
+                    </LoadingButton>
                 </Stack>
             </Stack>
         </FormProvider>
