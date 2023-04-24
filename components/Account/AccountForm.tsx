@@ -846,7 +846,6 @@ function AccountForm(props: AccountFormProps) {
                             label={isRequire(constant.phoneNumber)}
                             inputProps={{ maxLength: 10 }}
                             InputProps={{ inputComponent: NumberFormatCustomNoComma }}
-                            ref={register('phoneNumber').ref}
                         />
                         {!isFinance ? (
                             <Stack flexDirection={'row'} gap={3}>
