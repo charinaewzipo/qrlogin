@@ -1,73 +1,71 @@
-import { NumericFormat } from "react-number-format"
+import { InputBaseComponentProps } from '@mui/material'
+import React from 'react'
+import { NumericFormat } from 'react-number-format'
 
-function NumberFormatCustom(props) {
+const NumberFormatCustom = React.forwardRef<HTMLElement, any>((props, ref) => {
     const { inputRef, onChange, ...other } = props
 
     return (
         <NumericFormat
             {...other}
-            getInputRef={inputRef}
+            getInputRef={ref}
             allowNegative={false}
             decimalScale={0}
             onValueChange={(values) => {
                 onChange({
                     target: {
                         name: props.name,
-                        value: values.formattedValue
-                    }
+                        value: values.formattedValue,
+                    },
                 })
             }}
             thousandSeparator
         />
     )
-}
+})
 
-function NumberFormatCustomNoComma(props) {
+const NumberFormatCustomNoComma = React.forwardRef<HTMLElement, any>((props, ref) => {
     const { inputRef, onChange, ...other } = props
 
     return (
         <NumericFormat
             {...other}
             allowLeadingZeros
-            getInputRef={inputRef}
+            getInputRef={ref}
             allowNegative={false}
             decimalScale={0}
             onValueChange={(values) => {
                 onChange({
                     target: {
                         name: props.name,
-                        value: values.formattedValue
-                    }
+                        value: values.formattedValue,
+                    },
                 })
             }}
         />
     )
-}
+})
 
-function NumberFormatCustomDecimal(props) {
+const NumberFormatCustomDecimal = React.forwardRef<HTMLElement, any>((props, ref) => {
     const { inputRef, onChange, ...other } = props
 
     return (
         <NumericFormat
             {...other}
-            getInputRef={inputRef}
+            getInputRef={ref}
             allowNegative={false}
             decimalScale={2}
             onValueChange={(values) => {
                 onChange({
                     target: {
                         name: props.name,
-                        value: values.formattedValue
-                    }
+                        value: values.formattedValue,
+                    },
                 })
             }}
             thousandSeparator
         />
     )
-}
+})
 
-export {
-    NumberFormatCustom,
-    NumberFormatCustomNoComma,
-    NumberFormatCustomDecimal,
-}
+export { NumberFormatCustom, NumberFormatCustomNoComma, NumberFormatCustomDecimal }
