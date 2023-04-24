@@ -173,7 +173,7 @@ export default function EquipmentScheduleDetailPage() {
   const GetEquipmentRead = (pageToGo: number, limit: number, search: string, isSortName: boolean = false, isQuery: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
       page: pageToGo + 1,
-      limit: limit,
+      limit: isQuery ? 99999 : limit,
       eqId: isQuery ? get(router, 'query.id', '').toString() : '',
       eqStatus: '',
       eqSearch: search,
@@ -205,7 +205,7 @@ export default function EquipmentScheduleDetailPage() {
 
   const getEQ2All = () => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: 1, limit: 9999999,
+      page: 1, limit: 99999,
       eqSortName: false, eqSortCode: false,
     }
     fetchGetEquipmentRead(query).then(response => {

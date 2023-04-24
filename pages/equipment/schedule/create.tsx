@@ -157,7 +157,7 @@ export default function EquipmentScheduleCreatePage() {
   }
   const getEQ2All = () => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: 1, limit: 9999999,
+      page: 1, limit: 99999,
       eqSortName: false, eqSortCode: false,
     }
     fetchGetEquipmentRead(query).then(response => {
