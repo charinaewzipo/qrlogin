@@ -104,7 +104,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                 </RowDetailStyle>
                             </TableHead>
                             <TableBody>
-                                {bookingData.eqPrices.map((price) => (
+                                {bookingData.eqprices.map((price) => (
                                     <React.Fragment key={`booking-price-eqpEqId-${price.eqpEqId}`}>
                                         <RowDetailStyle>
                                             <TableCell>
@@ -119,7 +119,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                                     {price.eqpDescription}
                                                 </Typography>
                                             </TableCell>
-                                            {price.eqSubPrice.length === 0 ? (
+                                            {price.eqsubprice.length === 0 ? (
                                                 <>
                                                     <TableCell align="right">
                                                         {fNumber(price.eqpQuantity)}
@@ -137,7 +137,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                                 <></>
                                             )}
                                         </RowDetailStyle>
-                                        {price.eqSubPrice.map((subPrice) => (
+                                        {price.eqsubprice.map((subPrice) => (
                                             <RowDetailStyle
                                                 key={`booking-sub-price-eqpEqId-${subPrice.eqsubpId}`}
                                             >
@@ -184,7 +184,7 @@ function TableView({ bookingData, onDownloadAsPdf}: ITableViewProps) {
                                     <TableCell align="right">
                                         <Box sx={{ mt: 2 }} />
                                         <Typography>
-                                            {fCurrencyBaht(bookingData.eqPriceSubTotal)}
+                                            {fCurrencyBaht(bookingData.eqpriceSubTotal)}
                                         </Typography>
                                     </TableCell>
                                 </RowResultStyle>

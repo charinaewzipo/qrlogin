@@ -14,8 +14,6 @@ const nextConfig = {
     },
 }
 
-module.exports = withNx(nextConfig)
-
 const withTM = require('next-transpile-modules')([
     '@fullcalendar/common',
     '@fullcalendar/daygrid',
@@ -25,4 +23,5 @@ const withTM = require('next-transpile-modules')([
     '@fullcalendar/timegrid',
     '@fullcalendar/timeline',
 ]);
-module.exports = withTM()
+
+module.exports = withTM(withNx(nextConfig))

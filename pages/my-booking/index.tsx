@@ -54,7 +54,7 @@ const mockData: IV1RespGetBookingMeRead = {
     ],
     eqCreatedAt: '2023-03-13T16:21:30.894Z',
     eqUpdatedAt: '2023-03-16T16:21:30.894Z',
-    eqPrices: [
+    eqprices: [
         {
             eqpId: 1,
             eqpEqId: 1,
@@ -70,7 +70,7 @@ const mockData: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqSubPrice: [
+            eqsubprice: [
                 {
                     eqsubpId: 1,
                     eqsubpChecked: "no",
@@ -100,10 +100,10 @@ const mockData: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqSubPrice: [],
+            eqsubprice: [],
         },
     ],
-    eqPriceSubTotal: 100,
+    eqpriceSubTotal: 100,
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
@@ -113,8 +113,8 @@ const mockData: IV1RespGetBookingMeRead = {
     payFees: 0,
     payTotal: 100,
     bookCreatedAt: '2023-03-13T16:21:30.894Z',
-    eqRtimDays: '2023-03-13T16:21:30.894Z',
-    eqRtimTimes: [8, 10, 14],
+    eqrtimDays: '2023-03-13T16:21:30.894Z',
+    eqrtimTimes: [8, 10, 14],
 };
 const mockData2: IV1RespGetBookingMeRead = {
     eqId: 1,
@@ -153,7 +153,7 @@ const mockData2: IV1RespGetBookingMeRead = {
     ],
     eqCreatedAt: '2023-03-13T16:21:30.894Z',
     eqUpdatedAt: '2023-03-16T16:21:30.894Z',
-    eqPrices: [
+    eqprices: [
         {
             eqpId: 1,
             eqpEqId: 1,
@@ -169,7 +169,7 @@ const mockData2: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqSubPrice: [
+            eqsubprice: [
                 {
                     eqsubpId: 1,
                     eqsubpChecked: "no",
@@ -199,10 +199,10 @@ const mockData2: IV1RespGetBookingMeRead = {
             eqpUnitPer: "month",
             eqpCreatedAt: '2023-03-13T16:21:30.894Z',
             eqpUpdatedAt: '2023-03-15T16:21:30.894Z',
-            eqSubPrice: [],
+            eqsubprice: [],
         },
     ],
-    eqPriceSubTotal: 100,
+    eqpriceSubTotal: 100,
     bookId: 123,
     bookOwner: 1,
     bookAdvisor: 2,
@@ -212,8 +212,8 @@ const mockData2: IV1RespGetBookingMeRead = {
     payFees: 0,
     payTotal: 100,
     bookCreatedAt: '2023-03-13T16:21:30.894Z',
-    eqRtimDays: '2023-03-13T16:21:30.894Z',
-    eqRtimTimes: [8, 10, 14],
+    eqrtimDays: '2023-03-13T16:21:30.894Z',
+    eqrtimTimes: [8, 10, 14],
 };
 const TABLE_HEAD = [
     { id: 'booking', label: 'Booking', align: 'left', width: 200 },
