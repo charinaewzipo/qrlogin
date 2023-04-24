@@ -331,7 +331,6 @@ function AccountForm(props: AccountFormProps) {
         control,
         watch,
         trigger,
-        register,
         setFocus,
     } = methods
 
