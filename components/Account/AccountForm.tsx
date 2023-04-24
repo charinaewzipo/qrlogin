@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
-import { LoadingButton } from '@mui/lab'
-import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -326,10 +325,12 @@ function AccountForm(props: AccountFormProps) {
         handleSubmit,
         getValues,
         setValue,
-        formState: { errors, isSubmitted },
+        formState: { errors, isSubmitted, isSubmitting },
         control,
         watch,
-        trigger
+        trigger,
+        register,
+        setFocus,
     } = methods
 
     const [
@@ -377,6 +378,21 @@ function AccountForm(props: AccountFormProps) {
             //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
+
+    useEffect(() => {
+        if (isSubmitting) {
+            const firstError = (Object.keys(errors) as Array<keyof typeof errors>).reduce(
+                (field, a) => {
+                    const fieldKey = field
+                    return !!errors[fieldKey] ? fieldKey : a
+                },
+                null
+            )
+            if (firstError) {
+                setFocus(firstError)
+            }
+        }
+    }, [errors, isSubmitting])
 
     useEffect(() => {
         if (props.errorMsg !== '')
@@ -576,7 +592,7 @@ function AccountForm(props: AccountFormProps) {
                                 name="accountExpiryDate"
                                 control={control}
                                 defaultValue={''}
-                                render={({ field, fieldState: { error } }) => (
+                                render={({ field: { ref, ...field }, fieldState: { error } }) => (
                                     <DatePicker
                                         inputFormat="dd MMM yyyy"
                                         label={constant.accountExpiryDate}
@@ -590,6 +606,7 @@ function AccountForm(props: AccountFormProps) {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
+                                                inputRef={ref}
                                                 error={!!error}
                                                 helperText={error?.message}
                                                 fullWidth
@@ -666,7 +683,7 @@ function AccountForm(props: AccountFormProps) {
                                     <Controller
                                         name="department"
                                         control={control}
-                                        render={({ field }) => (
+                                        render={({ field: { ref, ...field } }) => (
                                             <Autocomplete
                                                 {...field}
                                                 clearOnBlur
@@ -691,6 +708,7 @@ function AccountForm(props: AccountFormProps) {
                                                             'message',
                                                             ''
                                                         )}
+                                                        inputRef={ref}
                                                         label={isRequire(constant.department)}
                                                     />
                                                 )}
@@ -826,6 +844,7 @@ function AccountForm(props: AccountFormProps) {
                             label={isRequire(constant.phoneNumber)}
                             inputProps={{ maxLength: 10 }}
                             InputProps={{ inputComponent: NumberFormatCustomNoComma }}
+                            ref={register('phoneNumber').ref}
                         />
                         {!isFinance ? (
                             <Stack flexDirection={'row'} gap={3}>
@@ -1024,7 +1043,7 @@ function AccountForm(props: AccountFormProps) {
                     <></>
                 )}
                 <Stack flexDirection="row" justifyContent="right" gap={2}>
-                    <LoadingButton
+                    <Button
                         type="button"
                         variant="contained"
                         size="large"
@@ -1032,15 +1051,15 @@ function AccountForm(props: AccountFormProps) {
                         color="inherit"
                     >
                         {props.updateMode ? constant.reset : constant.cancel}
-                    </LoadingButton>
-                    <LoadingButton
+                    </Button>
+                    <Button
                         type="submit"
                         variant="contained"
                         size="large"
                         // loading={authenticationStore.isFetching}
                     >
                         {props.updateMode ? constant.updateAccount : constant.createAccount}
-                    </LoadingButton>
+                    </Button>
                 </Stack>
             </Stack>
         </FormProvider>
