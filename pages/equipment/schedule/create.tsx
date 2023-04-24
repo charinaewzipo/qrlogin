@@ -1,5 +1,5 @@
 // next
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 // next
 import React from 'react'
 import * as Yup from 'yup'
@@ -86,7 +86,7 @@ export default function EquipmentScheduleCreatePage() {
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
-
+  const mounted = useRef(false);
   useEffect(() => {
     GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
     getEQ2All()
@@ -98,7 +98,11 @@ export default function EquipmentScheduleCreatePage() {
     }
   }, [selected])
   useEffect(() => {
-    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
+    if (!mounted.current) {
+      mounted.current = true
+    } else {
+      callBackTimeout(0, rowsPerPage, filterSearchEquipment)
+    }
   }, [filterSearchEquipment])
 
   const EquipmentScheduleScheme = Yup.object().shape({

@@ -129,6 +129,7 @@ export default function EquipmentSchedulePage() {
       startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormat(filterStartDate, 'YYYY-MM-DDT00:00:00') : null,
       endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormat(filterEndDate, 'YYYY-MM-DDT00:00:00') : null,
       status: filterStatus as IEquipmentUnavailableStatus,
+      equnavascheId: -1
     }
     Object.keys(query).forEach(key => {
       if (isNull(query[key]) || isUndefined(query[key])) {

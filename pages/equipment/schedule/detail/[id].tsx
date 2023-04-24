@@ -1,9 +1,9 @@
-// next
-import { useState, useEffect, useMemo } from 'react'
-// next
+import React, { useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import * as Yup from 'yup'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import { getTimeOfDay } from '@ku/utils/formatDate'
 import {
   Card,
   Table,
@@ -20,6 +20,7 @@ import {
   Alert,
   FormHelperText,
 } from '@mui/material'
+import responseCode from '@ku/constants/responseCode'
 import { EQUIPMENT_PATH, MERGE_PATH } from '@ku/constants/routes'
 import AuthorizedLayout from '@ku/layouts/authorized'
 // components
@@ -45,169 +46,24 @@ import { Controller, useForm, ErrorOption } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 import { DatePicker } from '@mui/x-date-pickers'
 import { RHFAutocomplete, RHFSelect, RHFTextField } from '@sentry/components/hook-form'
-import { get, isEmpty } from 'lodash'
-import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
+import { fetchGetEquipmentRead, fetchGetUnAvailableSchedule, fetchPostEquipmentUnavailableCreate } from '@ku/services/equipment'
+import messages from '@ku/constants/response'
+import uuidv4 from '@sentry/utils/uuidv4'
+import { TIME_OPTIONS } from '@ku/constants/variables'
+import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 
-
-const mockTableData: IV1PostEquipmentRead[] =
-  [{
-    eqId: "ABC123",
-    eqStatus: "available",
-    eqCode: "EQ001",
-    eqName: "Power Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_1.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1548435200, // April 26, 2022
-    eqUpdatedAt: 1949577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC124",
-    eqStatus: "Unavailable",
-    eqCode: "EQ001",
-    eqName: "DeWalt",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1448435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }, {
-    eqId: "ABC125",
-    eqStatus: "Temporary Unavailable",
-    eqCode: "EQ001",
-    eqName: "ABC124 Drill",
-    eqBrand: "DeWalt",
-    eqModel: "DCD771C2",
-    eqDescription: "This powerful drill is perfect for heavy-duty projects and can handle all types of materials.Temporary UnavailableTemporary Unavailable",
-    eqPicture: [
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_3.jpg",
-        eqpicSort: 1
-      },
-      {
-        eqpicLink: "https://minimal-assets-api-dev.vercel.app/assets/images/covers/cover_2.jpg",
-        eqpicSort: 2
-      }
-    ],
-    eqCreatedAt: 1648435200, // April 26, 2022
-    eqUpdatedAt: 1649577600, // April 9, 2022
-    eqAvascheDays: ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday"],
-    eqAvascheTimes: [9, 10, 11, 12, 13, 14, 15, 16, 17],
-    eqTypePerson: [
-      {
-        eqpscheTypePerson: "Residential",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 50,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          }
-        ]
-      },
-      {
-        eqpscheTypePerson: "Commercial",
-        eqsches: [
-          {
-            eqpscheSubOption: null,
-            eqpscheChecked: "Yes",
-            eqpscheName: "Hourly rate",
-            eqpscheDescription: null,
-            eqpscheUnitPrice: 100,
-            eqpscheUnitPer: "hour",
-            eqsubsches: null
-          },
-        ]
-      }]
-  }]
-
-
+const initialDataDetail = {
+  equnavascheId: -1,
+  equnavascheCreatedByName: '',
+  equnavascheDays: '',
+  equnavascheTimes: [],
+  equnavascheStatus: '',
+  equnavascheCreatedAt: '',
+  equnavascheUpdatedAt: '',
+}
 const TABLE_HEAD = [
-  { id: 'name', label: 'Equipment', align: 'left' },
+  { id: 'eqName', label: 'Equipment', align: 'left' },
 ];
 type FormValuesProps = {
   date: Date | null,
@@ -224,6 +80,7 @@ export default function EquipmentScheduleDetailPage() {
     orderBy,
     rowsPerPage,
     setPage,
+    setRowsPerPage,
     //
     selected,
     setSelected,
@@ -236,30 +93,63 @@ export default function EquipmentScheduleDetailPage() {
   } = useTable();
 
   const [tableData, setTableData] = useState<IV1PostEquipmentRead[]>([])
-  const [dataDetail, setDataDetail] = useState<IV1PostEquipmentRead>()
-
+  const [tableAllData, setTableAllData] = useState<IV1PostEquipmentRead[]>([])
+  const [dataScheduleDetail, setDataScheduleDetail] = useState<IV1RespGetEquipmentUnavailableSchedule>()
+  const [totalRecord, setTotalRecord] = useState<number>(0);
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
-  const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
-
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
-
+  const router = useRouter()
+  const mounted = useRef(false);
   useEffect(() => {
     if (isErrorSelectEquipment && selected.length > 0) {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
 
+  useEffect(() => {
+    if (!mounted.current) {
+      mounted.current = true
+    } else {
+      callBackTimeout(0, rowsPerPage, filterSearchEquipment)
+    }
+  }, [filterSearchEquipment])
+
+  useEffect(() => {
+    setValue('date', new Date(mapDate));
+    setValue('time', mapTime.label);
+  }, [dataScheduleDetail])
+
+  useEffect(() => {
+    if (!isEmpty(router.query.id)) {
+      GetUnAvailableSchedule()
+      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+      //get detail selected Equipment
+      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment, false, true)
+      getEQ2All()
+      return debouncedCallback.cancel
+    }
+  }, [router])
+
+  const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
+  const callBackTimeout = useCallback(debouncedCallback, [])
+
+  const mapTime = TIME_OPTIONS.find(i => i.title === getTimeOfDay(get(dataScheduleDetail, 'equnavascheTimes', [])))
+  const mapDate = fDateTimeFormat(get(dataScheduleDetail, 'equnavascheCreatedAt', new Date()), 'DD MMM YYYY')
+
   const EquipmentScheduleScheme = Yup.object().shape({
-    date: Yup.date().nullable().required('Date is require'),
+    date: Yup.date().min(new Date(), 'Please choose future date').nullable().typeError('Invalid Date').required('Date is require'),
     time: Yup.string().required('Time is require'),
   })
-  const defaultValues: FormValuesProps = {
-    date: get(dataDetail, 'eqUpdatedAt', addDays(new Date(), 1)),
-    time: get(dataDetail, 'eqAvascheTimes[0]', 'Afternoon (13:00 - 22:00)').toString(),
-  }
+
+  const defaultValues: FormValuesProps = useMemo(() => (
+    {
+      date: null,
+      time: ''
+    }
+  ), [])
   const methods = useForm<FormValuesProps>({
     resolver: yupResolver(EquipmentScheduleScheme),
     defaultValues,
@@ -274,118 +164,143 @@ export default function EquipmentScheduleDetailPage() {
     formState: { isSubmitting, errors },
   } = methods
 
-
-
-  const TIME_OPTIONS = [
-    'Ealry morning (7:00 - 12:59)',
-    'Afternoon (13:00 - 22:00)',
-    'Full day (7:00 - 22:00)',
-  ];
-  useEffect(() => {
-    GetEquipmentRead()
-  }, [])
-
-  const GetEquipmentRead = async () => {
+  const GetUnAvailableSchedule = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
+      page: 1,
+      limit: 1,
+      equnavascheId: Number(get(router, 'query.id', -1))
+    }
+    Object.keys(query).forEach(key => {
+      if (isNull(query[key]) || isUndefined(query[key])) {
+        delete query[key]
+      }
+    })
+    fetchGetUnAvailableSchedule(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setDataScheduleDetail(get(response, 'data.dataList[0]', initialDataDetail))
+      }
+    }).catch((err) => {
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
+    })
+  }
+  const GetEquipmentRead = (pageToGo: number, limit: number, search: string, isSortName: boolean = false, isQuery: boolean = false) => {
     const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
-      page: page,
-      limit: rowsPerPage,
-      eqId: '',
+      page: pageToGo + 1,
+      limit: limit,
+      eqId: isQuery ? get(router, 'query.id', '').toString() : '',
       eqStatus: '',
-      eqSearch: filterSearchEquipment,
-      eqSortName: false,
+      eqSearch: search,
+      eqSortName: isSortName,
       eqSortCode: false,
     }
-    await fetchGetEquipmentRead(query).then(response => {
-      if (response.code === 200) {
-        setTableData(mockTableData)
-        const dataSelect = ['ABC124', 'ABC123']
-        setSelected(dataSelect)
-        // setStatusStat(response.data)
+    Object.keys(query).forEach(key => {
+      if (isNull(query[key]) || isUndefined(query[key]) || query[key] === "") {
+        delete query[key]
+      }
+    })
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+
+        if (isQuery) {
+          const data = get(response, 'data.dataList', [])
+          const ArrayNumber = data.map(i => i.eqId)
+          setSelected(ArrayNumber)
+        } else {
+          setTableData(get(response, 'data.dataList', []))
+          setTotalRecord(get(response, 'data.totalRecord', 0))
+          setPage(pageToGo)
+        }
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
-  const PostEquipmentCreate = async (data: FormValuesProps) => {
-    const ArrayNumber = selected.map(numString => parseInt(numString))
-    const query: IV1PostEquipmentUnavailableCreate = {
-      date: Date.now(),
-      times: [],
-      eqId: ArrayNumber,
-      status: ''
+
+  const getEQ2All = () => {
+    const query: IV1QueryPagination & IV1QueryGetEquipmentRead = {
+      page: 1, limit: 9999999,
+      eqSortName: false, eqSortCode: false,
     }
-    console.log("selected", selected)
-    console.log("query", query)
-    await fetchPostEquipmentUnavailableCreate(query).then(response => {
-      if (response.code === 200) {
-        reset()
-        setSelected([])
-        push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
-        enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
+    fetchGetEquipmentRead(query).then(response => {
+      if (response.code === responseCode.OK_CODE) {
+        setTableAllData(get(response, 'data.dataList', []))
       }
     }).catch(err => {
-      console.log(err)
+      const errorMessage = get(messages, err.code, messages[0])
+      enqueueSnackbar(errorMessage, { variant: 'error' })
     })
   }
+  // const PostEquipmentCreate = async (data: FormValuesProps) => {
+  //   const ArrayNumber = selected.map(numString => parseInt(numString))
+  //   const query: IV1PostEquipmentUnavailableCreate = {
+  //     date: Date.now(),
+  //     times: [],
+  //     eqId: ArrayNumber,
+  //     status: ''
+  //   }
+  //   console.log("selected", selected)
+  //   console.log("query", query)
+  //   await fetchPostEquipmentUnavailableCreate(query).then(response => {
+  //     if (response.code === 200) {
+  //       reset()
+  //       setSelected([])
+  //       push(MERGE_PATH(EQUIPMENT_PATH, '/schedule'))
+  //       enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
+  //     }
+  //   }).catch(err => {
+  //     console.log(err)
+  //   })
+  // }
   const handleViewRow = (id: string) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id))
+    onSelectRow(id)
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
-    clearTimeout(countDown);
-    setCountDown(
-      setTimeout(() => {
-        GetEquipmentRead()
-      }, 1000)
-    );
+    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
   }
   const handleOnclickRemove = () => {
     // reset()
     setSelected([])
   }
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const limit = parseInt(event.target.value, 10)
+    setRowsPerPage(limit)
+    GetEquipmentRead(0, limit, filterSearchEquipment)
+  }
   const onSubmit = async (data: FormValuesProps) => {
+    console.log("data", data)
+    console.log("selected", selected)
     if (!isErrorSelectEquipment) {
-      console.log("onSubmit", data)
-      try {
-        PostEquipmentCreate(data)
-
-      } catch (error) {
-        // console.error(error)
-        const errorOptions: ErrorOption = {
-          message: 'errorResponse.data || errorResponse.devMessage',
-        }
-        setError('afterSubmit', errorOptions)
-      }
+      // PostEquipmentCreate(data)
     }
   }
-
-  const isNotFound = (!tableData.length)
-
-  const RenderChips = (): JSX.Element => {
+  const RenderChips = useMemo(() => {
     return (
       <Box sx={{ mx: 3, mb: 2 }}>
         {isErrorSelectEquipment && <FormHelperText sx={{ color: theme.palette.error.main, ml: 2, my: 1 }}>Please select equipment at lest 1 item</FormHelperText>}
-        {selected.map((id) => {
-          const findData = tableData.find(i => i.eqId === id)
+        {selected.map((id, index) => {
+          const findData = tableAllData.find(i => i.eqId === id)
           return (
-            <>
+            <React.Fragment key={index}>
               {!isEmpty(findData) &&
                 <Chip
                   size='small'
-                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={get(findData, 'eqPicture[0].eqpicLink', '')} />}
+                  avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
                   label={get(findData, 'eqName', '')}
-                  key={id}
+                  key={`${id}`}
                   sx={{ m: 0.5 }}
                   color='primary'
                   onDelete={() => onSelectRow(id)}
                 />
               }
-            </>
+            </React.Fragment>
           )
         })}
       </Box>
     )
-  }
+  }, [selected])
   return (
     <>
       <Head>
@@ -409,7 +324,7 @@ export default function EquipmentScheduleDetailPage() {
               href: MERGE_PATH(EQUIPMENT_PATH, 'schedule'),
             },
             {
-              name: `${format(get(dataDetail, 'eqUpdatedAt', (new Date())), 'dd MMM yyyy')} (${get(dataDetail, 'eqAvascheTimes[0]', 'Afternoon (13:00 - 22:00)').toString()})`,
+              name: `${mapDate} (${mapTime.label})`,
             },
           ]}
         />
@@ -448,13 +363,16 @@ export default function EquipmentScheduleDetailPage() {
                   name="time"
                   fullWidth
                   value={value}
+                  defaultValue={mapTime.label}
                   disablePortal
                   disableClearable
-                  options={TIME_OPTIONS.map((option) => option)}
+                  options={TIME_OPTIONS.map((option) => option.label)}
                   onChange={(event, newValue) => {
-                    onChange(() => setValue('time', `${newValue}`))
-                  }
-                  }
+                    if (isEmpty(newValue)) {
+                      console.log("helooooooooooo")
+                    }
+                    setValue('time', `${newValue}`)
+                  }}
                   renderInput={(params) => (
                     <TextField {...params}
                       label="Time"
@@ -465,7 +383,7 @@ export default function EquipmentScheduleDetailPage() {
               )}
             />
           </Stack>
-          <RenderChips />
+          {RenderChips}
           <Box sx={{ px: 4, py: 2 }}>
             <TextField
               fullWidth
@@ -486,21 +404,30 @@ export default function EquipmentScheduleDetailPage() {
             <Table>
               <TableHeadCustom
                 sx={{ "& th": { backgroundColor: 'background.neutral', color: theme.palette.text.secondary } }}
+                order={order}
+                orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={tableData.length}
+                rowCount={selected.length}
                 numSelected={selected.length}
-                onSelectAllRows={(checked) =>
-                  onSelectAllRows(
-                    checked,
-                    tableData.map((row) => get(row, 'eqId', ''))
-                  )
-                }
+                onSort={(id) => {
+                  if (id === 'eqName') {
+                    GetEquipmentRead(page, rowsPerPage, filterSearchEquipment, order === 'asc')
+                    onSort(id)
+                  }
+                }}
+                onSelectAllRows={(checked) => {
+                  if (checked || (!checked && !isEmpty(selected) && selected.length !== totalRecord)) {
+                    onSelectAllRows(checked, tableAllData.map((row) => get(row, 'eqId', '')))
+                  } else {
+                    onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
+                  }
+
+                }}
               />
 
               <TableBody>
-                {tableData
-                  .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                  .map((row, index) =>
+                {!isEmpty(tableData) &&
+                  tableData.map((row, index) =>
                     row ? (
                       <EquipmentScheduleCreateRow
                         key={get(row, 'eqId', '')}
@@ -510,22 +437,19 @@ export default function EquipmentScheduleDetailPage() {
                         onViewRow={() => handleViewRow(get(row, 'eqId', ''))}
                       />
                     ) : (
-                      !isNotFound && <TableSkeleton key={index} />
+                      !isEmpty(tableData) && <TableSkeleton key={index} />
                     )
                   )}
-
-
-                <TableNoData isNotFound={isNotFound} />
+                <TableNoData isNotFound={isEmpty(tableData)} />
               </TableBody>
             </Table>
           </TableContainer>
           <TablePaginationCustom
-
-            count={tableData.length}
+            count={totalRecord}
             rowsPerPage={rowsPerPage}
             page={page}
-            onPageChange={onChangePage}
-            onRowsPerPageChange={onChangeRowsPerPage}
+            onPageChange={(e, page) => GetEquipmentRead(page, rowsPerPage, filterSearchEquipment)}
+            onRowsPerPageChange={handleChangeRowsPerPage}
           />
 
           <Stack justifyContent={'flex-end'} direction={'row'} spacing={2} sx={{ my: 3, mx: 3 }}>
@@ -541,7 +465,7 @@ export default function EquipmentScheduleDetailPage() {
               type="submit"
               variant="contained"
               onClick={() => {
-                if (selected.length === 0) {
+                if (!selected.length) {
                   setIsErrorSelectEquipment(true)
                 }
               }}

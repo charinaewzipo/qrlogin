@@ -78,6 +78,7 @@ interface IV1QueryGetEquipmentUnavailableSchedule {
     startTime?: string
     endTime?: string
     status?: IEquipmentUnavailableStatus
+    equnavascheId:number
 }
 
 interface IV1RespGetEquipmentUnavailableSchedule {
