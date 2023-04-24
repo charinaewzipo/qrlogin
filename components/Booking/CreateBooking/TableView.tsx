@@ -80,11 +80,11 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
 
     const refreshAllRowWithHrUnit = () => {
         const allRowWithHrUnit: { index: number; subIndex: number }[] = []
-        for (const [index, price] of bookingData.eqPrices.entries()) {
+        for (const [index, price] of bookingData.eqprices.entries()) {
             if (price.eqpUnitPer.toLowerCase() === 'hr') {
                 allRowWithHrUnit.push({ index: index, subIndex: null })
             }
-            for (const [subIndex, subPrice] of price.eqsubPrice.entries()) {
+            for (const [subIndex, subPrice] of price.eqsubprice.entries()) {
                 if (subPrice.eqsubpUnitPer.toLowerCase() === 'hr') {
                     allRowWithHrUnit.push({ index: index, subIndex: subIndex })
                 }
@@ -100,9 +100,9 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
 
     const getSubTotal = () => {
         const allRowPrice: { index: number; subIndex: number; unitprice: number }[] = []
-        for (const [index, price] of bookingData.eqPrices.entries()) {
+        for (const [index, price] of bookingData.eqprices.entries()) {
             allRowPrice.push({ index: index, subIndex: null, unitprice: price.eqpUnitPrice })
-            for (const [subIndex, subPrice] of price.eqsubPrice.entries()) {
+            for (const [subIndex, subPrice] of price.eqsubprice.entries()) {
                 allRowPrice.push({
                     index: index,
                     subIndex: subIndex,
@@ -129,22 +129,22 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
     }
 
     const getIsChecked = (index: number, subIndex?: number) => {
-        const subIndexPath = `${index}.eqsubPrice.${subIndex}.eqsubpIsChecked`
+        const subIndexPath = `${index}.eqsubprice.${subIndex}.eqsubpIsChecked`
         const getPath = isNumber(subIndex) ? subIndexPath : `${index}.eqpscheIsChecked`
         const isChecked = get(bookingPriceRow, getPath, false)
         return isChecked
     }
 
     const getQuantity = (index: number, subIndex?: number) => {
-        const subIndexPath = `${index}.eqsubPrice.${subIndex}.eqsubpQuantity`
+        const subIndexPath = `${index}.eqsubprice.${subIndex}.eqsubpQuantity`
         const getPath = isNumber(subIndex) ? subIndexPath : `${index}.eqpQuantity`
         const qty = get(bookingPriceRow, getPath, 0)
         return qty
     }
 
     const getDefaultQty = (index: number, subIndex?: number) => {
-        const subIndexPath = `eqPrices.${index}.eqsubPrice.${subIndex}.eqsubpUnitPer`
-        const getPath = isNumber(subIndex) ? subIndexPath : `eqPrices.${index}.eqpUnitPer`
+        const subIndexPath = `eqprices.${index}.eqsubprice.${subIndex}.eqsubpUnitPer`
+        const getPath = isNumber(subIndex) ? subIndexPath : `eqprices.${index}.eqpUnitPer`
         const unit: string = get(bookingData, getPath, '')
         switch (unit.toLowerCase()) {
             case 'hr':
@@ -160,11 +160,11 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
     const handleCheckbox = (index: number, subIndex?: number) => {
         const priceAll = cloneDeep(bookingPriceRow)
         if (isNumber(subIndex)) {
-            priceAll[index].eqsubPrice[subIndex].eqsubpIsChecked = !getIsChecked(index, subIndex)
+            priceAll[index].eqsubprice[subIndex].eqsubpIsChecked = !getIsChecked(index, subIndex)
             if (!getIsChecked(index, subIndex)) {
-                priceAll[index].eqsubPrice[subIndex].eqsubpQuantity = getDefaultQty(index, subIndex)
+                priceAll[index].eqsubprice[subIndex].eqsubpQuantity = getDefaultQty(index, subIndex)
             } else {
-                priceAll[index].eqsubPrice[subIndex].eqsubpQuantity = 0
+                priceAll[index].eqsubprice[subIndex].eqsubpQuantity = 0
             }
         } else {
             priceAll[index].eqpscheIsChecked = !getIsChecked(index)
@@ -181,12 +181,12 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
     const handleRadiobutton = (index: number, subIndex: number) => {
         if (getIsChecked(index, subIndex)) return
         const priceAll = cloneDeep(bookingPriceRow)
-        priceAll[index].eqsubPrice.forEach((sub) => {
+        priceAll[index].eqsubprice.forEach((sub) => {
             sub.eqsubpIsChecked = false
             sub.eqsubpQuantity = 0
         })
-        priceAll[index].eqsubPrice[subIndex].eqsubpIsChecked = true
-        priceAll[index].eqsubPrice[subIndex].eqsubpQuantity = getDefaultQty(index, subIndex)
+        priceAll[index].eqsubprice[subIndex].eqsubpIsChecked = true
+        priceAll[index].eqsubprice[subIndex].eqsubpQuantity = getDefaultQty(index, subIndex)
 
         setBookingPriceRow(priceAll)
     }
@@ -195,7 +195,7 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
         const nQty = numeral(qty).value()
         const priceAll = cloneDeep(bookingPriceRow)
         if (isNumber(subIndex)) {
-            priceAll[index].eqsubPrice[subIndex].eqsubpQuantity = nQty
+            priceAll[index].eqsubprice[subIndex].eqsubpQuantity = nQty
         } else {
             priceAll[index].eqpQuantity = nQty
         }
@@ -204,8 +204,8 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
     }
 
     const formatPriceObject = (): IV1BookingEquipmentPrice[] => {
-        const priceObject = bookingData.eqPrices.map((price, index) => {
-            const subpriceObject: IV1BookingEquipmentSubPrice[] = price.eqsubPrice.map(
+        const priceObject = bookingData.eqprices.map((price, index) => {
+            const subpriceObject: IV1BookingEquipmentSubPrice[] = price.eqsubprice.map(
                 (sub, subIndex) => {
                     const isSubDefaultCheck = ['DEFAULT', 'FIXED'].includes(sub.eqsubpChecked)
                     return {
@@ -220,8 +220,8 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
                 eqpscheId: price.eqpId,
                 eqpscheIsChecked: isDefaultCheck,
                 eqpQuantity:
-                    price.eqsubPrice.length > 0 && isDefaultCheck ? 0 : getDefaultQty(index),
-                eqsubPrice: subpriceObject || [],
+                    price.eqsubprice.length > 0 && isDefaultCheck ? 0 : getDefaultQty(index),
+                eqsubprice: subpriceObject || [],
             }
         })
         return priceObject
@@ -252,7 +252,7 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
                             </RowDetailStyle>
                         </TableHead>
                         <TableBody>
-                            {bookingData.eqPrices.map((price, index) => (
+                            {bookingData.eqprices.map((price, index) => (
                                 <React.Fragment key={`booking-price-eqpEqId-${price.eqpEqId}`}>
                                     <RowDetailStyle>
                                         <TableCell padding="checkbox">
@@ -274,7 +274,7 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
                                                 {price.eqpDescription}
                                             </Typography>
                                         </TableCell>
-                                        {price.eqsubPrice.length === 0 ? (
+                                        {price.eqsubprice.length === 0 ? (
                                             <>
                                                 <TableCell align="right">
                                                     <TextField
@@ -302,7 +302,7 @@ function TableView({ bookingData, selectedHours, onChangeData }: ITableViewProps
                                             <></>
                                         )}
                                     </RowDetailStyle>
-                                    {price.eqsubPrice.map((subPrice, subIndex) => (
+                                    {price.eqsubprice.map((subPrice, subIndex) => (
                                         <RowDetailStyle
                                             key={`booking-sub-price-eqpEqId-${subPrice.eqsubpId}`}
                                         >

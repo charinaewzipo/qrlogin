@@ -65,7 +65,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
               </TableHead>
 
               <TableBody>
-                {!isEmpty(get(book, 'eqPrices', [])) && book.eqPrices.map((row, index) => (
+                {!isEmpty(get(book, 'eqprices', [])) && book.eqprices.map((row, index) => (
                   <React.Fragment key={`key-row-${index}`}>
                     <TableRow
                       key={`rowPrice-${index}`}
@@ -86,7 +86,7 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                       <TableCell align="right">{`${(get(row, 'eqpTotal', 0)).toLocaleString()} B`}</TableCell>
                     </TableRow>
 
-                    {!isEmpty(get(row, 'eqSubPrice', [])) && row.eqSubPrice.map((row, index) => (
+                    {!isEmpty(get(row, 'eqsubprice', [])) && row.eqsubprice.map((row, index) => (
                       <TableRow
                         key={`rowSubPrice-${index}`}
                         sx={{
@@ -96,15 +96,15 @@ export default function BookingEstimatingInvoice({ book, onDownloadPDF }: Props)
                       >
                         <TableCell align="left" sx={{ pl: 5 }}>
                           <Box sx={{ width: 460 }}>
-                            <Typography variant="subtitle2">{get(row, 'eqSubpName', '')}</Typography>
+                            <Typography variant="subtitle2">{get(row, 'eqsubpName', '')}</Typography>
                             <Typography variant="body2" sx={{ color: 'text.secondary' }} noWrap>
-                              {get(row, 'eqSubpDescription', '')}
+                              {get(row, 'eqsubpDescription', '')}
                             </Typography>
                           </Box>
                         </TableCell>
-                        <TableCell align="left">{get(row, 'eqSubpQuantity', 0).toLocaleString()}</TableCell>
-                        <TableCell align="right">{`${get(row, 'eqSubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqSubpUnitPer', '')}`}</TableCell>
-                        <TableCell align="right">{`${(get(row, 'eqSubpTotal', 0)).toLocaleString()} B`}</TableCell>
+                        <TableCell align="left">{get(row, 'eqsubpQuantity', 0).toLocaleString()}</TableCell>
+                        <TableCell align="right">{`${get(row, 'eqsubpUnitPrice', 0).toLocaleString()} B/${get(row, 'eqsubpUnitPer', '')}`}</TableCell>
+                        <TableCell align="right">{`${(get(row, 'eqsubpTotal', 0)).toLocaleString()} B`}</TableCell>
                       </TableRow>
 
                     ))}

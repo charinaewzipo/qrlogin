@@ -25,10 +25,11 @@ const constant = {
 }
 interface IBookDetailProps {
     bookingData: IV1RespGetBookingMeRead
-    onDownloadQuotation: () => void
-    onDownloadInvoice: () => void
-    onPaymentQRCode: () => void
-    onCancelBooking: () => void
+    onDownloadQuotation?: () => void
+    onDownloadInvoice?: () => void
+    onPaymentQRCode?: () => void
+    onCancelBooking?: () => void
+    noButton?: boolean
 }
 function BookDetail({
     bookingData,
@@ -36,6 +37,7 @@ function BookDetail({
     onDownloadInvoice,
     onPaymentQRCode,
     onCancelBooking,
+    noButton,
 }: IBookDetailProps) {
     const getBookingStatusLabelColor = (): LabelColor => {
         switch (bookingData.bookStatus) {
@@ -139,11 +141,11 @@ function BookDetail({
                             {constant.bookingTime}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.map((time) => (
-                                <Label color="info" sx={{ mr: 1 }}>
-                                    {`${time}:00 - ${time}:59`}
-                                </Label>
-                            ))}
+                            <Stack gap={1} direction="row" flexWrap="wrap">
+                                {bookingData.eqrtimTimes.map((time) => (
+                                    <Label color="info">{`${time}:00 - ${time}:59`}</Label>
+                                ))}
+                            </Stack>
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
@@ -151,7 +153,7 @@ function BookDetail({
                             {constant.duration}
                         </Typography>
                         <Typography gutterBottom variant="subtitle1">
-                            {bookingData.eqRtimTimes.length} Hrs.
+                            {bookingData.eqrtimTimes.length} Hrs.
                         </Typography>
                     </Grid>
                     <Grid item xs={6} sm={4}>
@@ -164,42 +166,48 @@ function BookDetail({
                         </Typography>
                     </Grid>
                 </Grid>
-                <Divider sx={{ mx: -3, mt: 3 }} />
-                <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
-                    {{
-                        PENDING: (
-                            <>
-                                {renderButtonCancelBooking()}
-                                {renderButtonDownloadQuotation()}
-                            </>
-                        ),
-                        CONFIRM: (
-                            <>
-                                {renderButtonCancelBooking()}
-                                {renderButtonDownloadQuotation()}
-                            </>
-                        ),
-                        WATTING_FOR_PAYMENT: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                                {renderButtonPaymentQRCode()}
-                            </>
-                        ),
-                        WATTING_FOR_PAYMENT_CONFIRM: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                            </>
-                        ),
-                        FINISH: (
-                            <>
-                                {renderButtonDownloadQuotation()}
-                                {renderButtonDownloadInvoice()}
-                            </>
-                        ),
-                    }[bookingData.bookStatus] || <></>}
-                </Stack>
+                {noButton ? (
+                    <></>
+                ) : (
+                    <>
+                        <Divider sx={{ mx: -3, mt: 3 }} />
+                        <Stack flexDirection="row" justifyContent="right" gap={2} mt={3}>
+                            {{
+                                PENDING: (
+                                    <>
+                                        {renderButtonCancelBooking()}
+                                        {renderButtonDownloadQuotation()}
+                                    </>
+                                ),
+                                CONFIRM: (
+                                    <>
+                                        {renderButtonCancelBooking()}
+                                        {renderButtonDownloadQuotation()}
+                                    </>
+                                ),
+                                WATTING_FOR_PAYMENT: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                        {renderButtonPaymentQRCode()}
+                                    </>
+                                ),
+                                WATTING_FOR_PAYMENT_CONFIRM: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                    </>
+                                ),
+                                FINISH: (
+                                    <>
+                                        {renderButtonDownloadQuotation()}
+                                        {renderButtonDownloadInvoice()}
+                                    </>
+                                ),
+                            }[bookingData.bookStatus] || <></>}
+                        </Stack>
+                    </>
+                )}
             </Paper>
         </Stack>
     )

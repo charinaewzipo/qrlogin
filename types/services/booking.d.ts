@@ -47,10 +47,10 @@ interface IV1RespGetBookingMeRead {
     bookAdvisor: number
     bookStatus: TBookStatus
     bookCreatedAt: string
-    eqRtimDays: string
-    eqRtimTimes: number[]
-    eqPrices: IV1EquipmentPrice[]
-    eqPriceSubTotal: number
+    eqrtimDays: string
+    eqrtimTimes: number[]
+    eqprices: IV1EquipmentPrice[]
+    eqpriceSubTotal: number
     payOt: number
     payDiscount: number
     payFees: number
@@ -77,7 +77,7 @@ interface IV1EquipmentPrice {
     eqpUnitPer: string
     eqpCreatedAt: string
     eqpUpdatedAt: string
-    eqsubPrice: IV1EquipmentSubPrice[]
+    eqsubprice: IV1EquipmentSubPrice[]
 }
 
 interface IV1EquipmentSubPrice {
@@ -111,9 +111,9 @@ interface IV1QueyGetBookingMeRead {
 
 interface IV1PostBookingCreate {
     eqId: number
-    eqPrices: IV1BookingEquipmentPrice[]
-    eqRtimDays: string
-    eqRtimTimes: number[]
+    eqprices: IV1BookingEquipmentPrice[]
+    eqrtimDays: string
+    eqrtimTimes: number[]
     payRemark: string
     payBillingAddress: string
     payMethod: TPaymentMethod
@@ -123,7 +123,7 @@ interface IV1BookingEquipmentPrice {
     eqpscheId: number
     eqpscheIsChecked: boolean
     eqpQuantity: number
-    eqsubPrice: IV1BookingEquipmentSubPrice[] | null
+    eqsubprice: IV1BookingEquipmentSubPrice[] | null
 }
 
 interface IV1BookingEquipmentSubPrice {
