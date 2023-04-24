@@ -78,6 +78,7 @@ export default function EquipmentSchedulePage() {
   const [countDown, setCountDown] = useState<NodeJS.Timeout>();
   const [detailSchedule, setDetailSchedule] = useState<IV1RespGetEquipmentUnavailableSchedule>(null)
   const [totalRecord, setTotalRecord] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
@@ -111,7 +112,6 @@ export default function EquipmentSchedulePage() {
       );
     }
   }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus]);
-
   const GetUnAvailableScheduleStats = () => {
     fetchGetUnAvailableScheduleStats().then(response => {
       if (response.code === responseCode.OK_CODE) {
@@ -159,6 +159,8 @@ export default function EquipmentSchedulePage() {
       enqueueSnackbar(`Failled cancel schedule of ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} (${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))}).`, { variant: 'error' })
 
     }).finally(() => {
+      setIsLoading(false)
+      setOpenConfirmModal(false)
       GetUnAvailableScheduleStats()
       GetUnAvailableSchedule()
     })
@@ -173,7 +175,7 @@ export default function EquipmentSchedulePage() {
 
   }
   const handleOnClickModal = () => {
-    setOpenConfirmModal(false)
+    setIsLoading(true)
     PostEquipmentUnavailableDelete()
   }
   return (
@@ -316,6 +318,7 @@ export default function EquipmentSchedulePage() {
             size="large"
             type="button"
             variant="contained"
+            loading={isLoading}
             onClick={
               handleOnClickModal
             }

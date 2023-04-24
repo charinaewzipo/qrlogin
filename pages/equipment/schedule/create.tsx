@@ -83,6 +83,7 @@ export default function EquipmentScheduleCreatePage() {
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
   const [totalRecord, setTotalRecord] = useState<number>(0);
+  const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
@@ -190,6 +191,8 @@ export default function EquipmentScheduleCreatePage() {
         message: errorMessage
       }
       setError('afterSubmit', errorOptions)
+    }).finally(() => {
+      setIsLoading(false)
     })
   }
 
@@ -212,6 +215,7 @@ export default function EquipmentScheduleCreatePage() {
   }
   const onSubmit = async (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
+      setIsLoading(true)
       PostEquipmentCreate(data)
     }
   }
@@ -400,6 +404,7 @@ export default function EquipmentScheduleCreatePage() {
               size="medium"
               type="submit"
               variant="contained"
+              loading={isLoading}
               onClick={() => {
                 if (!selected.length) {
                   setIsErrorSelectEquipment(true)

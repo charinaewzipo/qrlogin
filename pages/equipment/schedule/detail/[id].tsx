@@ -90,6 +90,7 @@ export default function EquipmentScheduleDetailPage() {
   const [totalRecord, setTotalRecord] = useState<number>(0);
   const [filterSearchEquipment, setFilterSearchEquipment] = useState('');
   const [isErrorSelectEquipment, setIsErrorSelectEquipment] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
   const { push } = useRouter()
@@ -229,6 +230,8 @@ export default function EquipmentScheduleDetailPage() {
       times: mapTimePost.value,
       eqId: ArrayEqID,
     }
+
+
     fetchPostEquipmentUnavailableUpdate(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
         reset()
@@ -239,6 +242,8 @@ export default function EquipmentScheduleDetailPage() {
     }).catch(err => {
       const errorMessage = get(messages, err.code, messages[0])
       enqueueSnackbar(errorMessage, { variant: 'error' })
+    }).finally(() => {
+      setIsLoading(false)
     })
   }
   const handleViewRow = (id: string) => {
@@ -257,6 +262,7 @@ export default function EquipmentScheduleDetailPage() {
   }
   const onSubmit = (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
+      setIsLoading(true)
       PostEquipmentUpdate(data)
     }
   }
@@ -445,6 +451,7 @@ export default function EquipmentScheduleDetailPage() {
               size="medium"
               type="submit"
               variant="contained"
+              loading={isLoading}
               onClick={() => {
                 if (!selected.length) {
                   setIsErrorSelectEquipment(true)
