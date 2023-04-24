@@ -24,6 +24,7 @@ export function MaintenanceLog() {
     const { enqueueSnackbar } = useSnackbar()
     const { push, query: { id }, isReady } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     useEffect(() => {
         if (!isReady) return
@@ -53,6 +54,7 @@ export function MaintenanceLog() {
     const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         const mtnDate = data.date ? formatISO(new Date(get(data, 'date', ''))) : formatISO(startOfDay(new Date()))
         setErrorMsg('')
+        setIsLoading(true)
         await postEquipmentMaintenanceCreate({
             eqId: Number(id),
             eqmtnDescription: get(data, 'descriptions', ''),
@@ -70,6 +72,9 @@ export function MaintenanceLog() {
             })
             .catch((err: AxiosError) => {
                 setErrorMsg(get(err, 'devMessage', messages[0]))
+            })
+            .finally(() => {
+                setIsLoading(false)
             })
     }
 
@@ -110,6 +115,7 @@ export function MaintenanceLog() {
                                 <MaintenanceLogForm
                                     onSubmit={handleFormSubmit}
                                     onCancel={handleFormCancel}
+                                    isLoading={isLoading}
                                 />
                             </Stack>
                         </div>

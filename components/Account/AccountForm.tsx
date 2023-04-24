@@ -158,6 +158,7 @@ interface AccountFormProps {
     updateMode? : boolean
     permission? : TPermission
     errorMsg: string
+    isLoading: boolean
 }
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
@@ -1057,6 +1058,7 @@ function AccountForm(props: AccountFormProps) {
                         type="submit"
                         variant="contained"
                         size="large"
+                        loading={props.isLoading}
                     >
                         {props.updateMode ? constant.updateAccount : constant.createAccount}
                     </LoadingButton>

@@ -39,6 +39,7 @@ interface MaintenanceLogFormProps {
     onCancel: () => void
     defaultValue?: IMaintenanceLogFormValuesProps
     isEditing?: boolean
+    isLoading?: boolean
 }
 function MaintenanceLogForm(props: MaintenanceLogFormProps) {
     const [allObjectUrl, setAllObjectUrl] = useState<string[]>()
@@ -74,7 +75,6 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
         watch,
         reset,
         getValues,
-        formState: { isSubmitted },
         trigger,
     } = methods
 
@@ -269,7 +269,7 @@ function MaintenanceLogForm(props: MaintenanceLogFormProps) {
                         type="submit"
                         variant="contained"
                         size="large"
-                        // loading={authenticationStore.isFetching}
+                        loading={props.isLoading}
                     >
                         {props.isEditing
                             ? constant.updateMaintenanceLog

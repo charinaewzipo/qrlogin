@@ -21,9 +21,11 @@ export function AccountCreate() {
     const { enqueueSnackbar } = useSnackbar()
     const { push } = useRouter()
     const [errorMsg, setErrorMsg] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
 
     const onFormSubmit = (data: IV1PostMemberCreate) => {
         setErrorMsg('')
+        setIsLoading(true)
         postMemberCreate(data)
             .then(async (res) => {
                 enqueueSnackbar('Account create success.')
@@ -42,6 +44,9 @@ export function AccountCreate() {
                 } else {
                     setErrorMsg(get(err, 'devMessage', messages[0]))
                 }
+            })
+            .finally(() => {
+                setIsLoading(false)
             })
     }
 
@@ -73,7 +78,7 @@ export function AccountCreate() {
                                 ]}
                                 sx={{ mt: 3, mb: 5, height: 72 }}
                             />
-                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} />
+                            <AccountForm onSubmit={onFormSubmit} onCancel={onFormCancel} errorMsg={errorMsg} isLoading={isLoading} />
                         </div>
                     </div>
                 </Box>
