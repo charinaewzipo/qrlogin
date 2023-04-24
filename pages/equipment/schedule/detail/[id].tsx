@@ -246,7 +246,6 @@ export default function EquipmentScheduleDetailPage() {
   };
   const handleFilterSearchEquipment = (event: React.ChangeEvent<HTMLInputElement>) => {
     setFilterSearchEquipment(event.target.value);
-    callBackTimeout(0, rowsPerPage, filterSearchEquipment)
   }
   const handleOnclickRemove = () => {
     setSelected([])
@@ -256,7 +255,7 @@ export default function EquipmentScheduleDetailPage() {
     setRowsPerPage(limit)
     GetEquipmentRead(0, limit, filterSearchEquipment)
   }
-  const onSubmit = async (data: FormValuesProps) => {
+  const onSubmit = (data: FormValuesProps) => {
     if (!isErrorSelectEquipment) {
       PostEquipmentUpdate(data)
     }
@@ -309,7 +308,7 @@ export default function EquipmentScheduleDetailPage() {
               href: MERGE_PATH(EQUIPMENT_PATH, 'schedule'),
             },
             {
-              name: `${mapDate} (${mapTime.label})`,
+              name: `${mapDate} (${mapTime.title})`,
             },
           ]}
         />
