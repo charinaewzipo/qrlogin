@@ -227,7 +227,7 @@ export default function EquipmentScheduleCreatePage() {
                 <Chip
                   size='small'
                   avatar={<Avatar alt={get(findData, 'eqName', '')} src={`${get(findData, 'eqPicture[0].eqpicLink', '')}?${uuidv4()}`} />}
-                  label={get(findData, 'eqName', '')}
+                  label={get(findData, 'eqCode', '')}
                   key={`${id}`}
                   sx={{ m: 0.5 }}
                   color='primary'
