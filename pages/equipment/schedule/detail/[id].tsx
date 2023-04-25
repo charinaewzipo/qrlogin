@@ -75,12 +75,10 @@ export default function EquipmentScheduleDetailPage() {
     rowsPerPage,
     setPage,
     setRowsPerPage,
-    //
     selected,
     setSelected,
     onSelectRow,
     onSelectAllRows,
-    //
     onSort,
   } = useTable();
 
@@ -93,7 +91,6 @@ export default function EquipmentScheduleDetailPage() {
   const [isLoading, setIsLoading] = useState(false)
   const theme = useTheme()
   const { enqueueSnackbar } = useSnackbar();
-  const { push } = useRouter()
   const router = useRouter()
   const mounted = useRef(false);
   useEffect(() => {
@@ -101,6 +98,15 @@ export default function EquipmentScheduleDetailPage() {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
+
+  useEffect(() => {
+    if (!isEmpty(router.query.id)) {
+      GetUnAvailableSchedule()
+      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
+      getEQ2All()
+      return debouncedCallback.cancel
+    }
+  }, [router])
 
   useEffect(() => {
     if (!mounted.current) {
@@ -114,15 +120,6 @@ export default function EquipmentScheduleDetailPage() {
     setValue('date', new Date(mapDate));
     setValue('time', mapTime.label);
   }, [dataScheduleDetail])
-
-  useEffect(() => {
-    if (!isEmpty(router.query.id)) {
-      GetUnAvailableSchedule()
-      GetEquipmentRead(0, rowsPerPage, filterSearchEquipment)
-      getEQ2All()
-      return debouncedCallback.cancel
-    }
-  }, [router])
 
   const debouncedCallback = debounce((pageToGo: number, limit: number, search: string) => { GetEquipmentRead(pageToGo, limit, search) }, 1000)
   const callBackTimeout = useCallback(debouncedCallback, [])
@@ -230,13 +227,11 @@ export default function EquipmentScheduleDetailPage() {
       times: mapTimePost.value,
       eqId: ArrayEqID,
     }
-
-
     fetchPostEquipmentUnavailableUpdate(query).then(response => {
       if (response.code === responseCode.OK_CODE) {
         reset()
         setSelected([])
-        push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
+        router.push(MERGE_PATH(EQUIPMENT_PATH, 'schedule'))
         enqueueSnackbar(`Updated schedule of ${format(get(data, 'date', addDays(new Date(), 1)), 'dd MMM yyyy')} (${(get(data, 'time', 'Afternoon (13:00 - 22:00)')).split(' (', 1)}).`)
       }
     }).catch(err => {
@@ -383,7 +378,7 @@ export default function EquipmentScheduleDetailPage() {
                   <InputAdornment position="start">
                     <Iconify icon="eva:search-fill" width={20} sx={{ color: 'text.disabled' }} />
                   </InputAdornment>
-                ),
+                )
               }}
             />
           </Box>

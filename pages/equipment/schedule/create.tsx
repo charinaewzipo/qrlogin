@@ -68,12 +68,10 @@ export default function EquipmentScheduleCreatePage() {
     rowsPerPage,
     setRowsPerPage,
     setPage,
-    //
     selected,
     setSelected,
     onSelectRow,
     onSelectAllRows,
-    //
     onSort,
   } = useTable();
 
@@ -335,7 +333,7 @@ export default function EquipmentScheduleCreatePage() {
                   <InputAdornment position="start">
                     <Iconify icon="eva:search-fill" width={20} sx={{ color: 'text.disabled' }} />
                   </InputAdornment>
-                ),
+                )
               }}
             />
           </Box>
