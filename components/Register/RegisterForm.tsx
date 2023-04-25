@@ -384,8 +384,8 @@ function RegisterForm(props: RegisterFormProps) {
                                         variant="caption"
                                         sx={{ mt: 1, color: 'text.secondary' }}
                                     >
-                                        Allowed *.jpeg, *.jpg, *.png, *.gif
-                                        <br /> max size of {fData(200000)}
+                                        Allowed *.jpeg, *.jpg, *.png
+                                        <br /> Max size of {fData(200000)}
                                     </Typography>
                                 }
                             />
@@ -395,17 +395,17 @@ function RegisterForm(props: RegisterFormProps) {
                         </Stack>
                     )}
                 />
-                <RHFTextField name="email" label={isRequire(constant.email)} />
+                <RHFTextField
+                    name="email"
+                    label={isRequire(constant.email)}
+                />
                 <RHFTextField
                     name="password"
                     label={isRequire(constant.password)}
                     inputProps={{ maxLength: 100 }}
                 />
                 <Stack flexDirection={'row'} gap={3}>
-                    <RHFSelect
-                        name="typeOfPerson"
-                        label={isRequire(constant.typeOfPerson)}
-                    >
+                    <RHFSelect name="typeOfPerson" label={isRequire(constant.typeOfPerson)}>
                         <option value={''} key={`${''}-typeOfPerson-option`} hidden></option>
                         {typeOfPerson.map(({ value, label }) => (
                             <option value={value} key={`${value}-typeOfPerson-option`}>
@@ -415,13 +415,17 @@ function RegisterForm(props: RegisterFormProps) {
                     </RHFSelect>
                     {{
                         'Other University': (
-                            <RHFTextField name="universityName" label={isRequire(constant.universityName)} />
+                            <RHFTextField
+                                name="universityName"
+                                label={isRequire(constant.universityName)}
+                            />
                         ),
                         'KU Student & Staff': (
                             <RHFTextField
                                 name="department"
                                 key={'department-textfield'}
                                 label={isRequire(constant.department)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                         'SciKU Student & Staff': (
@@ -431,12 +435,17 @@ function RegisterForm(props: RegisterFormProps) {
                                 render={({ field }) => (
                                     <Autocomplete
                                         {...field}
-                                        freeSolo
-                                        fullWidth
                                         clearOnBlur
-                                        onChange={(event, newValue) =>
-                                            field.onChange(get(newValue, 'value', newValue))
+                                        fullWidth
+                                        isOptionEqualToValue={(option, value) =>
+                                            option.value === value.value
                                         }
+                                        value={{ value: field.value, label: field.value }}
+                                        onChange={(event, newValue) => {
+                                            const newVal = get(newValue, 'value', '')
+                                            field.onChange(newVal)
+                                        }}
+                                        popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                         options={department}
                                         key={'department-auto'}
                                         renderInput={(param) => (
@@ -456,6 +465,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 name="governmentName"
                                 key={'governmentName-textfield'}
                                 label={isRequire(constant.governmentName)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                         'Private company': (
@@ -463,6 +473,7 @@ function RegisterForm(props: RegisterFormProps) {
                                 name="companyName"
                                 key={'companyName-textfield'}
                                 label={isRequire(constant.companyName)}
+                                inputProps={{ maxLength: 100 }}
                             />
                         ),
                     }[watchTypeOfPerson] || (
@@ -470,6 +481,7 @@ function RegisterForm(props: RegisterFormProps) {
                             name="department"
                             key={'department-textfield'}
                             label={isRequire(constant.department)}
+                            inputProps={{ maxLength: 100 }}
                             disabled
                         />
                     )}
@@ -615,7 +627,7 @@ function RegisterForm(props: RegisterFormProps) {
                                                 variant="body2"
                                                 component="p"
                                                 whiteSpace="pre-line"
-                                                sx={{ ml: -2 }}
+                                                sx={{ ml: -2, color: 'text.secondary' }}
                                             >
                                                 Drop files here or click
                                                 <Typography
@@ -673,6 +685,7 @@ function RegisterForm(props: RegisterFormProps) {
                             label={isRequire(constant.supervisorCode)}
                             error={!!errors.supervisorCode}
                             helperText={get(errors?.supervisorCode, 'message', '')}
+                            inputProps={{ maxLength: 6 }}
                             InputProps={{
                                 endAdornment: (
                                     <InputAdornment position="end">

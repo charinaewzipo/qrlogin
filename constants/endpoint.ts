@@ -1,4 +1,5 @@
 const endpoint = {
+    //Equipment
     equipmentRead: '/api/v1/equipment/read',
     equipmentUnAvailableSchedule: '/api/v1/equipment/unavailable/schedule',
     equipmentUnAvailableScheduleStats: '/api/v1/equipment/unavailable/schedule/stats',
@@ -11,5 +12,11 @@ const endpoint = {
     equipmentMaintenanceRead: '/api/v1/equipment/maintenance/read',
     // EQ 7
     equipmentMaintenanceUpdate: '/api/v1/equipment/maintenance/update',
+
+    //Account
+    memberCreate: '/api/v1/member/create',
+    
+    //Advisor
+    advisorRead: 'api/v1/advisor/read',
 }
 export default endpoint

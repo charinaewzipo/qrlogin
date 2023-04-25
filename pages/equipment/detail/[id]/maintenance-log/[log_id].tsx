@@ -34,6 +34,7 @@ export function MaintenanceLogEdit() {
     const [errorMsg, setErrorMsg] = useState('')
 	const [maintenanceApiData, setMaintenanceApiData] = useState<IV1GetEquipmentMaintenanceRead>()
 	const [maintenanceData, setMaintenanceData] = useState<IMaintenanceLogFormValuesProps>()
+    const [isLoading, setIsLoading] = useState(false)
 
 	useEffect(() => {
         if (!isReady) return
@@ -93,6 +94,7 @@ export function MaintenanceLogEdit() {
 
 	const handleFormSubmit = async (data: IMaintenanceLogFormValuesProps) => {
         setErrorMsg('')
+        setIsLoading(true)
         await postEquipmentMaintenanceUpdate({
             eqmtnId: Number(get(maintenanceApiData, 'eqmtnId', '')),
             eqmtnDescription: get(data, 'descriptions', ''),
@@ -108,6 +110,9 @@ export function MaintenanceLogEdit() {
             })
             .catch((err: AxiosError) => {
                 setErrorMsg(get(err, 'devMessage', messages[0]))
+            })
+            .finally(() => {
+                setIsLoading(false)
             })
     }
 
@@ -150,6 +155,7 @@ export function MaintenanceLogEdit() {
                                     onCancel={handleFormReset}
                                     isEditing
                                     defaultValue={maintenanceData}
+                                    isLoading={isLoading}
                                 />
                             </Stack>
                         </div>

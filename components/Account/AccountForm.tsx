@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as Yup from 'yup'
-import { LoadingButton } from '@mui/lab'
-import { Controller, ControllerRenderProps, useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 import Iconify from '@sentry/components/iconify'
 import { yupResolver } from '@hookform/resolvers/yup'
 import {
@@ -26,16 +25,21 @@ import { clamp, cloneDeep, get } from 'lodash'
 import { DatePicker } from '@mui/x-date-pickers'
 import { fetchGetSupervisor } from '@ku/services/supervisor'
 import { NumberFormatCustom, NumberFormatCustomNoComma } from '@ku/utils/numberFormatCustom'
+import { formatISO } from 'date-fns'
+import numeral from 'numeral'
+import transformer from '@ku/utils/transformer'
+import { LoadingButton } from '@mui/lab'
 
 export interface IAccountFormValuesProps {
-    privillege: string
+    privillege: TPermission
     email: string
     password: string
-    accountStatus: string
+    accountStatus: TAccountStatus
     accountExpiryDate: string
-    typeOfPerson: string
+    typeOfPerson: TTypeOfPerson
     avatar: string
     department: string
+    universityName: string
     governmentName: string
     companyName: string
     position: string
@@ -84,7 +88,7 @@ const constant = {
     bookingLimit: 'Booking limit',
     supervisorDetail: 'Supervisor/Advisor Detail',
     enterSupervisorCode: 'Please enter the code form supervisor associated with your account here.',
-    supervisorCode: 'Supervisor code',
+    supervisorCode: 'Supervisor code (โค้ด mock รอ api คือ 123456)',
     supervisorNotFound: 'Supervisor code not found, please contact your supervisor for code',
 
     updateAccount:'Update Account',
@@ -93,13 +97,13 @@ const constant = {
     approve: 'Approve',
 }
 const typeOfPerson = [
-    { value: 'SciKU Student & Staff', label: 'SciKU Student & Staff' },
-    { value: 'KU Student & Staff', label: 'KU Student & Staff' },
-    { value: 'Other University', label: 'Other University' },
-    { value: 'Government office', label: 'Government office' },
-    { value: 'Private company', label: 'Private company' },
+    { value: 'SCIKU_STUDENT_STAFF', label: 'SciKU Student & Staff' },
+    { value: 'KU_STUDENT_STAFF', label: 'KU Student & Staff' },
+    { value: 'OTHER_UNIVERSITY', label: 'Other University' },
+    { value: 'GOVN_OFFICE', label: 'Government office' },
+    { value: 'PRIVATE_COMPANY', label: 'Private company' },
 ]
-const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU Student & Staff')
+const financeTypeOfPerson = typeOfPerson.filter((type) => type.value === 'KU_STUDENT_STAFF')
 const position = [
     { value: 'Lecturer', label: 'Lecturer' },
     { value: 'Researcher', label: 'Researcher' },
@@ -138,40 +142,41 @@ const title = [
     { value: 'Other', label: 'Other' },
 ]
 const accountStatus = [
-    { value: 'Active', label: 'Active' },
-    { value: 'Inactive', label: 'Inactive' },
-    { value: 'Lock', label: 'Lock' },
+    { value: 'ACTIVE', label: 'Active' },
+    { value: 'INACTIVE', label: 'Inactive' },
+    { value: 'LOCKED', label: 'Lock' },
 ]
 const privillege = [
-    { value: 'Admin', label: 'Admin' },
-    { value: 'Finance', label: 'Finance' },
-    { value: 'Supervisor', label: 'Supervisor' },
-    { value: 'User', label: 'User' },
+    { value: 'ADMIN', label: 'Admin' },
+    { value: 'FINANCE', label: 'Finance' },
+    { value: 'SUPERVISOR', label: 'Supervisor' },
+    { value: 'USER', label: 'User' },
 ]
-
-declare type PERMISSION = 'Admin' | 'Finance' | 'Supervisor' | 'User'
 interface AccountFormProps {
-    onSubmit: (data: IAccountFormValuesProps) => void
+    onSubmit: (data: IV1PostMemberCreate) => void
     onCancel: () => void
     updateMode? : boolean
-    permission? : PERMISSION
+    permission? : TPermission
     errorMsg: string
+    isLoading: boolean
 }
 function AccountForm(props: AccountFormProps) {
     const [supervisor, setSupervisor] = useState<ISupervisor | null>()
     const [supervisorTimeout, setSupervisorTimeout] = useState<NodeJS.Timeout>();
 
     const checkIsKuPerson = (typeOfPerson: string) =>
-        ['KU Student & Staff', 'SciKU Student & Staff'].includes(typeOfPerson)
+        ['KU_STUDENT_STAFF', 'SCIKU_STUDENT_STAFF'].includes(typeOfPerson)
     const checkIsStudent = (position: string) => position.includes('student')
     const checkIsStaff = (position: string) => ['Lecturer', 'Researcher'].includes(position)
     const checkIsKuStudent = (position: string, typeOfPerson: string) =>
         checkIsKuPerson(typeOfPerson) && checkIsStudent(position)
+    const checkIsKuStaff = (position: string, typeOfPerson: string) =>
+        checkIsKuPerson(typeOfPerson) && checkIsStaff(position)
     const checkIsOther = (check: string) => check === 'Other'
-    const checkIsUser = (privillege: string) => privillege === 'User'
-    const checkIsFinance = (privillege: string) => privillege === 'Finance'
-    const checkIsAdmin = (privillege: string) => privillege === 'Admin'
-    const checkIsSupervisor = (privillege: string) => privillege === 'Supervisor'
+    const checkIsUser = (privillege: TPermission) => privillege === 'USER'
+    const checkIsFinance = (privillege: TPermission) => privillege === 'FINANCE'
+    const checkIsAdmin = (privillege: TPermission) => privillege === 'ADMIN'
+    const checkIsSupervisor = (privillege: TPermission) => privillege === 'SUPERVISOR'
     const kuStudentEmailRegex = /@ku\.ac\.th$|@ku\.th$/
     const numberOnlyRegex = /^[0-9\b]+$/
 
@@ -216,22 +221,21 @@ function AccountForm(props: AccountFormProps) {
                 then: Yup.string().nullable().required('Department is require'),
             }),
         universityName: Yup.string().when('typeOfPerson', {
-            is: 'Other University',
+            is: 'OTHER_UNIVERSITY',
             then: Yup.string().required('University name is require'),
         }),
         governmentName: Yup.string().when('typeOfPerson', {
-            is: 'Government office',
+            is: 'GOVN_OFFICE',
             then: Yup.string().required('Government name is require'),
         }),
         companyName: Yup.string().when('typeOfPerson', {
-            is: 'Private company',
+            is: 'PRIVATE_COMPANY',
             then: Yup.string().required('Company name is require'),
         }),
         position: Yup.string()
-            .required('Position is require')
             .when('privillege', {
-                is: (privillege) => checkIsFinance(privillege),
-                then: Yup.string(),
+                is: (privillege) => !checkIsFinance(privillege),
+                then: Yup.string().required('Position is require'),
             }),
         studentId: Yup.string().when(['position', 'typeOfPerson'], {
             is: (position, typeOfPerson) => checkIsKuStudent(position, typeOfPerson),
@@ -285,12 +289,12 @@ function AccountForm(props: AccountFormProps) {
         }),
     })
 
-    const defaultValues = {
-        privillege: 'User',
+    const defaultValues: IAccountFormValuesProps = {
+        privillege: 'USER',
         avatar: '',
         email: '',
         password: '',
-        accountStatus: 'Active',
+        accountStatus: 'ACTIVE',
         accountExpiryDate: null,
         typeOfPerson: '',
         department: '',
@@ -311,6 +315,7 @@ function AccountForm(props: AccountFormProps) {
         bookingLimit: '5',
         supervisorCode: '',
         supervisorStatus: null,
+        governmentName: '',
     }
 
     const methods = useForm<IAccountFormValuesProps>({
@@ -322,10 +327,11 @@ function AccountForm(props: AccountFormProps) {
         handleSubmit,
         getValues,
         setValue,
-        formState: { errors, isSubmitted },
+        formState: { errors, isSubmitted, isSubmitting },
         control,
         watch,
-        trigger
+        trigger,
+        setFocus,
     } = methods
 
     const [
@@ -347,7 +353,7 @@ function AccountForm(props: AccountFormProps) {
     ])
 
     useEffect(() => {
-        if(props.permission && props.permission === 'User'){
+        if(props.permission && props.permission === 'USER'){
             fetchSupervisorData('123456')
         }
         clearTimeout(supervisorTimeout);
@@ -362,17 +368,32 @@ function AccountForm(props: AccountFormProps) {
     useEffect(() => {
         if (isSubmitted)
             trigger()
-        if (getValues('typeOfPerson') === 'SciKU Student & Staff') {
+        if (getValues('typeOfPerson') === 'SCIKU_STUDENT_STAFF') {
             if (isPositionOther) setValue('position', '')
             if (!department.map((d) => d.value).includes(getValues('department')))
                 setValue('department', '')
         }
         if (isFinance) {
-            if (getValues('typeOfPerson') !== 'KU Student & Staff') setValue('typeOfPerson', '')
+            if (getValues('typeOfPerson') !== 'KU_STUDENT_STAFF') setValue('typeOfPerson', '')
             //ตอนปรับ privillege เป็น finance
             //ถ้าไม่ได้เลือก KU Student & Staff อยู่จะให้กลับไปเป็นค่าว่าง
         }
     }, [watchTypeOfPerson, watchPosition, watchPrivillege])
+
+    useEffect(() => {
+        if (isSubmitting) {
+            const firstError = (Object.keys(errors) as Array<keyof typeof errors>).reduce(
+                (field, a) => {
+                    const fieldKey = field
+                    return !!errors[fieldKey] ? fieldKey : a
+                },
+                null
+            )
+            if (firstError) {
+                setFocus(firstError)
+            }
+        }
+    }, [errors, isSubmitting])
 
     useEffect(() => {
         if (props.errorMsg !== '')
@@ -404,10 +425,99 @@ function AccountForm(props: AccountFormProps) {
                 setValue('supervisorStatus', 'notFound')
             }
         } catch (error) {
-            console.log(error);
             setValue('supervisorStatus', null)
         }
         trigger('supervisorCode')
+    }
+
+    const transformDataToPostCreate = (data: IAccountFormValuesProps) => {
+        const getTitleField = () => {
+            if (checkIsOther(data.title)) {
+                return data.otherTitle
+            }
+            return data.title
+        }
+        const getDepartmentField = () => {
+            switch (data.typeOfPerson) {
+                case 'GOVN_OFFICE':
+                    return data.governmentName
+                case 'PRIVATE_COMPANY':
+                    return data.companyName
+                case 'OTHER_UNIVERSITY':
+                    return data.universityName
+            
+                default:
+                    return data.department
+            }
+        }
+        const getPositionField = () => {
+            if (checkIsFinance(data.privillege)) {
+                return null
+            }
+            if (checkIsOther(data.position)) {
+                return data.positionName
+            }
+            return data.position
+        }
+        const getStudentIdField = () => {
+            if (checkIsKuStudent(data.position, data.typeOfPerson)) {
+                return data.studentId
+            } else if (checkIsKuStaff(data.position, data.typeOfPerson)) {
+                return data.staffId || null
+            }
+            return null
+        }
+        const getSupervisorCode = () => {
+            if (checkIsKuStudent(data.position, data.typeOfPerson) && checkIsUser(data.privillege)) {
+                return data.supervisorCode
+            }
+            return null
+        }
+        const getPasswordField = () => {
+            if (data.password === '') {
+                return transformer.random(10)
+            }
+            return data.password
+        }
+        const getExpiryDate = () => {
+            return data.accountExpiryDate ? formatISO(new Date(data.accountExpiryDate)) : null
+        }
+        const getIdImages = () => {
+            if (idImageWithoutEmpty.length) {
+                return 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg'
+            }
+            return null
+        }
+        const getAvatar = () => {
+            if (data.avatar !== '') {
+                return 'https://media-cdn.bnn.in.th/219215/MacBook_Pro_13-inch_Silver_2-square_medium.jpg'
+            }
+            return null
+        }
+        
+        //รอ Api รูป
+        const formattedData: IV1PostMemberCreate = {
+            uTitle: getTitleField(),
+            uFirstname: data.firstName,
+            uSurname: data.surName,
+            uAddress: data.address,
+            uPhoneNumber: data.phoneNumber,
+            authEmail: data.email,
+            authPassword: getPasswordField(),
+            authAccountStatus: data.accountStatus,
+            authPermission: data.privillege,
+            uiTypePerson: data.typeOfPerson,
+            uiDepartment: getDepartmentField(),
+            uiCardPicture: getAvatar(),
+            uiPersonPicture: getIdImages(),
+            uiPosition: getPositionField(),
+            uiAdvisorCode: getSupervisorCode(),
+            uiStudentId: getStudentIdField(),
+            uiCardExpireDate: getExpiryDate(),
+            uiCreditLimit: numeral(data.creditLimit).value(),
+            uiBookingLimit: numeral(data.bookingLimit).value(),
+        }
+        return formattedData
     }
 
     const onSubmit = async (data: IAccountFormValuesProps) => {
@@ -416,7 +526,8 @@ function AccountForm(props: AccountFormProps) {
             submitData.creditLimit = '0'
             submitData.bookingLimit = '0'
         }
-        props.onSubmit(submitData)
+        const formattedSubmitData = transformDataToPostCreate(submitData)
+        props.onSubmit(formattedSubmitData)
     }
 
     const idImageWithoutEmpty = watchIdImages.filter(idImage => idImage)
@@ -455,13 +566,16 @@ function AccountForm(props: AccountFormProps) {
                                 </option>
                             ))}
                         </RHFSelect>
-                        <RHFTextField name="email" label={isRequire(constant.email)} />
+                        <RHFTextField
+                            name="email"
+                            label={isRequire(constant.email)}
+                        />
                         <RHFTextField
                             name="password"
                             label={constant.password}
                             placeholder={constant.passwordPlaceholder}
                             InputLabelProps={{ shrink: true }}
-                            inputProps={{ maxLength: 100 }}
+                            disabled
                         />
                         <Stack gap={3} flexDirection="row">
                             <RHFSelect
@@ -479,7 +593,7 @@ function AccountForm(props: AccountFormProps) {
                                 name="accountExpiryDate"
                                 control={control}
                                 defaultValue={''}
-                                render={({ field, fieldState: { error } }) => (
+                                render={({ field: { ref, ...field }, fieldState: { error } }) => (
                                     <DatePicker
                                         inputFormat="dd MMM yyyy"
                                         label={constant.accountExpiryDate}
@@ -493,6 +607,7 @@ function AccountForm(props: AccountFormProps) {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
+                                                inputRef={ref}
                                                 error={!!error}
                                                 helperText={error?.message}
                                                 fullWidth
@@ -523,8 +638,8 @@ function AccountForm(props: AccountFormProps) {
                                                 variant="caption"
                                                 sx={{ mt: 1, color: 'text.secondary' }}
                                             >
-                                                Allowed *.jpeg, *.jpg, *.png, *.gif
-                                                <br /> max size of {fData(200000)}
+                                                Allowed *.jpeg, *.jpg, *.png
+                                                <br /> Max size of {fData(200000)}
                                             </Typography>
                                         }
                                     />
@@ -535,10 +650,7 @@ function AccountForm(props: AccountFormProps) {
                             )}
                         />
                         <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="typeOfPerson"
-                                label={isRequire(constant.typeOfPerson)}
-                            >
+                            <RHFSelect name="typeOfPerson" label={isRequire(constant.typeOfPerson)}>
                                 <option
                                     value={''}
                                     key={`${''}-typeOfPerson-option`}
@@ -553,14 +665,14 @@ function AccountForm(props: AccountFormProps) {
                                 )}
                             </RHFSelect>
                             {{
-                                'Other University': (
+                                OTHER_UNIVERSITY: (
                                     <RHFTextField
                                         name="universityName"
                                         label={isRequire(constant.universityName)}
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'KU Student & Staff': (
+                                KU_STUDENT_STAFF: (
                                     <RHFTextField
                                         name="department"
                                         key={'department-textfield'}
@@ -568,20 +680,24 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'SciKU Student & Staff': (
+                                SCIKU_STUDENT_STAFF: (
                                     <Controller
                                         name="department"
                                         control={control}
-                                        render={({ field }) => (
+                                        render={({ field: { ref, ...field } }) => (
                                             <Autocomplete
                                                 {...field}
-                                                freeSolo
                                                 clearOnBlur
                                                 fullWidth
-                                                onChange={(event, newValue) =>{
-                                                    console.log(newValue)
-                                                    field.onChange(get(newValue, 'value', newValue))}
+                                                isOptionEqualToValue={(option, value) =>
+                                                    option.value === value.value
                                                 }
+                                                value={{ value: field.value, label: field.value }}
+                                                onChange={(event, newValue) => {
+                                                    const newVal = get(newValue, 'value', '')
+                                                    field.onChange(newVal)
+                                                }}
+                                                popupIcon={<Iconify icon={'mdi:chevron-down'} />}
                                                 options={department}
                                                 key={'department-auto'}
                                                 renderInput={(param) => (
@@ -593,6 +709,7 @@ function AccountForm(props: AccountFormProps) {
                                                             'message',
                                                             ''
                                                         )}
+                                                        inputRef={ref}
                                                         label={isRequire(constant.department)}
                                                     />
                                                 )}
@@ -600,7 +717,7 @@ function AccountForm(props: AccountFormProps) {
                                         )}
                                     />
                                 ),
-                                'Government office': (
+                                GOVN_OFFICE: (
                                     <RHFTextField
                                         name="governmentName"
                                         key={'governmentName-textfield'}
@@ -608,7 +725,7 @@ function AccountForm(props: AccountFormProps) {
                                         inputProps={{ maxLength: 100 }}
                                     />
                                 ),
-                                'Private company': (
+                                PRIVATE_COMPANY: (
                                     <RHFTextField
                                         name="companyName"
                                         key={'companyName-textfield'}
@@ -639,7 +756,7 @@ function AccountForm(props: AccountFormProps) {
                                     ></option>
                                     {position.map(({ value, label }) => {
                                         if (
-                                            watchTypeOfPerson === 'SciKU Student & Staff' &&
+                                            watchTypeOfPerson === 'SCIKU_STUDENT_STAFF' &&
                                             value === 'Other'
                                         )
                                             return
@@ -659,24 +776,28 @@ function AccountForm(props: AccountFormProps) {
                                     {isKuStudent ? (
                                         <RHFTextField
                                             name="studentId"
+                                            key="field-studentId"
                                             label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isKu && isStaff ? (
                                         <RHFTextField
                                             name="staffId"
+                                            key="field-staffId"
                                             label={constant.staffId}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : isPositionOther ? (
                                         <RHFTextField
                                             name="positionName"
+                                            key="field-positionName"
                                             label={isRequire(constant.positionName)}
                                             inputProps={{ maxLength: 100 }}
                                         />
                                     ) : (
                                         <RHFTextField
                                             name="studentId"
+                                            key="field-studentId"
                                             label={isRequire(constant.studentId)}
                                             inputProps={{ maxLength: 100 }}
                                         />
@@ -687,10 +808,7 @@ function AccountForm(props: AccountFormProps) {
                             <></>
                         )}
                         <Stack flexDirection={'row'} gap={3}>
-                            <RHFSelect
-                                name="title"
-                                label={isRequire(constant.title)}
-                            >
+                            <RHFSelect name="title" label={isRequire(constant.title)}>
                                 <option value={''} key={`${''}-title-option`} hidden></option>
                                 {title.map(({ value, label }) => (
                                     <option value={value} key={`${value}-title-option`}>
@@ -767,7 +885,7 @@ function AccountForm(props: AccountFormProps) {
                                                         variant="body2"
                                                         component="p"
                                                         whiteSpace="pre-line"
-                                                        sx={{ ml: -2 }}
+                                                        sx={{ ml: -2, color: 'text.secondary' }}
                                                     >
                                                         Drop files here or click
                                                         <Typography
@@ -822,6 +940,7 @@ function AccountForm(props: AccountFormProps) {
                                 label={isRequire(constant.supervisorCode)}
                                 error={!!errors.supervisorCode}
                                 helperText={get(errors?.supervisorCode, 'message', '')}
+                                inputProps={{ maxLength: 6 }}
                                 InputProps={{
                                     endAdornment: (
                                         <InputAdornment position="end">
@@ -874,7 +993,7 @@ function AccountForm(props: AccountFormProps) {
                     <></>
                 )}
 
-                {props.permission && props.permission === 'User' ? (
+                {props.permission && props.permission === 'USER' ? (
                     <Paper elevation={8} sx={{ borderRadius: 2, p: 3 }}>
                         <Stack spacing={2} textAlign={'left'}>
                             <Typography variant="h4">{constant.supervisorDetail}</Typography>
@@ -889,26 +1008,30 @@ function AccountForm(props: AccountFormProps) {
                                         sx={{ height: 64, width: 64, borderRadius: 1 }}
                                         disabledEffect
                                     />
-                                     <Box sx={{ flexGrow: 1 }}>
-                                    <Stack>
-                                        <Typography variant="h6">
-                                            {`${supervisor.name} (${supervisor.code})`}
-                                        </Typography>
-                                        <Typography variant="body1" whiteSpace={'pre-line'}>
-                                            {supervisor.email}
-                                        </Typography>
-                                    </Stack>
+                                    <Box sx={{ flexGrow: 1 }}>
+                                        <Stack>
+                                            <Typography variant="h6">
+                                                {`${supervisor.name} (${supervisor.code})`}
+                                            </Typography>
+                                            <Typography variant="body1" whiteSpace={'pre-line'}>
+                                                {supervisor.email}
+                                            </Typography>
+                                        </Stack>
                                     </Box>
 
-                                    <Box sx={{ flexShrink: 0}}>
-                                            <Button
-                                                variant="contained"
-                                                startIcon={<Iconify icon="ic:round-mark-email-read"/>}
-                                                sx={{ borderRadius: '50px', height: '24px',width: '99px' }}
-                                                disableElevation
-                                            >
-                                                {constant.approve}
-                                            </Button>
+                                    <Box sx={{ flexShrink: 0 }}>
+                                        <Button
+                                            variant="contained"
+                                            startIcon={<Iconify icon="ic:round-mark-email-read" />}
+                                            sx={{
+                                                borderRadius: '50px',
+                                                height: '24px',
+                                                width: '99px',
+                                            }}
+                                            disableElevation
+                                        >
+                                            {constant.approve}
+                                        </Button>
                                     </Box>
                                 </Stack>
                             ) : (
@@ -933,7 +1056,7 @@ function AccountForm(props: AccountFormProps) {
                         type="submit"
                         variant="contained"
                         size="large"
-                        // loading={authenticationStore.isFetching}
+                        loading={props.isLoading}
                     >
                         {props.updateMode ? constant.updateAccount : constant.createAccount}
                     </LoadingButton>
