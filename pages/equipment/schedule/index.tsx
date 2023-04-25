@@ -253,7 +253,7 @@ export default function EquipmentSchedulePage() {
 
           <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>
             <Scrollbar>
-              <Table sx={{ minWidth: 800 }}>
+              <Table size={'small'} sx={{ minWidth: 800 }}>
                 <TableHeadCustom
                   headLabel={TABLE_HEAD}
                   rowCount={tableData.length}
