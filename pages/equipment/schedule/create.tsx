@@ -33,7 +33,7 @@ import {
   TablePaginationCustom,
 } from '@sentry/components/table'
 import { useSnackbar } from 'notistack'
-import { addDays, isValid, } from 'date-fns'
+import { addDays, format, isValid, } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import EquipmentScheduleCreateRow from '@ku/components/Equipment/EquipmentScheduleCreateRow'
 import { Avatar } from '@mui/material'
@@ -46,7 +46,6 @@ import { fetchGetEquipmentRead, fetchPostEquipmentUnavailableCreate } from '@ku/
 import { debounce, get, isEmpty, isNull, isUndefined } from 'lodash'
 import messages from '@ku/constants/response'
 import { TIME_OPTIONS } from '@ku/constants/variables'
-import { fDateTimeFormat } from '@sentry/utils/formatDateTime'
 import uuidv4 from '@sentry/utils/uuidv4'
 
 
@@ -98,6 +97,7 @@ export default function EquipmentScheduleCreatePage() {
       setIsErrorSelectEquipment(false)
     }
   }, [selected])
+
   useEffect(() => {
     if (!mounted.current) {
       mounted.current = true
@@ -174,7 +174,7 @@ export default function EquipmentScheduleCreatePage() {
     const mapTime = TIME_OPTIONS.find(i => i.label === data.time)
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableCreate = {
-      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
+      date: !isNull(data.date) && isValid(data.date) ? `${format(data.date, 'yyyy-MM-dd')}T00:00:00` : null,
       times: mapTime.value,
       eqId: ArrayEqID,
     }
@@ -243,7 +243,7 @@ export default function EquipmentScheduleCreatePage() {
         })}
       </Box>
     )
-  }, [selected])
+  }, [selected, isErrorSelectEquipment])
   return (
     <>
       <Head>

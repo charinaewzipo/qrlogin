@@ -226,7 +226,7 @@ export default function EquipmentScheduleDetailPage() {
     const ArrayEqID = selected.map(numString => parseInt(numString))
     const query: IV1PostEquipmentUnavailableUpdate = {
       equnavascheId: Number(get(router, 'query.id', -1)),
-      date: !isNull(data.date) && isValid(data.date) ? fDateTimeFormat(data.date, 'YYYY-MM-DDT00:00:00') : null,
+      date: !isNull(data.date) && isValid(data.date) ? `${format(data.date, 'yyyy-MM-dd')}T00:00:00` : null,
       times: mapTimePost.value,
       eqId: ArrayEqID,
     }
@@ -290,7 +290,7 @@ export default function EquipmentScheduleDetailPage() {
         })}
       </Box>
     )
-  }, [selected])
+  }, [selected, isErrorSelectEquipment])
   return (
     <>
       <Head>

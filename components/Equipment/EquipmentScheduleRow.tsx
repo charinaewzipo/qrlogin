@@ -39,17 +39,23 @@ export default function EquipmentScheduleRow({
           <Label color={get(row, 'equnavascheStatus', '') === 'PENDING' ? 'warning' : 'default'}>{get(row, 'equnavascheStatus', '').toLocaleLowerCase()}</Label>
         </TableCell>
         <TableCell align="left">
-          {get(row, 'equnavascheStatus', '') === 'PENDING' && <Button
-            color="error"
-            sx={{ flexShrink: 0 }}
-            onClick={(e) => {
-              e.stopPropagation()
-              onRemove ? onRemove() : noop
-            }}
-            startIcon={<Iconify icon="eva:trash-2-outline" />}
-          >
-            Cancel
-          </Button>}
+          {get(row, 'equnavascheStatus', '') === 'PENDING'
+            ? <Button
+              color="error"
+              sx={{ flexShrink: 0 }}
+              onClick={(e) => {
+                e.stopPropagation()
+                onRemove ? onRemove() : noop
+              }}
+              startIcon={<Iconify icon="eva:trash-2-outline" />}
+            >
+              Cancel
+            </Button> :
+            <Button
+              sx={{ color: 'transparent' }}
+            >
+              hide
+            </Button>}
         </TableCell>
       </TableRow>
     </>

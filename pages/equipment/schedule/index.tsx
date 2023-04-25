@@ -33,7 +33,7 @@ import { useSnackbar } from 'notistack'
 import { Typography } from '@mui/material'
 import EquipmentScheduleRow from '@ku/components/Equipment/EquipmentScheduleRow'
 import EquipmentScheduleToolsbar from '@ku/components/Equipment/EquipmentScheduleToolsbar'
-import { isValid } from 'date-fns'
+import { format, isValid } from 'date-fns'
 import { LoadingButton } from '@mui/lab';
 import ConfirmDialog from '@ku/components/ConfirmDialog'
 import { get, isEmpty, isNull, isUndefined } from 'lodash'
@@ -47,7 +47,6 @@ const initialScheduleStats = {
   upcomingCount: 0,
   finishCount: 0,
 }
-
 const TABLE_HEAD = [
   { id: 'activeDate', label: 'Active date', align: 'left', width: 150 },
   { id: 'time', label: 'Time', align: 'left' },
@@ -56,7 +55,6 @@ const TABLE_HEAD = [
   { id: 'status', label: 'Status', align: 'left', width: 120 },
   { id: 'button', label: '', align: 'left', width: 150 },
 ];
-
 
 EquipmentSchedulePage.getLayout = (page: React.ReactElement) => <AuthorizedLayout>{page}</AuthorizedLayout>
 
@@ -93,16 +91,11 @@ export default function EquipmentSchedulePage() {
     },
   ] as const
 
-
   const mounted = useRef(false);
   useEffect(() => {
     if (!mounted.current) {
-      // do componentDidMount logic
       mounted.current = true
-      GetUnAvailableScheduleStats()
-      GetUnAvailableSchedule()
     } else {
-      // do componentDidUpdate logic
       clearTimeout(countDown);
       setCountDown(
         setTimeout(() => {
@@ -111,7 +104,14 @@ export default function EquipmentSchedulePage() {
         }, 1000)
       );
     }
-  }, [page, rowsPerPage, filterStartDate, filterEndDate, filterStatus]);
+  }, [filterStartDate, filterEndDate]);
+
+  useEffect(() => {
+    GetUnAvailableScheduleStats()
+    GetUnAvailableSchedule()
+  }, [page, rowsPerPage, filterStatus]);
+
+
   const GetUnAvailableScheduleStats = () => {
     fetchGetUnAvailableScheduleStats().then(response => {
       if (response.code === responseCode.OK_CODE) {
@@ -126,8 +126,8 @@ export default function EquipmentSchedulePage() {
     const query: IV1QueryPagination & IV1QueryGetEquipmentUnavailableSchedule = {
       page: page + 1,
       limit: rowsPerPage,
-      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? fDateTimeFormat(filterStartDate, 'YYYY-MM-DDT00:00:00') : null,
-      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? fDateTimeFormat(filterEndDate, 'YYYY-MM-DDT00:00:00') : null,
+      startTime: !isNull(filterStartDate) && isValid(filterStartDate) ? `${format(filterStartDate, 'yyyy-MM-dd')}T00:00:00` : null,
+      endTime: !isNull(filterEndDate) && isValid(filterEndDate) ? `${format(filterEndDate, 'yyyy-MM-dd')}T00:00:00` : null,
       status: filterStatus as IEquipmentUnavailableStatus,
       equnavascheId: -1
     }
@@ -166,7 +166,7 @@ export default function EquipmentSchedulePage() {
     })
   }
   const handleViewRow = (id: number) => {
-    push(MERGE_PATH(EQUIPMENT_PATH, '/schedule/detail', id.toString()))
+    push(MERGE_PATH(EQUIPMENT_PATH, 'schedule/detail', id.toString()))
   };
 
   const handleOnCancel = (item: IV1RespGetEquipmentUnavailableSchedule) => {
@@ -294,7 +294,6 @@ export default function EquipmentSchedulePage() {
         content={
           <Box>
             {[
-
               { sx: { mb: 0 }, text: `To cancel upcoming ${fDateTimeFormat(get(detailSchedule, 'equnavascheDays', ''), 'DD MMM YYYY')} ${getTimeOfDay(get(detailSchedule, 'equnavascheTimes', []))} schedule` },
               { sx: { my: 2 }, text: `Remark: after you cancelled schedule, you can not \nrecover this schedule.` },
             ].map((i, index) => (
