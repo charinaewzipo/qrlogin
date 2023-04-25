@@ -394,7 +394,7 @@ export default function EquipmentScheduleDetailPage() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={selected.length}
+                rowCount={tableAllData.length}
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {

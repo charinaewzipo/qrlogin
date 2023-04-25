@@ -347,7 +347,7 @@ export default function EquipmentScheduleCreatePage() {
                 order={order}
                 orderBy={orderBy}
                 headLabel={TABLE_HEAD}
-                rowCount={selected.length}
+                rowCount={tableAllData.length}
                 numSelected={selected.length}
                 onSort={(id) => {
                   if (id === 'eqName') {
@@ -361,7 +361,6 @@ export default function EquipmentScheduleCreatePage() {
                   } else {
                     onSelectAllRows(checked, tableData.map((row) => get(row, 'eqId', '')))
                   }
-
                 }}
               />
               <TableBody>
